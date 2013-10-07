@@ -1,10 +1,10 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base;
+use beatbox;
 
-class AssetTest extends base\Test {
+class AssetTest extends beatbox\Test {
 
 	/**
 	 * @group fast
@@ -15,7 +15,7 @@ class AssetTest extends base\Test {
 		fwrite($fd, "Test File");
 		fclose($fd);
 
-		$asset = new base\Asset;
+		$asset = new beatbox\Asset;
 		$asset->setName("TestFile.txt");
 		$asset->setMIME('text/plain');
 		$asset->loadSourceFile($file);
@@ -27,7 +27,7 @@ class AssetTest extends base\Test {
 	 * @group fast
 	 */
 	public function testFallback() {
-		$asset = new base\Asset;
+		$asset = new beatbox\Asset;
 		$this->assertEquals('fallback', $asset->getURI('fallback'));
 	}
 }

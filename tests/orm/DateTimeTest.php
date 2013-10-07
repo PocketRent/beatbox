@@ -1,10 +1,10 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base, pr\base\orm\DateTimeType;
+use beatbox, beatbox\orm\DateTimeType;
 
-class DateTimeTest extends base\Test {
+class DateTimeTest extends beatbox\Test {
 	private $old_tz;
 	public function setUp() {
 		$this->old_tz = date_default_timezone_get();

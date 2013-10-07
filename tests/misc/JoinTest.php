@@ -1,10 +1,10 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base, Vector;
+use beatbox, Vector;
 
-class JoinTest extends base\Test {
+class JoinTest extends beatbox\Test {
 
 	/**
 	 * @group sanity

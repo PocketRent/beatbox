@@ -1,10 +1,10 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base, pr\base\orm;
+use beatbox, beatbox\orm;
 
-class ORMTest extends base\Test {
+class ORMTest extends beatbox\Test {
 
 	/**
 	 * @group sanity
@@ -72,7 +72,7 @@ ORDER BY "TestTable"."ID" ASC, "TestTable"."AuxID" ASC', $str);
 		$q = TestTable::get();
 		try {
 			// This should pass
-			$this->assertInstanceOf('pr\base\orm\ORM', $q->sortBy('ID'));
+			$this->assertInstanceOf('beatbox\orm\ORM', $q->sortBy('ID'));
 		} catch (orm\InvalidFieldException $e) {
 			$this->fail('Valid field failed validation');
 		} catch (\Exception $e) {

@@ -1,11 +1,11 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base, pr\base\Session;
+use beatbox, beatbox\Session;
 
-class SessionTest extends base\Test {
-	use base\test\Redis { 
+class SessionTest extends beatbox\Test {
+	use beatbox\Test\Redis {
 		tearDown as rCleanUp;
 	}
 
@@ -61,7 +61,7 @@ class SessionTest extends base\Test {
 			Session::set('CSRF', 2);
 			$this->fail('Should not be able to override CSRF value');
 		} catch(\InvalidArgumentException $e) {
-			
+
 		}
 	}
 
@@ -79,7 +79,7 @@ class SessionTest extends base\Test {
 		Session::clear('o');
 		Session::clear('test');
 		Session::end();
-		
+
 		$this->assertFalse(Session::exists('test'));
 		$this->assertFalse(Session::exists('o'));
 	}

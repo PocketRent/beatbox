@@ -1,10 +1,10 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base, pr\base\Cache;
+use beatbox, beatbox\Cache;
 
-class CacheTest extends base\Test {
+class CacheTest extends beatbox\Test {
 
 	/**
 	 * @group fast

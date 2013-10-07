@@ -1,10 +1,10 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base;
+use beatbox;
 
-class FileFieldTest extends base\Test {
+class FileFieldTest extends beatbox\Test {
 	private $html = [
 		'name' => 'SomeFile.html',
 		'type' => 'text/html',
@@ -102,7 +102,7 @@ class FileFieldTest extends base\Test {
 			$field->setValue($this->getError(UPLOAD_ERR_NO_TMP_DIR));
 			$field->validate();
 			$this->fail('Exception expected');
-		} catch(base\errors\HTTP_Exception $e) {
+		} catch(beatbox\errors\HTTP_Exception $e) {
 			$this->assertEquals(500, $e->getBaseCode());
 		}
 
@@ -110,7 +110,7 @@ class FileFieldTest extends base\Test {
 			$field->setValue($this->getError(UPLOAD_ERR_CANT_WRITE));
 			$field->validate();
 			$this->fail('Exception expected');
-		} catch(base\errors\HTTP_Exception $e) {
+		} catch(beatbox\errors\HTTP_Exception $e) {
 			$this->assertEquals(500, $e->getBaseCode());
 		}
 	}
@@ -231,7 +231,7 @@ class FileFieldTest extends base\Test {
 			$field->setValue($this->getFiles(['jpeg', UPLOAD_ERR_NO_TMP_DIR]));
 			$field->validate();
 			$this->fail('Exception expected');
-		} catch(base\errors\HTTP_Exception $e) {
+		} catch(beatbox\errors\HTTP_Exception $e) {
 			$this->assertEquals(500, $e->getBaseCode());
 		}
 
@@ -239,7 +239,7 @@ class FileFieldTest extends base\Test {
 			$field->setValue($this->getFiles(['jpeg', UPLOAD_ERR_CANT_WRITE]));
 			$field->validate();
 			$this->fail('Exception expected');
-		} catch(base\errors\HTTP_Exception $e) {
+		} catch(beatbox\errors\HTTP_Exception $e) {
 			$this->assertEquals(500, $e->getBaseCode());
 		}
 	}
@@ -279,7 +279,7 @@ class FileFieldTest extends base\Test {
 		$field->setValue($this->getFiles(['png', 'mp4']));
 		$errors = $field->validate();
 		$this->assertTrue($errors[0], $errors[1]);
-		
+
 		$field->setValue($this->getFiles(['mp4', 'mpeg']));
 		$this->assertFalse($field->validate()[0]);
 	}

@@ -1,10 +1,10 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base, Map, Vector;
+use beatbox, Map, Vector;
 
-class FormTest extends base\Test {
+class FormTest extends beatbox\Test {
 	/**
 	 * @group fast
 	 */
@@ -199,7 +199,7 @@ class FormTest extends base\Test {
 			$_SERVER['HTTP_X_REQUESTED_WITH'] = 'No AJAX';
 			$form->forFragment(['/'], 'form');
 			$this->fail('Non-AJAX form validation should throw an exception');
-		} catch(base\errors\HTTP_Exception $e) {
+		} catch(beatbox\errors\HTTP_Exception $e) {
 			$this->assertEquals(302, $e->getBaseCode());
 		}
 	}
@@ -221,7 +221,7 @@ class FormTest extends base\Test {
 			$this->assertEquals('Value', $field->getValue());
 			$form->forFragment(['/'], 'form');
 			$this->fail('Should have errored');
-		} catch(base\errors\HTTP_Exception $e) {
+		} catch(beatbox\errors\HTTP_Exception $e) {
 			$this->assertEquals('', $field->getValue());
 		}
 		$field->setValue('Value');

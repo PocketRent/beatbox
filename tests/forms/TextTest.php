@@ -1,10 +1,10 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base;
+use beatbox;
 
-class TextFieldTest extends base\Test {
+class TextFieldTest extends beatbox\Test {
 	/**
 	 * @group sanity
 	 */

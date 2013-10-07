@@ -1,10 +1,10 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base;
+use beatbox;
 
-class CSRFFieldTest extends base\Test {
+class CSRFFieldTest extends beatbox\Test {
 	/**
 	 * @group sanity
 	 */
@@ -12,7 +12,7 @@ class CSRFFieldTest extends base\Test {
 		$field = <pr:form:csrf />;
 
 		$existing = $field->getValue();
-		
+
 		$field->setValue('null');
 		$this->assertNotEquals('null', $field->getValue());
 		$this->assertEquals($existing, $field->getValue());

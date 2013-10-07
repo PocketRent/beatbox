@@ -1,11 +1,11 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base, pr\base\Task;
+use beatbox, beatbox\Task;
 
-class TaskTest extends base\Test {
-	use base\test\Redis;
+class TaskTest extends beatbox\Test {
+	use beatbox\Test\Redis;
 
 	/**
 	 * @group fast

@@ -1,16 +1,16 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base;
+use beatbox;
 
-class EmailFieldTest extends base\Test {
+class EmailFieldTest extends beatbox\Test {
 	/**
 	 * @group sanity
 	 */
 	public function testBaseValidation() {
 		$field = <pr:form:email />;
-		
+
 		$field->setValue('@fail.com');
 		$this->assertFalse($field->validate()[0]);
 
@@ -24,7 +24,7 @@ class EmailFieldTest extends base\Test {
 	 */
 	public function testMaxLengthValidation() {
 		$field = <pr:form:email />;
-		
+
 		$field->setAttribute('maxlength', 11);
 		$field->setValue('123456@aa.bb');
 		$this->assertFalse($field->validate()[0]);

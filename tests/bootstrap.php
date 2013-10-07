@@ -11,7 +11,7 @@ if (!$dir) $dir = '/tmp';
 define('ASSET_PATH', $dir.$assets);
 
 // Load the stuff
-require __DIR__ . '/../src/php/base/init.php';
+require __DIR__ . '/../php/init.php';
 
 // Connect to the database
 
@@ -34,7 +34,7 @@ $cmd = $cmd . ' ' . implode(' ', $args);
 passthru($cmd);
 
 // Create a new connection to set the global object
-$con = new pr\base\orm\Connection(['dbname' => $dbname]);
+$con = new beatbox\orm\Connection(['dbname' => $dbname]);
 
 // Shutdown handler
 register_shutdown_function(function() use($connectString, $dbname, $con) {

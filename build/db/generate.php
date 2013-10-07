@@ -332,7 +332,7 @@ class PGType {
 		} else if ($this->type == PGType::T_COMPOSITE) {
 			$f->writeLine("$dest = {$this->name}::fromString($raw);");
 		} else if ($this->type_cat == PGType::TCAT_DATETIME) {
-			$f->writeLine("$dest = new \\pr\\base\\orm\\DateTimeType($raw);");
+			$f->writeLine("$dest = new \\beatbox\\orm\\DateTimeType($raw);");
 		} else {
 			$f->writeLine("$dest = $raw;");
 		}
@@ -346,7 +346,7 @@ class PGType {
 		vprint("Generating type code for $this->name");
 
 		if ($this->type == PGType::T_COMPOSITE) {
-			$file->startBlock("class $this->name extends \\pr\\base\\orm\\CompositeType");
+			$file->startBlock("class $this->name extends \\beatbox\\orm\\CompositeType");
 			$file->writeLine();
 
 			foreach ($this->elements as $name => $type) {
@@ -360,7 +360,7 @@ class PGType {
 			$file->writeLine('$parts = db_parse_composite($val);');
 
 			$file->startBlock("if (count(\$parts) != {$this->elements->count()})");
-			$file->writeLine('throw new \pr\base\orm\InvalidValueException($val);');
+			$file->writeLine('throw new \beatbox\orm\InvalidValueException($val);');
 			$file->endBlock();
 			$file->writeLine();
 
@@ -380,7 +380,7 @@ class PGType {
 
 			$file->writeLine();
 
-			$file->startBlock("public final function toDBString(\\pr\\base\\orm\\Connection \$conn): string");
+			$file->startBlock("public final function toDBString(\\beatbox\\orm\\Connection \$conn): string");
 
 			if ($this->elements->count() == 1) {
 				$file->writeLine('$str = "ROW(";');
@@ -448,7 +448,7 @@ class PGType {
 			} else if ($this->type_cat == PGType::TCAT_STRING) {
 				return "\string";
 			} else if ($this->type_cat == PGType::TCAT_DATETIME) {
-				return "\\pr\\base\\orm\\DateTimeType";
+				return "\\beatbox\\orm\\DateTimeType";
 			}
 		} else if ($this->type == PGType::T_DOMAIN) {
 			return $this->type_dict->typeByOid($this->sub_type)->__toString();
@@ -963,10 +963,10 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 		$tbl_data->writeLine();
 		$tbl_data->writeLine("namespace $ns;");
 		$tbl_data->writeLine();
-		$tbl_data->writeLine('use pr\\base\\orm\\ORM, pr\\base\\orm\\Connection;');
+		$tbl_data->writeLine('use beatbox\\orm\\ORM, beatbox\\orm\\Connection;');
 		$tbl_data->writeLine();
 
-		$tbl_data->startBlock("abstract class $table->name extends \\pr\\base\\orm\\DataTable");
+		$tbl_data->startBlock("abstract class $table->name extends \\beatbox\\orm\\DataTable");
 
 		$tbl_data->writeLine();
 		$tbl_data->writeLine("// Original data");
@@ -1034,12 +1034,12 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 						$tbl_data->writeLine('assert(!is_null($val));');
 					}
 					$tbl_data->startBlock('if(is_string($val))');
-					$tbl_data->writeLine('$val = new \pr\base\orm\DateTimeType($val);');
+					$tbl_data->writeLine('$val = new \beatbox\orm\DateTimeType($val);');
 					$tbl_data->endBlock();
 					$tbl_data->startBlock('elseif(is_numeric($val))');
-					$tbl_data->writeLine('$val = new \pr\base\orm\DateTimeType(\'@\' . $val);');
+					$tbl_data->writeLine('$val = new \beatbox\orm\DateTimeType(\'@\' . $val);');
 					$tbl_data->endBlock();
-					$tbl_data->writeLine('assert($val instanceof \pr\base\orm\DateTimeType);');
+					$tbl_data->writeLine('assert($val instanceof \beatbox\orm\DateTimeType);');
 					$tbl_data->writeLine("\$this->changed['$col->name'] = ".
 						"\$this->orig == null || (\$this->orig['$col->name']->cmp(\$val) != 0);");
 					$tbl_data->writeLine("\$this->_$col->name = \$val;");

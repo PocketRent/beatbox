@@ -1,11 +1,11 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base, pr\base\Event;
+use beatbox, beatbox\Event;
 
-class EventTest extends base\Test {
-	use base\test\Redis;
+class EventTest extends beatbox\Test {
+	use beatbox\Test\Redis;
 
 	protected $called = [];
 	protected $args = [];
@@ -62,7 +62,7 @@ class EventTest extends base\Test {
 		$event = new Event('test', 'ing');
 		$event->send();
 
-		base\Task::run();
+		beatbox\Task::run();
 
 		$this->assertEquals(['test'], $this->called);
 		$this->assertEquals([['ing']], $this->args);
@@ -70,7 +70,7 @@ class EventTest extends base\Test {
 		$event = new Event('prefix', 'something', 'else');
 		$event->send();
 
-		base\Task::run();
+		beatbox\Task::run();
 
 		$this->assertEquals(['test', 'prefix'], $this->called);
 		$this->assertEquals([['ing'], ['something', 'else']], $this->args);

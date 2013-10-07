@@ -1,10 +1,10 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use \pr\base, Vector;
+use \beatbox, Vector;
 
-class ParseTest extends base\Test {
+class ParseTest extends beatbox\Test {
 
 	/**
 	 * @group sanity

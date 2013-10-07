@@ -1,10 +1,10 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base;
+use beatbox;
 
-class RadioFieldTest extends base\Test {
+class RadioFieldTest extends beatbox\Test {
 	/**
 	 * @group fast
 	 */

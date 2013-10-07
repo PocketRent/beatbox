@@ -4,12 +4,12 @@
 require __DIR__ . '/../xhp/init.php';
 
 function makeMap() {
-	$lookIn = __DIR__ . '/../src/php';
+	$lookIn = __DIR__ . '/../..';
 
 	$map = [];
 
 	global $base;
-	$base = realpath(__DIR__ . '/..');
+	$base = realpath(__DIR__ . '/../..');
 
 	foreach(glob($lookIn, GLOB_ONLYDIR) as $dir) {
 		$map = array_merge_recursive($map, handleDir($dir));

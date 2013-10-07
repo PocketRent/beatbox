@@ -1,10 +1,10 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base;
+use beatbox;
 
-class DropdownFieldTest extends base\Test {
+class DropdownFieldTest extends beatbox\Test {
 	/**
 	 * @group fast
 	 */

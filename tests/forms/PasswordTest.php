@@ -1,10 +1,10 @@
 <?php
 
-namespace pr\test;
+namespace beatbox\test;
 
-use pr\base;
+use beatbox;
 
-class PasswordFieldTest extends base\Test {
+class PasswordFieldTest extends beatbox\Test {
 	/**
 	 * @group fast
 	 */

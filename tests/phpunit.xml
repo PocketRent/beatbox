@@ -1,0 +1,13 @@
+<phpunit bootstrap="bootstrap.php" colors="true">
+	<testsuites>
+		<testsuite name="Default">
+			<directory>.</directory>
+		</testsuite>
+	</testsuites>
+	<groups>
+		<include>
+			<group>sanity</group>
+			<group>fast</group>
+		</include>
+	</groups>
+</phpunit>

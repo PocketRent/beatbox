@@ -1,0 +1,85 @@
+#!/usr/bin/hhvm -vEval.EnableHipHopSyntax=true
+<?php
+
+require_once __DIR__.'/db/base.php';
+
+$commands = StableMap {
+    "create" => [
+        "description" => "Create the database",
+        "run" => "doCreate",
+        "help" => "createHelp"
+    ],
+    "generate" => [
+        "description" => "Generate PHP classes from Database schema",
+        "run" => "doGenerate",
+        "help" => "generateHelp"
+    ]
+};
+
+function main($args) {
+    global $commands;
+
+    if ($args->count() < 2) {
+        return usage();
+    }
+    if ($args->linearSearch("-h") > 0 || $args->linearSearch("--help") > 0) {
+        return usage($args[1]);
+    }
+
+    $command = $args[1];
+    if ($command && $commands->containsKey($command)) {
+        $cmd = $commands[$command];
+        if (isset($cmd['run'])) {
+            try {
+                $cmd['run'](Vector::slice($args, 2));
+            } catch (CommandException $e) {
+                echo "Error running command: ".$e->getMessage()."\n";
+                return $e->getCode();
+            }
+        }
+    }
+
+    return 0;
+}
+
+function usage($command=null) {
+    global $exe, $commands;
+    if ($command && $commands->containsKey($command)) {
+        $cmd = $commands[$command];
+        if (isset($cmd['help'])) {
+            $cmd['help']();
+        } else {
+            echo "  No help for this command\n\n";
+        }
+    } else {
+        echo "Usage: $exe <command> [options]\n\n";
+        echo "  Available Commands are:\n";
+        foreach ($commands as $cmd => $info) {
+            $desc = format_desc($info['description']);
+            printf("    %-22s %s\n", $cmd, $desc);
+        }
+    }
+    echo <<<HELP
+
+
+  Common Options:
+    -h, --help             Show this help text, or help for a command
+    -V, --verbose          Show verbose output
+    -C, --conf-dir DIR     Path to configuration directory containing at least
+                           a 'db.php' file. Defaults to 'conf/'
+    -d, --database DB      Use this database to create the schema, if the
+                           database does not exist, it will be created
+                           unless --no-create-db is set. Defaults to the
+                           'DATABASE_NAME' constant in 'db.php'.
+    -h, --host HOST        Database hostname. Defaults to the
+                           'DATABASE_HOST' constant in 'db.php'.
+    -u, --user USER        Username for the database. Defaults to the
+                           'DATABASE_USER' constant in 'db.php'.
+    -p, --pass PASS        Password for the database. Defaults to the
+                           'DATABASE_PASS' constant in 'db.php'.
+
+HELP;
+}
+
+$exe = $argv[0];
+exit(main(Vector::fromArray($argv)));

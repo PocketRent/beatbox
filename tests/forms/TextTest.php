@@ -9,7 +9,7 @@ class TextFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testMaxlengthValidation() {
-		$field = <pr:form:text maxlength="5" />;
+		$field = <bb:form:text maxlength="5" />;
 		$field->setValue('Ω≈ç√∫µ');
 
 		$this->assertFalse($field->validate()[0]);
@@ -21,7 +21,7 @@ class TextFieldTest extends beatbox\Test {
 	}
 
 	public function testPatternValidation() {
-		$field = <pr:form:text />;
+		$field = <bb:form:text />;
 
 		$field->setAttribute('pattern', '\w@\w{2}\.\w{3}');
 		$field->setValue('hello@pass.com');
@@ -33,7 +33,7 @@ class TextFieldTest extends beatbox\Test {
 	}
 
 	public function testRequiredValidation() {
-		$field = <pr:form:text />;
+		$field = <bb:form:text />;
 
 		$field->setAttribute('required', true);
 		$field->setValue(null);
@@ -50,7 +50,7 @@ class TextFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testEmptyValidation() {
-		$field = <pr:form:text maxlength="2" pattern="\w+" />;
+		$field = <bb:form:text maxlength="2" pattern="\w+" />;
 		$field->setValue(null);
 
 		$errors = $field->validate();

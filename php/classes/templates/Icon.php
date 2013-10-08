@@ -1,6 +1,6 @@
 <?php
 
-class :pr:icon extends :pr:base {
+class :bb:icon extends :bb:base {
 	attribute :img;
 
 	protected $skipTransfer = Set<string> {'src'};
@@ -38,7 +38,7 @@ class :pr:icon extends :pr:base {
 			}
 			self::formatDOMElement($svg);
 			$svg = $dom->saveXML($svg);
-			return <pr:raw>{$svg}</pr:raw>;
+			return <bb:raw>{$svg}</bb:raw>;
 		}
 		return <img src={$src} />;
 	}
@@ -115,7 +115,7 @@ class :pr:icon extends :pr:base {
 }
 
 //TODO: Implement thumbnails
-class :pr:thumnail extends :pr:icon {
+class :bb:thumnail extends :bb:icon {
 	private $asset = null;
 
 	public function setAsset(\beatbox\Asset $asset) {

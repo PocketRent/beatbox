@@ -6,7 +6,7 @@ use beatbox;
 
 class TextareaFieldTest extends beatbox\Test {
 	public function testRequiredValidation() {
-		$field = <pr:form:textarea required="true" />;
+		$field = <bb:form:textarea required="true" />;
 		$field->setValue('');
 
 		$this->assertFalse($field->validate()[0]);
@@ -17,7 +17,7 @@ class TextareaFieldTest extends beatbox\Test {
 	}
 
 	public function testMaxlengthValidation() {
-		$field = <pr:form:textarea maxlength="3" />;
+		$field = <bb:form:textarea maxlength="3" />;
 		$field->setValue('1234');
 		$this->assertFalse($field->validate()[0]);
 

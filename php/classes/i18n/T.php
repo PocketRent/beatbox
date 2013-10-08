@@ -1,6 +1,6 @@
 <?php
 
-class :pr:t extends :pr:base {
+class :bb:t extends :bb:base {
 	children (pcdata)*;
 
 	attribute
@@ -8,7 +8,7 @@ class :pr:t extends :pr:base {
 		Traversable args = [];
 
 	protected function compose() {
-		$message = (string)((<pr:raw />)->appendChild($this->getChildren()));
+		$message = (string)((<bb:raw />)->appendChild($this->getChildren()));
 		if(($args = $this->getAttribute('args'))) {
 			$callingArgs = [$message];
 			foreach($args as $v) $callingArgs[] = $v;

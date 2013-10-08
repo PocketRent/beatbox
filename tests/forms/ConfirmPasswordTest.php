@@ -9,13 +9,13 @@ class ConfirmPasswordTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testRender() {
-		$field = <pr:form:confirm-password />;
+		$field = <bb:form:confirm-password />;
 		$field->setValue('hello');
 		$this->assertNotContains('hello', (string)$field);
 	}
 
 	public function testMaxlengthValidation() {
-		$field = <pr:form:confirm-password maxlength="5" />;
+		$field = <bb:form:confirm-password maxlength="5" />;
 
 		$field->setValue('123456');
 		$this->assertFalse($field->validate()[0]);
@@ -26,7 +26,7 @@ class ConfirmPasswordTest extends beatbox\Test {
 	}
 
 	public function testPatternValidation() {
-		$field = <pr:form:confirm-password pattern="[A-Za-z]{5,7}\d+" />;
+		$field = <bb:form:confirm-password pattern="[A-Za-z]{5,7}\d+" />;
 
 		$field->setValue('ABCDEFGH12');
 		$this->assertFalse($field->validate()[0]);
@@ -37,7 +37,7 @@ class ConfirmPasswordTest extends beatbox\Test {
 	}
 
 	public function testRequiredValidation() {
-		$field = <pr:form:confirm-password required="true" />;
+		$field = <bb:form:confirm-password required="true" />;
 
 		$field->setValue(null);
 		$this->assertFalse($field->validate()[0]);

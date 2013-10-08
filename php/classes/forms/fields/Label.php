@@ -1,9 +1,9 @@
 <?php
 
-class :pr:form:label extends :pr:form:field {
+class :bb:form:label extends :bb:form:field {
 	attribute
 		:label,
-		:pr:form:field for @required;
+		:bb:form:field for @required;
 
 	protected function buildField() {
 		$root = <label for={$this->getAttribute('for')->getID()} />;

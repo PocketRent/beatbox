@@ -1,14 +1,14 @@
 <?php
 
-class :pr:tabs extends :pr:base {
+class :bb:tabs extends :bb:base {
 	attribute :div;
 
-	children (:pr:tab)+;
+	children (:bb:tab)+;
 
 	protected function compose() {
 		$root = <div class="tabsOuter" />;
 
-		$switcher = <pr:button-group />;
+		$switcher = <bb:button-group />;
 		$tabs = <div class="tabs" />;
 
 		$root->appendChild(<div class="tabSwitcher" role="tablist">{$switcher}</div>);
@@ -19,9 +19,9 @@ class :pr:tabs extends :pr:base {
 			$title = $tab->getAttribute('title');
 			$id = $tab->getID();
 			$tabs->appendChild($tab);
-			$icon = $tab->isAttributeSet('icon') ? <pr:icon src={$tab->getAttribute('icon')} /> : '';
+			$icon = $tab->isAttributeSet('icon') ? <bb:icon src={$tab->getAttribute('icon')} /> : '';
 
-			$button = <pr:button role="tab" aria-controls={$id}>{$icon}<span>{$title}</span></pr:button>;
+			$button = <bb:button role="tab" aria-controls={$id}>{$icon}<span>{$title}</span></bb:button>;
 			if ($first) {
 				$button->setAttribute('aria-selected', 'true');
 				$button->setAttribute('tabindex', '0');
@@ -39,7 +39,7 @@ class :pr:tabs extends :pr:base {
 	}
 }
 
-class :pr:tab extends :pr:base {
+class :bb:tab extends :bb:base {
 	attribute
 		:div,
 		string title @required,

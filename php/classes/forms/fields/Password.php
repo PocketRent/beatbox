@@ -1,6 +1,6 @@
 <?php
 
-class :pr:form:password extends :pr:form:field {
+class :bb:form:password extends :bb:form:field {
 	attribute :input;
 
 	protected $type = 'password';

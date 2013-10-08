@@ -1,6 +1,6 @@
 <?php
 
-class :pr:form:dropdown extends :pr:form:field {
+class :bb:form:dropdown extends :bb:form:field {
 	protected $type = 'dropdown';
 
 	attribute

@@ -11,7 +11,7 @@ class Task implements \Serializable {
 	const CON_DIFF = 1;
 	const CON_NEVER = 2;
 
-	const QUEUE_NAME = 'pr:queue';
+	const QUEUE_NAME = 'bb:queue';
 
 	protected $callback;
 

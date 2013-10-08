@@ -9,7 +9,7 @@ class NumberFieldTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testRequiredValidation() {
-		$field = <pr:form:number />;
+		$field = <bb:form:number />;
 
 		$field->setAttribute('required', true);
 		// 0 is deliberately not valid when the field is required
@@ -22,7 +22,7 @@ class NumberFieldTest extends beatbox\Test {
 	}
 
 	public function testMaxValidation() {
-		$field = <pr:form:number />;
+		$field = <bb:form:number />;
 
 		$field->setAttribute('max', 10);
 		$field->setValue(20);
@@ -34,7 +34,7 @@ class NumberFieldTest extends beatbox\Test {
 	}
 
 	public function testMinValidation() {
-		$field = <pr:form:number />;
+		$field = <bb:form:number />;
 
 		$field->setAttribute('min', 10);
 		$field->setValue(0);
@@ -49,7 +49,7 @@ class NumberFieldTest extends beatbox\Test {
 	 * @depends testMinValidation
 	 */
 	public function testStepValidation() {
-		$field = <pr:form:number />;
+		$field = <bb:form:number />;
 
 		$field->setAttribute('step', 5);
 		$field->setAttribute('min', 10);
@@ -73,7 +73,7 @@ class NumberFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testEmptyValidation() {
-		$field = <pr:form:number max="2" min="3" step="5" />;
+		$field = <bb:form:number max="2" min="3" step="5" />;
 		$field->setValue(null);
 
 		$errors = $field->validate();

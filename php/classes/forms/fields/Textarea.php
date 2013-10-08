@@ -1,6 +1,6 @@
 <?php
 
-class :pr:form:textarea extends :pr:form:field {
+class :bb:form:textarea extends :bb:form:field {
 	attribute :textarea;
 
 	protected $type = 'textarea';

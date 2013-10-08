@@ -1,6 +1,6 @@
 <?php
 
-final class :pr:css extends :pr:base {
+final class :bb:css extends :bb:base {
 	attribute
 		string media = 'all',
 		string dev @required,

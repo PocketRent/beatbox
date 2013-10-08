@@ -1,6 +1,6 @@
 <?php
 
-class :pr:form:radio extends :pr:form:field {
+class :bb:form:radio extends :bb:form:field {
 	attribute :input;
 
 	protected $type = 'radio';

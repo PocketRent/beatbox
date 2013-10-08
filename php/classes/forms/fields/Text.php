@@ -1,6 +1,6 @@
 <?php
 
-class :pr:form:text extends :pr:form:field {
+class :bb:form:text extends :bb:form:field {
 	attribute :input;
 
 	protected $type = 'text';

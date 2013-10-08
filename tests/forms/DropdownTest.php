@@ -9,7 +9,7 @@ class DropdownFieldTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testGetValue() {
-		$field = <pr:form:dropdown><option value="Hello">Hello</option></pr:form:dropdown>;
+		$field = <bb:form:dropdown><option value="Hello">Hello</option></bb:form:dropdown>;
 
 		$this->assertEmpty($field->getValue());
 
@@ -26,7 +26,7 @@ class DropdownFieldTest extends beatbox\Test {
 		$field->setValue('C');
 		$this->assertEquals('C', $field->getValue());
 
-		$field = <pr:form:dropdown items={['a' => 'b']} />;
+		$field = <bb:form:dropdown items={['a' => 'b']} />;
 		$field->setValue('a');
 		$this->assertEquals('a', $field->getValue());
 	}
@@ -36,7 +36,7 @@ class DropdownFieldTest extends beatbox\Test {
 	 * @depends testGetValue
 	 */
 	public function testRequiredValidation() {
-		$field = <pr:form:dropdown required="true"><option value="Hello">Hello</option></pr:form:dropdown>;
+		$field = <bb:form:dropdown required="true"><option value="Hello">Hello</option></bb:form:dropdown>;
 
 		$field->setValue('Bye');
 		$this->assertFalse($field->validate()[0]);
@@ -50,12 +50,12 @@ class DropdownFieldTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testSelectOption() {
-		$field = <pr:form:dropdown>
+		$field = <bb:form:dropdown>
 			<option value="1">1</option>
 			<optgroup label="2">
 				<option value="3">3</option>
 			</optgroup>
-		</pr:form:dropdown>;
+		</bb:form:dropdown>;
 
 		$html = (string)$field;
 		$this->assertNotContains('selected', $html);

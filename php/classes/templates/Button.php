@@ -1,6 +1,6 @@
 <?php
 
-class :pr:button extends :pr:base {
+class :bb:button extends :bb:base {
 	attribute
 		:button,
 		enum {'modal', 'action', 'link'} kind = 'action',

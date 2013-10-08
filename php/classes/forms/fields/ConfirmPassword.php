@@ -1,9 +1,9 @@
 <?php
 
-class :pr:form:confirm-password extends :pr:form:field {
+class :bb:form:confirm-password extends :bb:form:field {
 	attribute
 		:div,
-		:pr:form:password,
+		:bb:form:password,
 		string name,
 		string firstLabel,
 		string secondLabel;
@@ -13,8 +13,8 @@ class :pr:form:confirm-password extends :pr:form:field {
 	protected $skipTransfer = Set<string> {'name', 'label'};
 
 	protected function buildField() {
-		$first = <pr:form:password name={$this->getAttribute('name') . '[0]'} label={$this->getAttribute('firstLabel')} id={$this->getID()} class="first" />;
-		$second = <pr:form:password name={$this->getAttribute('name') . '[1]'} label={$this->getAttribute('secondLabel')} class="second" />;
+		$first = <bb:form:password name={$this->getAttribute('name') . '[0]'} label={$this->getAttribute('firstLabel')} id={$this->getID()} class="first" />;
+		$second = <bb:form:password name={$this->getAttribute('name') . '[1]'} label={$this->getAttribute('secondLabel')} class="second" />;
 
 		$this->cascadeAttributes($first);
 		$this->cascadeAttributes($second);

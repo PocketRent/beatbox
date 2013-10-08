@@ -9,7 +9,7 @@ class RadioFieldTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testRequiredValidation() {
-		$field = <pr:form:radio required="true" />;
+		$field = <bb:form:radio required="true" />;
 		$field->setValue(true);
 
 		$errors = $field->validate();

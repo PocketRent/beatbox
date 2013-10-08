@@ -1,6 +1,6 @@
 <?php
 
-class :pr:form:file extends :pr:form:field {
+class :bb:form:file extends :bb:form:field {
 	attribute
 		:input,
 		array value;

@@ -86,7 +86,7 @@ class FileFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testBaseValidation() {
-		$field = <pr:form:file />;
+		$field = <bb:form:file />;
 
 		$field->setValue($this->getError(UPLOAD_ERR_INI_SIZE));
 		$this->assertFalse($field->validate()[0]);
@@ -120,7 +120,7 @@ class FileFieldTest extends beatbox\Test {
 	 * @depends testBaseValidation
 	 */
 	public function testGetValue() {
-		$field = <pr:form:file />;
+		$field = <bb:form:file />;
 		$field->setValue($this->getFile('html'));
 
 		$this->assertEquals($this->getFile('html'), $field->getValue());
@@ -134,7 +134,7 @@ class FileFieldTest extends beatbox\Test {
 
 	// accept, multiple, required
 	public function testRequiredValidation() {
-		$field = <pr:form:file required="true" />;
+		$field = <bb:form:file required="true" />;
 
 		$field->setValue(null);
 
@@ -149,7 +149,7 @@ class FileFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testAcceptValidation() {
-		$field = <pr:form:file />;
+		$field = <bb:form:file />;
 
 		// test image/*
 		$field->setAttribute('accept', 'image/*');
@@ -215,7 +215,7 @@ class FileFieldTest extends beatbox\Test {
 	 * @depends testBaseValidation
 	 */
 	public function testMultipleBaseValidation() {
-		$field = <pr:form:file multiple="true" />;
+		$field = <bb:form:file multiple="true" />;
 
 		$field->setValue($this->getFiles(['html', UPLOAD_ERR_INI_SIZE]));
 		$this->assertFalse($field->validate()[0]);
@@ -248,7 +248,7 @@ class FileFieldTest extends beatbox\Test {
 	 * @depends testRequiredValidation
 	 */
 	public function testMultipleRequiredValidation() {
-		$field = <pr:form:file multiple="true" required="true" />;
+		$field = <bb:form:file multiple="true" required="true" />;
 
 		$field->setValue(null);
 
@@ -263,7 +263,7 @@ class FileFieldTest extends beatbox\Test {
 	 * @depends testAcceptValidation
 	 */
 	public function testMultipleAcceptValidation() {
-		$field = <pr:form:file multiple="true" />;
+		$field = <bb:form:file multiple="true" />;
 
 		// test image/*
 		$field->setAttribute('accept', 'image/*');

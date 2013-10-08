@@ -1,6 +1,6 @@
 <?php
 
-final class :pr:js extends :pr:base {
+final class :bb:js extends :bb:base {
 	attribute
 		string dev_path @required,
 		Vector dev @required,

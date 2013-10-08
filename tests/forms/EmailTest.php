@@ -9,7 +9,7 @@ class EmailFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testBaseValidation() {
-		$field = <pr:form:email />;
+		$field = <bb:form:email />;
 
 		$field->setValue('@fail.com');
 		$this->assertFalse($field->validate()[0]);
@@ -23,7 +23,7 @@ class EmailFieldTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testMaxLengthValidation() {
-		$field = <pr:form:email />;
+		$field = <bb:form:email />;
 
 		$field->setAttribute('maxlength', 11);
 		$field->setValue('123456@aa.bb');
@@ -38,7 +38,7 @@ class EmailFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testPatternValidation() {
-		$field = <pr:form:email />;
+		$field = <bb:form:email />;
 
 		$field->setAttribute('pattern', '\w@\w{2}\.\w{3}');
 		$field->setValue('hello@pass.com');
@@ -50,7 +50,7 @@ class EmailFieldTest extends beatbox\Test {
 	}
 
 	public function testRequiredValidation() {
-		$field = <pr:form:email />;
+		$field = <bb:form:email />;
 
 		$field->setAttribute('required', true);
 		$field->setValue(null);
@@ -67,7 +67,7 @@ class EmailFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testMultipleBaseValidation() {
-		$field = <pr:form:email />;
+		$field = <bb:form:email />;
 
 		$field->setAttribute('multiple', true);
 		$field->setValue('@fail.com');
@@ -90,7 +90,7 @@ class EmailFieldTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testMultiplePatternValidation() {
-		$field = <pr:form:email />;
+		$field = <bb:form:email />;
 
 		$field->setAttribute('multiple', true);
 		$field->setAttribute('pattern', '\w@\w{2}\.\w{3}');

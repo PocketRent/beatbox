@@ -236,10 +236,10 @@ class Asset {
 	 */
 	public function icon($thumnail = true) {
 		if ($thumnail && $this->thumbnailable()) {
-			$icon = <pr:thumnail />;
+			$icon = <bb:thumnail />;
 			$icon->setAsset($this);
 		} else {
-			return <pr:icon src={$this->iconName()} />;
+			return <bb:icon src={$this->iconName()} />;
 		}
 	}
 

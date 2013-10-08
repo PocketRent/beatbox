@@ -1,6 +1,6 @@
 <?php
 
-abstract class :pr:form:field extends :pr:base {
+abstract class :bb:form:field extends :bb:base {
 	attribute string label;
 
 	protected $type;
@@ -22,7 +22,7 @@ abstract class :pr:form:field extends :pr:base {
 		return <input type={$this->type} class={$this->type} />;
 	}
 
-	public function setValue($value) : :pr:form:field {
+	public function setValue($value) : :bb:form:field {
 		$this->setAttribute('value', $value);
 		$this->reset();
 		return $this;
@@ -41,7 +41,7 @@ abstract class :pr:form:field extends :pr:base {
 			// Force ID generation here, so that buildField() later has it,
 			// as it is called before the label is rendered
 			$this->getID();
-			$root->appendChild(<pr:form:label for={$this}>{$label}</pr:form:label>);
+			$root->appendChild(<bb:form:label for={$this}>{$label}</bb:form:label>);
 			$root->appendChild(' ');
 		}
 
@@ -50,7 +50,7 @@ abstract class :pr:form:field extends :pr:base {
 			$prev = $field;
 			$field = $field->buildField();
 			$prev->cascadeAttributes($field);
-		} while($field instanceof :pr:form:field);
+		} while($field instanceof :bb:form:field);
 
 		if (!$this->valid) {
 			$root->setAttribute('aria-invalid', 'true');

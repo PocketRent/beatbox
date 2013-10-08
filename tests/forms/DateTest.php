@@ -9,7 +9,7 @@ class DateFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testRequiredValidation() {
-		$field = <pr:form:date />;
+		$field = <bb:form:date />;
 
 		$field->setAttribute('required', true);
 		$this->assertFalse($field->validate()[0]);
@@ -23,7 +23,7 @@ class DateFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testMinValidation() {
-		$field = <pr:form:date />;
+		$field = <bb:form:date />;
 
 		$field->setAttribute('min', new \DateTime('2012-10-10'));
 		$field->setValue('2012-01-01');
@@ -38,7 +38,7 @@ class DateFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testMaxValidation() {
-		$field = <pr:form:date />;
+		$field = <bb:form:date />;
 
 		$field->setAttribute('max', new \DateTime('2012-10-10'));
 		$field->setValue('2013-01-01');
@@ -54,7 +54,7 @@ class DateFieldTest extends beatbox\Test {
 	 * @depends testMinValidation
 	 */
 	public function testStepValidation() {
-		$field = <pr:form:date />;
+		$field = <bb:form:date />;
 
 		$field->setAttribute('min', new \DateTime('2012-10-10'));
 		$field->setAttribute('step', 5);

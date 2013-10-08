@@ -9,7 +9,7 @@ class CSRFFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testSetValue() {
-		$field = <pr:form:csrf />;
+		$field = <bb:form:csrf />;
 
 		$existing = $field->getValue();
 

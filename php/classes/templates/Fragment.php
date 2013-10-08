@@ -1,6 +1,6 @@
 <?php
 
-final class :pr:fragment extends :pr:base {
+final class :bb:fragment extends :bb:base {
 	attribute
 		:div,
 		string name @required;

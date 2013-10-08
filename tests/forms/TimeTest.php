@@ -9,7 +9,7 @@ class TimeFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testRequiredValidation() {
-		$field = <pr:form:time />;
+		$field = <bb:form:time />;
 
 		$field->setAttribute('required', true);
 		$this->assertFalse($field->validate()[0]);
@@ -23,7 +23,7 @@ class TimeFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testMinHourValidation() {
-		$field = <pr:form:time />;
+		$field = <bb:form:time />;
 
 		$field->setAttribute('minHour', 13);
 		$field->setValue('12:59');
@@ -38,7 +38,7 @@ class TimeFieldTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testMaxHourValidation() {
-		$field = <pr:form:time />;
+		$field = <bb:form:time />;
 
 		$field->setAttribute('maxHour', 11);
 		$field->setValue('12:59');
@@ -54,7 +54,7 @@ class TimeFieldTest extends beatbox\Test {
 	 * @depends testMinHourValidation
 	 */
 	public function testMinuteStepValidation() {
-		$field = <pr:form:time />;
+		$field = <bb:form:time />;
 
 		$field->setAttribute('minHour', 12);
 		$field->setAttribute('minuteStep', 5);

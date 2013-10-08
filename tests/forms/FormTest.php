@@ -10,7 +10,7 @@ class FormTest extends beatbox\Test {
 	 */
 	public function testCSRF() {
 		// Make sure that a csrf input is added.
-		$form = <pr:form />;
+		$form = <bb:form />;
 		$this->assertContains('name="__csrf"', (string)$form);
 	}
 
@@ -18,7 +18,7 @@ class FormTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testFragmentHandling() {
-		$form = <pr:form />;
+		$form = <bb:form />;
 		$form->forFragment(['a', 'b'], 'test');
 
 		$this->assertEquals('post', $form->getAttribute('method'));
@@ -43,15 +43,15 @@ class FormTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testLoadData() {
-		$f1 = <pr:form:text name="Field1" />;
-		$f2 = <pr:form:text name="Field2" />;
+		$f1 = <bb:form:text name="Field1" />;
+		$f2 = <bb:form:text name="Field2" />;
 
-		$form = <pr:form>
+		$form = <bb:form>
 			{$f1}
 			<div>
 				{$f2}
 			</div>
-		</pr:form>;
+		</bb:form>;
 
 		$form->loadData(['Field1' => 'Value1', 'Field2' => 'Value2']);
 
@@ -68,16 +68,16 @@ class FormTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testLoadNestedData() {
-		$f1 = <pr:form:text name="Field1[]" />;
-		$f2 = <pr:form:text name="Field1[]" />;
+		$f1 = <bb:form:text name="Field1[]" />;
+		$f2 = <bb:form:text name="Field1[]" />;
 
-		$f3 = <pr:form:text name="Field3[]" />;
-		$f4 = <pr:form:text name="Field3[]" />;
+		$f3 = <bb:form:text name="Field3[]" />;
+		$f4 = <bb:form:text name="Field3[]" />;
 
-		$form = <pr:form>
+		$form = <bb:form>
 			{$f1}{$f3}
 			{$f2}{$f4}
-		</pr:form>;
+		</bb:form>;
 
 		$form->loadData(['Field1' => ['a', 'b'], 'Field3' => ['c', 'd']]);
 		$this->assertEquals('a', $f1->getValue());
@@ -91,16 +91,16 @@ class FormTest extends beatbox\Test {
 		$this->assertEquals('c', $f3->getValue());
 		$this->assertEmpty($f4->getValue());
 
-		$f1 = <pr:form:text name="Field[f1][]" />;
-		$f2 = <pr:form:text name="Field[f1][]" />;
+		$f1 = <bb:form:text name="Field[f1][]" />;
+		$f2 = <bb:form:text name="Field[f1][]" />;
 
-		$f3 = <pr:form:text name="Field[f3][]" />;
-		$f4 = <pr:form:text name="Field[f3][]" />;
+		$f3 = <bb:form:text name="Field[f3][]" />;
+		$f4 = <bb:form:text name="Field[f3][]" />;
 
-		$form = <pr:form>
+		$form = <bb:form>
 			{$f1}{$f3}
 			{$f2}{$f4}
-		</pr:form>;
+		</bb:form>;
 
 		$form->loadData(['Field' => ['f1' => ['a', 'b'], 'f3' => ['c', 'd']]]);
 		$this->assertEquals('a', $f1->getValue());
@@ -119,8 +119,8 @@ class FormTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testValidate() {
-		$field = <pr:form:text name="Field" value="Value" required="true" />;
-		$form = <pr:form>{$field}</pr:form>;
+		$field = <bb:form:text name="Field" value="Value" required="true" />;
+		$form = <bb:form>{$field}</bb:form>;
 
 		$called = false;
 
@@ -155,8 +155,8 @@ class FormTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testValidSubmission() {
-		$field = <pr:form:text name="Field" value="Value" required="true" />;
-		$form = <pr:form>{$field}</pr:form>;
+		$field = <bb:form:text name="Field" value="Value" required="true" />;
+		$form = <bb:form>{$field}</bb:form>;
 
 		$called = false;
 
@@ -177,8 +177,8 @@ class FormTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testInvalidSubmission() {
-		$field = <pr:form:text name="Field" value="Value" required="true" />;
-		$form = <pr:form>{$field}</pr:form>;
+		$field = <bb:form:text name="Field" value="Value" required="true" />;
+		$form = <bb:form>{$field}</bb:form>;
 
 		$called = false;
 
@@ -209,8 +209,8 @@ class FormTest extends beatbox\Test {
 	 * @depends testLoadData
 	 */
 	public function testReloadData() {
-		$field = <pr:form:text name="Field" value="Value" required="true" />;
-		$form = <pr:form>{$field}</pr:form>;
+		$field = <bb:form:text name="Field" value="Value" required="true" />;
+		$form = <bb:form>{$field}</bb:form>;
 
 		$called = false;
 
@@ -235,11 +235,11 @@ class FormTest extends beatbox\Test {
 	 * @depends testValidSubmission
 	 */
 	public function testPullOutNestedData() {
-		$form = <pr:form>
-			<pr:form:text name="Field[]" value="Value" required="true" />;
-			<pr:form:text name="Field[]" value="Value" required="true" />;
-			<pr:form:text name="Field[]" value="Value" required="true" />;
-		</pr:form>;
+		$form = <bb:form>
+			<bb:form:text name="Field[]" value="Value" required="true" />;
+			<bb:form:text name="Field[]" value="Value" required="true" />;
+			<bb:form:text name="Field[]" value="Value" required="true" />;
+		</bb:form>;
 
 		$called = false;
 
@@ -255,11 +255,11 @@ class FormTest extends beatbox\Test {
 		$form->forFragment(['/'], 'form');
 		$this->assertTrue($called);
 
-		$form = <pr:form>
-			<pr:form:text name="Field[a][]" value="Value" required="true" />;
-			<pr:form:text name="Field[b][]" value="Value" required="true" />;
-			<pr:form:text name="Field[a][]" value="Value" required="true" />;
-		</pr:form>;
+		$form = <bb:form>
+			<bb:form:text name="Field[a][]" value="Value" required="true" />;
+			<bb:form:text name="Field[b][]" value="Value" required="true" />;
+			<bb:form:text name="Field[a][]" value="Value" required="true" />;
+		</bb:form>;
 
 		$called = false;
 

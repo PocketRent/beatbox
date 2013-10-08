@@ -1,8 +1,8 @@
 <?php
 
-final class :pr:form:csrf extends :pr:form:field {
+final class :bb:form:csrf extends :bb:form:field {
 	protected function buildField() {
-		return <pr:form:hidden name="__csrf" value={get_csrf_token()} />;
+		return <bb:form:hidden name="__csrf" value={get_csrf_token()} />;
 	}
 
 	public function getValue() {

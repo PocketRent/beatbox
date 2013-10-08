@@ -1,8 +1,8 @@
 <?php
 
-class :pr:form:time extends :pr:form:field {
+class :bb:form:time extends :bb:form:field {
 	attribute
-		:pr:form:dropdown,
+		:bb:form:dropdown,
 		:div,
 		int minuteStep = 1,
 		int minHour = 0,
@@ -51,8 +51,8 @@ class :pr:form:time extends :pr:form:field {
 			$mV = '-1';
 		}
 
-		$hours = <pr:form:dropdown class="hours" items={$hours} name={$this->getAttribute('name') . '[Hour]'} id={$this->getID()} value={$hV} />;
-		$minutes = <pr:form:dropdown class="minutes" items={$minutes()} name={$this->getAttribute('name') . '[Minute]'} value={$mV} />;
+		$hours = <bb:form:dropdown class="hours" items={$hours} name={$this->getAttribute('name') . '[Hour]'} id={$this->getID()} value={$hV} />;
+		$minutes = <bb:form:dropdown class="minutes" items={$minutes()} name={$this->getAttribute('name') . '[Minute]'} value={$mV} />;
 
 		$this->cascadeAttributes($hours);
 		$this->cascadeAttributes($minutes);

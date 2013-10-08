@@ -1,6 +1,6 @@
 <?php
 
-abstract class :pr:base extends :x:element {
+abstract class :bb:base extends :x:element {
 	attribute
 		int devices = DEVICE_ALL,
 		string id;
@@ -42,11 +42,11 @@ abstract class :pr:base extends :x:element {
 		}
 		if (:x:base::$ENABLE_VALIDATION) {
 			if (!$root instanceof :xhp:html-element
-					&& !$root instanceof :pr:base) {
+					&& !$root instanceof :bb:base) {
 				throw new XHPClassException(
 					$this,
 					'compose() must return an xhp:html-element'.
-					' or pr:base instance.'
+					' or bb:base instance.'
 				);
 			}
 		}
@@ -94,7 +94,7 @@ abstract class :pr:base extends :x:element {
 					// fix your APIs to use different attributes.
 					error_log(
 						'Attribute name collision for '.$attribute.
-						' in :pr:base::render() when transferring'.
+						' in :bb:base::render() when transferring'.
 						' attributes to a returned node. source: '.
 						$this->source."\nException: ".$e->getMessage()
 					);

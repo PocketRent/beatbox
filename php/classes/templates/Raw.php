@@ -1,6 +1,6 @@
 <?php
 
-final class :pr:raw extends :xhp:raw-pcdata-element {
+final class :bb:raw extends :xhp:raw-pcdata-element {
 	category %flow, %phrase;
 
 	children (pcdata*);

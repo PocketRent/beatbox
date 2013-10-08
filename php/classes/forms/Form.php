@@ -2,7 +2,7 @@
 
 use beatbox;
 
-class :pr:form extends :pr:base implements beatbox\FragmentCallback {
+class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 	attribute
 		:form,
 		var validator,
@@ -11,7 +11,7 @@ class :pr:form extends :pr:base implements beatbox\FragmentCallback {
 	protected function compose() :form {
 		return <form>
 			{$this->getChildren()}
-			<pr:form:csrf />
+			<bb:form:csrf />
 		</form>;
 	}
 
@@ -62,7 +62,7 @@ class :pr:form extends :pr:base implements beatbox\FragmentCallback {
 			$base = $this;
 		}
 		foreach($base->getChildren() as $field) {
-			if($field instanceof :pr:form:field) {
+			if($field instanceof :bb:form:field) {
 				yield $field;
 			} elseif($field instanceof :x:base) {
 				foreach($this->getFields($field) as $f) yield $f;

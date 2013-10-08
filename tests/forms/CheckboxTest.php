@@ -9,7 +9,7 @@ class CheckboxFieldTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testRequiredValidation() {
-		$field = <pr:form:checkbox required="true" />;
+		$field = <bb:form:checkbox required="true" />;
 		$field->setValue(true);
 
 		$errors = $field->validate();

@@ -1,6 +1,6 @@
 <?php
 
-class :pr:form:checkbox extends :pr:form:field {
+class :bb:form:checkbox extends :bb:form:field {
 	attribute :input;
 
 	protected $type = 'checkbox';

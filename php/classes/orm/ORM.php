@@ -13,6 +13,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	private $sorts = \Vector {};
 	private $joins = \Vector {};
 	private $limit = -1;
+	private $from = null;
 
 	private $result = null;
 	/**
@@ -34,6 +35,29 @@ class ORM implements \IteratorAggregate, \Countable {
 		assert($new->table == $this->table && "Tables should be the same");
 
 		return $new;
+	}
+
+	/**
+	 * Set a custom FROM clause
+	 *
+	 * The new clause should be an escaped identifier and should return rows
+	 * that match the data class's.
+	 */
+	public function setFrom(\string $from) : ORM {
+		$new = clone $this;
+		$new->from = $from;
+
+		return $new;
+	}
+
+	/**
+	 * Get the escaped FROM clause
+	 */
+	public function getFrom() : \string {
+		if($this->from) {
+			return $this->from;
+		}
+		return $this->conn->escapeIdentifier($this->table);
 	}
 
 	/**
@@ -181,7 +205,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	public function getQueryString() : \string {
 		$conn = $this->conn;
 
-		$table = $this->conn->escapeIdentifier($this->table);
+		$table = $this->getFrom();
 
 		$query = "SELECT DISTINCT ".$this->getFieldList()." FROM $table";
 		$query .= pr_join("\n", $this->joins);

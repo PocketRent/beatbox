@@ -103,6 +103,17 @@ WHERE ("TestTable"."ID" IS NULL)', $str);
 		$this->assertEquals('SELECT DISTINCT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
 WHERE ("TestTable"."ID" IS NOT NULL)', $str);
 	}
+
+	/**
+	 * @group fast
+	 */
+	public function testFromClause() {
+		$q = TestTable::get();
+		$this->assertEquals('"TestTable"', $q->getFrom());
+
+		$q = $q->setFrom('someFunction()');
+		$this->assertEquals('someFunction()', $q->getFrom());
+	}
 }
 
 // This is normally generated code, but this means

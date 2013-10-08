@@ -14,7 +14,10 @@ trait Redis {
 		static $inst = null;
 		if(!$inst) {
 			$inst = new R;
-			$inst->connect('localhost');
+			$inst->connect(REDIS_SERVER);
+			if(defined('REDIS_PASSWORD')) {
+				$inst->auth(REDIS_PASSWORD);
+			}
 			self::config_redis($inst);
 
 			if (defined('RUNNING_TEST')) {

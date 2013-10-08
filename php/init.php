@@ -49,6 +49,10 @@ require BASE_DIR . '/beatbox/build/classmap';
 // the map file
 function register_autoload_map() {
 	$path = realpath(CONF_DIR . '/map.php');
+	if(!$path) {
+		makeMap();
+		$path = realpath(CONF_DIR . '/map.php');
+	}
 	if($path) {
 		require $path;
 	} else {

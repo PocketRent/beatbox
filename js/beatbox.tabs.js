@@ -1,4 +1,4 @@
-jQuery.entwine('pr', function($) {
+jQuery.entwine('beatbox', function($) {
 	$('.tabsOuter').entwine({
 		switchTab: function(button, tab) {
 			button = button || this.switcher().selectedButton();

@@ -112,7 +112,7 @@ WHERE ("TestTable"."ID" IS NOT NULL)', $str);
 		$this->assertEquals('"TestTable"', $q->getFrom());
 
 		$q = $q->setFrom('someFunction()');
-		$this->assertEquals('someFunction()', $q->getFrom());
+		$this->assertEquals('someFunction() AS "TestTable"', $q->getFrom());
 	}
 }
 

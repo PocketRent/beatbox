@@ -55,7 +55,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	 */
 	public function getFrom() : \string {
 		if($this->from) {
-			return $this->from;
+			return sprintf('%s AS %s', $this->from, $this->conn->escapeIdentifier($this->table));
 		}
 		return $this->conn->escapeIdentifier($this->table);
 	}

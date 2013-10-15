@@ -18,6 +18,9 @@ trait Redis {
 			if(defined('REDIS_PASSWORD')) {
 				$inst->auth(REDIS_PASSWORD);
 			}
+			if(defined('APP_NAME')) {
+				$inst->setOption(R::OPT_PREFIX, APP_NAME);
+			}
 			self::config_redis($inst);
 
 			if (defined('RUNNING_TEST')) {

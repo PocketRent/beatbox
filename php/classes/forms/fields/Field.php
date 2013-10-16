@@ -1,13 +1,15 @@
 <?php
 
 abstract class :bb:form:field extends :bb:base {
-	attribute string label;
+	attribute
+		string label,
+		integer minlength;
 
 	protected $type;
 
 	private static $rangeVal = Set<string> {'date', 'number'};
 
-	private static $maxlenVal = Set<string> {'text', 'email', 'password', 'textarea'};
+	private static $lenVal = Set<string> {'text', 'email', 'password', 'textarea'};
 
 	private static $patternVal = Set<string> {'text', 'email', 'password'};
 
@@ -96,10 +98,14 @@ abstract class :bb:form:field extends :bb:base {
 			}
 		}
 		// maxlength
-		if($this->valid && self::$maxlenVal->contains($this->type)) {
+		if($this->valid && self::$lenVal->contains($this->type)) {
 			if(($len = $this->getAttribute('maxlength')) && mb_strlen($value) > $len) {
 				$this->valid = false;
 				$this->error = 'Maximum length is ' . $len;
+			}
+			if(($len = $this->getAttribute('minlength')) && mb_strlen($value) < $len) {
+				$this->valid = false;
+				$this->error = 'Minimum length is ' . $len;
 			}
 		}
 		// pattern

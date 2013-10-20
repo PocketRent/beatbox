@@ -1,5 +1,7 @@
 <?php
 
+use beatbox\orm\DateTimeType as DateTime;
+
 class :bb:form:date extends :bb:form:field {
 	attribute
 		:bb:form:dropdown,

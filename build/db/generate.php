@@ -455,7 +455,7 @@ class PGType {
 		} else if ($this->type == PGType::T_ENUM) {
 			return '';
 		}
-		return 'type\\'.$this->name;
+		return $this->name;
 	}
 
 	public static function categoryName($cat) {

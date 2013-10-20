@@ -64,7 +64,8 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		foreach($base->getChildren() as $field) {
 			if($field instanceof :bb:form:field) {
 				yield $field;
-			} elseif($field instanceof :x:base) {
+			}
+			if($field instanceof :x:base) {
 				foreach($this->getFields($field) as $f) yield $f;
 			}
 		}
@@ -91,6 +92,9 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 	protected function getData() {
 		$data = Map {};
 		foreach($this->getFields() as $field) {
+			if(!$field->getAttribute('name')) {
+				continue;
+			}
 			self::add_to_map($data, $field->getAttribute('name'), $field->getValue());
 		}
 		return $data;

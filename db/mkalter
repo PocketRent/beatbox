@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# -ne 2 ]; then
 	cat <<USAGE
@@ -14,6 +14,7 @@ TIME=`date +%s`
 
 FILENAME="$2/$1.ALTER.$TIME.sql"
 
-touch $FILENAME
+echo "ALTER TABLE \"$1\"" > $FILENAME
+echo -n $'\t' >> $FILENAME
 
 echo "Created $FILENAME"

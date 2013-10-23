@@ -133,7 +133,7 @@ class QueryResult extends Result implements \IteratorAggregate {
 }
 
 class ResultIterable implements \Iterable {
-	use \IterableTrait;
+	use \LazyIterable;
 
 	private $result = null;
 

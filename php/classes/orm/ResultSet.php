@@ -3,7 +3,7 @@
 namespace beatbox\orm;
 
 class ResultSet implements \Iterable {
-	use \IterableTrait;
+	use \LazyIterable;
 
 	private $results = null;
 	private $conn = null;

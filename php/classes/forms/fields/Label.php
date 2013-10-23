@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 class :bb:form:label extends :bb:form:field {
 	attribute

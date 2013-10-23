@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 /**
  * Get the item out of the session for the given key

@@ -1,5 +1,5 @@
-#!/usr/bin/hhvm -vEval.EnableHipHopSyntax=true
-<?php
+#!/usr/bin/hhvm
+<?hh
 
 require __DIR__ . '/../xhp/init.php';
 

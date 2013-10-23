@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 class :bb:form:password extends :bb:form:field {
 	attribute :input;

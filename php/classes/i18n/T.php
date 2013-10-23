@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 class :bb:t extends :bb:base {
 	children (pcdata)*;

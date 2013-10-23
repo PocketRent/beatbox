@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 /**
  * This is a listbox, which is an iteractive list of items.

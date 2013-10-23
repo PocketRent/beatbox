@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 /**
  * Returns the weekday name from the ISO-8601 week day number,

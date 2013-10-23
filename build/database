@@ -1,5 +1,5 @@
 #!/usr/bin/hhvm -vEval.EnableHipHopSyntax=true
-<?php
+<?hh
 
 require_once __DIR__.'/db/base.php';
 

@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 final class :bb:css extends :bb:base {
 	attribute

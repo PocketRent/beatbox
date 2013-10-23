@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 /**
  * Check if the provided token matches the expected one

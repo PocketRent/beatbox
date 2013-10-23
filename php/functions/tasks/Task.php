@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 /**
  * Create a task and add it to the queue

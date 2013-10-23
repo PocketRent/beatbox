@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 function db_parse_array(string $delimiter, string $val): Vector<string> {
 	$generator = function () use ($delimiter, $val) {

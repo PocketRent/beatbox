@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 /**
  * Button group for applying the correct classes for a group

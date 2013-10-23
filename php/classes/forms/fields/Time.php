@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 class :bb:form:time extends :bb:form:field {
 	attribute

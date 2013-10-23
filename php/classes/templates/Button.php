@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 class :bb:button extends :bb:base {
 	attribute

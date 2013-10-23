@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 /**
  * Throw a HTTP error

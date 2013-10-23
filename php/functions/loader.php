@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 // Load all defined functions, since we can't autoload them
 require __DIR__ . '/date.php';

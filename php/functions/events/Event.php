@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 /**
  * Send an asynchronous event with the given name and arguments

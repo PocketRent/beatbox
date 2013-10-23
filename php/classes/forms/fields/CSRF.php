@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 final class :bb:form:csrf extends :bb:form:field {
 	protected function buildField() {

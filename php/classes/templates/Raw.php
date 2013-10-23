@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 final class :bb:raw extends :xhp:raw-pcdata-element {
 	category %flow, %phrase;

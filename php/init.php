@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 // INI
 date_default_timezone_set('UTC');

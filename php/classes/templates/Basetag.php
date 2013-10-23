@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 final class :bb:basetag extends :bb:base {
 	protected function compose() {

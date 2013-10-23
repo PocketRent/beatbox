@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 class :bb:form:textarea extends :bb:form:field {
 	attribute :textarea;

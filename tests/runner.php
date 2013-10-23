@@ -1,5 +1,5 @@
 #!/usr/bin/hhvm -v Eval.EnableHipHopSyntax=true
-<?php
+<?hh
 
 chdir(__DIR__);
 $base = dirname(__DIR__);

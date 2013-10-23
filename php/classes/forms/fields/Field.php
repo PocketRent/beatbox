@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 abstract class :bb:form:field extends :bb:base {
 	attribute

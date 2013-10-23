@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 final class :bb:fragment extends :bb:base {
 	attribute

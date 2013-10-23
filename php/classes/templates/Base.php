@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 abstract class :bb:base extends :x:element {
 	attribute

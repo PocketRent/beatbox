@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 class :bb:icon extends :bb:base {
 	attribute :img;

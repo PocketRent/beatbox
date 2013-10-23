@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 class :bb:form:file extends :bb:form:field {
 	attribute

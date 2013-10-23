@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 class :bb:tabs extends :bb:base {
 	attribute :div;

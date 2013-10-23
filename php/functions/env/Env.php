@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 use beatbox\Browser;
 

@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 class :bb:form:confirm-password extends :bb:form:field {
 	attribute

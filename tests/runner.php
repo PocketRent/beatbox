@@ -1,4 +1,4 @@
-#!/usr/bin/hhvm -v Eval.EnableHipHopSyntax=true
+#!/usr/bin/env hhvm
 <?hh
 
 chdir(__DIR__);

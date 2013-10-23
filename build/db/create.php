@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 function createHelp() {
 	global $exe;

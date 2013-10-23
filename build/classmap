@@ -1,4 +1,4 @@
-#!/usr/bin/hhvm
+#!/usr/bin/env hhvm
 <?hh
 
 require __DIR__ . '/../xhp/init.php';

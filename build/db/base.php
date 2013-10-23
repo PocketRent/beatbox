@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 require_once 'create.php';
 require_once 'generate.php';

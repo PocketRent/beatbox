@@ -1,4 +1,4 @@
-#!/usr/bin/hhvm -vEval.EnableHipHopSyntax=true
+#!/usr/bin/env hhvm
 <?hh
 
 require_once __DIR__.'/db/base.php';

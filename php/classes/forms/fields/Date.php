@@ -1,6 +1,6 @@
 <?php
 
-use beatbox\orm\DateTimeType as DateTime;
+use beatbox\orm\DateTimeType as DateTimeType;
 
 class :bb:form:date extends :bb:form:field {
 	attribute
@@ -57,13 +57,11 @@ class :bb:form:date extends :bb:form:field {
 	}
 
 	public function setValue($value) {
-		if(is_a($value, 'DateTime')) {
-			parent::setValue($value);
-		} elseif(is_array($value)) {
+		if(is_array($value)) {
 			$value = "$value[Year]-$value[Month]-$value[Day]";
-			parent::setValue(new DateTime($value));
+			parent::setValue(new DateTimeType($value));
 		} else {
-			parent::setValue(new DateTime($value));
+			parent::setValue(new DateTimeType($value));
 		}
 	}
 }

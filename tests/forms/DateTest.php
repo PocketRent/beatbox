@@ -66,4 +66,16 @@ class DateFieldTest extends beatbox\Test {
 		$errors = $field->validate();
 		$this->assertTrue($errors[0], $errors[1]);
 	}
+
+	/**
+	 * @group fast
+	 */
+	public function testReturnType() {
+		$field = <bb:form:date />;
+		$field->setValue('2012-10-15');
+
+		$value = $field->getValue();
+
+		$this->assertTrue($value instanceof \beatbox\orm\DateTimeType);
+	}
 }

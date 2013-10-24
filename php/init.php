@@ -38,11 +38,11 @@ require __DIR__ . '/classes/errors/PHP.php';
 require __DIR__ . '/functions/loader.php';
 
 // Load XHP
-require BASE_DIR . '/beatbox/xhp/init.php';
+require __DIR__ . '/../xhp/init.php';
 :x:base::$ENABLE_VALIDATION = in_dev();
 
 // Load the classmap thing
-require BASE_DIR . '/beatbox/build/classmap';
+require __DIR__ . '/../build/classmap';
 
 // This registers the autoloader map, does it inside
 // a function to avoid any issues from the require of

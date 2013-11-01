@@ -2,12 +2,28 @@
 
 namespace beatbox\orm;
 
+/**
+ * This class represents the Postgres connection used for interacting with the
+ * database. It is intended for use as a singleton, with the constructor
+ * filling in the blanks with defined constants.
+ *
+ *   DATABASE_HOST
+ *   DATABASE_USER
+ *   DATABASE_PASS
+ *   DATABASE_NAME
+ *
+ * It is recommended to supply these values and use Connection::get to get an
+ * instance of Connection.
+ */
 final class Connection {
 
 	private static $connection = null;
 
 	private $pg_conn = null;
 
+	/**
+	 * Returns the singleton instance of Connection, creating it if necessary.
+	 */
 	public static function get() : Connection {
 		if (self::$connection === null) {
 			// The constructor will set self::$connection
@@ -16,6 +32,13 @@ final class Connection {
 		return self::$connection;
 	}
 
+	/**
+	 * Constructs a new connection and sets itself as the single instance.
+	 *
+	 * $params is a map from parameter name to value. The parameters host, user,
+	 *    password and dbname will be automatically be filled by defined
+	 *    constants
+	 */
 	public function __construct(array $params = null) {
 		if (!$params) {
 			$params = [];
@@ -68,6 +91,9 @@ final class Connection {
 			self::$connection = $this;
 	}
 
+	/**
+	 * This sets the default connection that would be returned by Connection::get()
+	 */
 	public static function setDefault(Connection $conn) {
 		self::$connection = $conn;
 	}
@@ -141,6 +167,12 @@ final class Connection {
 		}
 	}
 
+	/**
+	 * Executes the given callable in a transaction, passing the connection
+	 * through to the callable.
+	 *
+	 * This method returns the same thing as the callable
+	 */
 	public function inTransaction(\callable $fn) {
 		$this->begin();
 		try {
@@ -156,6 +188,10 @@ final class Connection {
 	private $_currentResultSet = null;
 	/**
 	 * Send a parameterized query to the database.
+	 *
+	 * This method does an asynchrounous query to the database. Retrieving
+	 * results from the returned ResultSet will block until the results are
+	 * ready.
 	 */
 	public function query(\string $query, array $params=[]) : ResultSet {
 		if ($this->pg_conn == null)
@@ -210,18 +246,33 @@ final class Connection {
 		return Result::from_raw_result($res, $query, $params);
 	}
 
+	/**
+	 * Gets the description of the last error that occured in the database
+	 */
 	public function getLastError() : \string {
 		if ($this->pg_conn == null)
 			throw new DatabaseException("Database Connection closed");
 		return pg_last_error($this->pg_conn);
 	}
 
+	/**
+	 * Escapes the given identifier according to postgres rules.
+	 */
 	public function escapeIdentifier(\string $id) : \string {
 		if ($this->pg_conn == null)
 			throw new DatabaseException("Database Connection closed");
 		return pg_escape_identifier($this->pg_conn, $id);
 	}
 
+	/**
+	 * Escapes the given value.
+	 *
+	 * If the value is an instance of `Type`, then the toDBString method is
+	 * called on it.
+	 * Types implementing Traversable will be converted to arrays.
+	 * Everything else is escaped using the low-level pg_escape_literal
+	 * function.
+	 */
 	public function escapeValue($val, \bool $sub = false) : \string {
 		if ($this->pg_conn == null)
 			throw new DatabaseException("Database Connection closed");
@@ -250,6 +301,9 @@ final class Connection {
 		}
 	}
 
+	/**
+	 * Closes the connection.
+	 */
 	public function close() {
 		if ($this->pg_conn) {
 			pg_close($this->pg_conn);

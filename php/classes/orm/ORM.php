@@ -26,6 +26,11 @@ class ORM implements \IteratorAggregate, \Countable {
 		$this->valid_fields = $data_class::getColumnNames();
 	}
 
+	/**
+	 * Sets the class that will be constructed to the given name.
+	 *
+	 * The underlying tables must, however, be the same.
+	 */
 	public function setDataClass($data_class) {
 		$new = clone $this;
 		$new->data_class = $data_class;

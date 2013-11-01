@@ -4,12 +4,19 @@ namespace beatbox\orm;
 
 use beatbox\errors\Exception;
 
+/**
+ * Common exception for database-related errors
+ */
 class DatabaseException extends Exception {
 	public final function getEventPrefix() : string {
 		return "db";
 	}
 }
 
+/**
+ * Exception for errors that occur with the connection itself. For example,
+ * being unable to connect
+ */
 class ConnectionException extends DatabaseException {
 	protected $dbError;
 
@@ -24,6 +31,9 @@ class ConnectionException extends DatabaseException {
 	}
 }
 
+/**
+ * Exception for errors that occur with results and result sets.
+ */
 class ResultException extends DatabaseException {
 	public function __construct($result, $message="", $previous=null) {
 		$err = pg_result_error($result);
@@ -37,6 +47,9 @@ class ResultException extends DatabaseException {
 	}
 }
 
+/**
+ * Exception thrown when an invalid field is referenced.
+ */
 class InvalidFieldException extends DatabaseException {
 	private static $num_fields = 4; // number of valid fields to show in the error message
 
@@ -58,6 +71,9 @@ class InvalidFieldException extends DatabaseException {
 	}
 }
 
+/**
+ * Exception thrown when trying to perform an action on a deleted object.
+ */
 class DeletedObjectException extends DatabaseException {
 	public function __construct(\string $action, \string $object, $previous = null) {
 		$message = "Tried to $action a deleted object '$object'";

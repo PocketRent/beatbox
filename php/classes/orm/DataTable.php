@@ -221,13 +221,13 @@ abstract class DataTable {
 	 */
 	public function delete() {
 		if ($this->deleted)
-			throw new \DeletedObjectException('deleteWithConn', get_called_class());
+			throw new \DeletedObjectException('delete', get_called_class());
 		$this->deleteWithConn(Connection::get());
 	}
 
 	public function deleteWithConn(Connection $conn) {
 		if ($this->deleted)
-			throw new \DeletedObjectException('deleteWithConn', get_called_class());
+			throw new \DeletedObjectException('delete', get_called_class());
 		$this->deleted = true;
 
 		// This object was never written, save us some work by not even

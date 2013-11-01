@@ -17,7 +17,7 @@ class Cache {
 	/**
 	 * Test to see if a key is in the cache
 	 */
-	public static function test($key) : bool {
+	public static function test(\string $key) : bool {
 		$key = self::key_name($key);
 		return self::redis()->exists($key);
 	}
@@ -26,7 +26,7 @@ class Cache {
 	 * Get the value of a key from the cache, returns
 	 * null if the key doesn't exist
 	 */
-	public static function get($key) {
+	public static function get(\string $key) : mixed {
 		$key = self::key_name($key);
 		return self::redis()->get($key);
 	}

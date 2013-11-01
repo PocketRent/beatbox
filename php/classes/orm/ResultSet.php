@@ -24,6 +24,10 @@ class ResultSet implements \Iterable {
 		}
 	}
 
+	/**
+	 * Gets the first result in the set. If there are no results in the
+	 * set, then it will return null.
+	 */
 	public function getFirst() : Result {
 		if ($this->results->count() > 0) {
 			return $this->results->at(0);
@@ -38,10 +42,17 @@ class ResultSet implements \Iterable {
 		return null;
 	}
 
+	/**
+	 * Returns whether or not this result set is "lazy". Whether the actual
+	 * results have been retrieved yet or not
+	 */
 	public function isLazy() : bool {
 		return $this->conn != null;
 	}
 
+	/**
+	 * Forces the result set to load the entire set of results
+	 */
 	public function loadRest() {
 		if ($this->conn) {
 			// iterating over the result set causes them all to be loaded

@@ -68,8 +68,10 @@ abstract class Result {
 		$this->result = $result;
 	}
 
-	// Returns the number of rows associated with this query,
-	// either the number returned, or the number affected
+	/**
+	 * Returns the number of rows associated with this query,
+	 * either the number returned, or the number affected
+	 */
 	abstract function numRows() : int;
 }
 
@@ -102,6 +104,11 @@ class QueryResult extends Result implements \IteratorAggregate {
 		return $this->num_rows;
 	}
 
+	/**
+	 * Gets the nth row in the set, indexed from 0.
+	 *
+	 * Will throw an exception if the given position is out of bounds
+	 */
 	public function nthRow(\int $pos) {
 		if ($pos >= 0 && $pos < $this->numRows()) {
 			if ($pos >= $this->rows->count()) {

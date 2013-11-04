@@ -45,16 +45,16 @@ final class Connection {
 		}
 
 		// Fill in missing values from the configuration
-		if (!isset($params['host'])) {
+		if (!isset($params['host']) && DATABASE_HOST) {
 			$params['host'] = DATABASE_HOST;
 		}
-		if (!isset($params['user'])) {
+		if (!isset($params['user']) && DATABASE_USER) {
 			$params['user'] = DATABASE_USER;
 		}
-		if (!isset($params['password'])) {
+		if (!isset($params['password']) && DATABASE_USER) {
 			$params['password'] = DATABASE_PASS;
 		}
-		if (!isset($params['dbname'])) {
+		if (!isset($params['dbname']) && DATABASE_USER) {
 			$params['dbname'] = DATABASE_NAME;
 		}
 		if (!isset($params['application_name']) && defined('APP_NAME')) {

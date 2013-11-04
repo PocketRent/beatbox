@@ -17,9 +17,9 @@ require __DIR__ . '/../php/init.php';
 
 $connectString = 'dbname=\'postgres\' host=\''.DATABASE_HOST.'\'';
 if (DATABASE_USER) $connectString .= ' user=\''.DATABASE_USER.'\'';
-if (DATABASE_PASS) $connectString .= ' user=\''.DATABASE_PASS.'\'';
+if (DATABASE_PASS) $connectString .= ' password=\''.DATABASE_PASS.'\'';
 
-$con = pg_connect($connectString) or die('Unable to connect to postgres');
+$con = @pg_connect($connectString) or die('Unable to connect to postgres');
 
 $dbname = 'PR_test_' . str_replace('.', '_', microtime(true));
 

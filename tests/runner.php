@@ -5,4 +5,9 @@ chdir(__DIR__);
 $base = dirname(__DIR__);
 
 set_include_path(__DIR__. ':' . $base . '/pear');
-require 'phpunit.php';
+
+define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
+
+require 'PHPUnit' . DIRECTORY_SEPARATOR . 'Autoload.php';
+
+exit(PHPUnit_TextUI_Command::main());

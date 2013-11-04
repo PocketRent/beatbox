@@ -15,7 +15,8 @@ require __DIR__ . '/../php/init.php';
 
 // Connect to the database
 
-$connectString = 'dbname=\'postgres\' host=\''.DATABASE_HOST.'\'';
+$connectString = 'dbname=\'postgres\''
+if (DATABASE_HOST) $connectString .= ' host=\''.DATABASE_HOST.'\'';
 if (DATABASE_USER) $connectString .= ' user=\''.DATABASE_USER.'\'';
 if (DATABASE_PASS) $connectString .= ' password=\''.DATABASE_PASS.'\'';
 

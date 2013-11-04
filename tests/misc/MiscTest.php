@@ -27,4 +27,11 @@ class MiscTest extends beatbox\Test {
 
 		$this->assertEquals(\Vector { 0, 1, 2, 3 }, $vector);
 	}
+
+	/**
+	 * @group sanity
+	 */
+	public function testCheckToken() {
+		$this->assertTrue(check_token("abcde", "abcde"));
+	}
 }

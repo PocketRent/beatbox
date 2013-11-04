@@ -34,5 +34,4 @@ class MiscTest extends beatbox\Test {
 	public function testCheckToken() {
 		$this->assertTrue(check_token("abcde", "abcde"));
 	}
-
 }

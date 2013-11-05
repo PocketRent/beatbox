@@ -100,9 +100,9 @@ function parse_common_args(Vector<string> &$args): Map<string,string> {
 function do_connect(Map<string,string> $info) {
 
 	$conn_string = '';
-	if ($info['host']) $connectString .= ' host=\''.$info['host'].'\'';
-	if ($info['user']) $connectString .= ' user=\''.$info['user'].'\'';
-	if ($info['pass']) $connectString .= ' password=\''.$info['pass'].'\'';
+	if ($info['host']) $conn_string .= ' host=\''.$info['host'].'\'';
+	if ($info['user']) $conn_string .= ' user=\''.$info['user'].'\'';
+	if ($info['pass']) $conn_string .= ' password=\''.$info['pass'].'\'';
 
 	if (isset($info['create_db']) && $info['create_db']) {
 		$conn = pg_connect($conn_string . "dbname=postgres") or

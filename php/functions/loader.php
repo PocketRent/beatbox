@@ -5,6 +5,7 @@ require __DIR__ . '/date.php';
 require __DIR__ . '/env/Env.php';
 require __DIR__ . '/errors/HTTP.php';
 require __DIR__ . '/events/Event.php';
+require __DIR__ . '/http.php';
 require __DIR__ . '/mailer/mailer.php';
 require __DIR__ . '/misc.php';
 require __DIR__ . '/orm/Parse.php';

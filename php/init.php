@@ -28,6 +28,11 @@ define('REDIS_DB_TASKS', 3);
 // Test database
 define('REDIS_DB_TEST', 15);
 
+interface Blah extends Traversable {}
+
+$v = Vector {};
+if (!($v instanceof Blah)) die ("BLAH");
+
 // Load the env-conf
 require __DIR__ . '/../conf/conf.php';
 

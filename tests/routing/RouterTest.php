@@ -3,6 +3,7 @@
 namespace beatbox\test;
 
 use beatbox, Map, Pair, Vector;
+use HH\Traversable;
 
 class RouterTest extends beatbox\Test {
 	// Wipe the existing routes for each test
@@ -684,7 +685,7 @@ class RouterTest extends beatbox\Test {
 class RouterTest_Callback implements beatbox\FragmentCallback {
 	public $url, $fragment;
 
-	public function forFragment(\Traversable $url, \string $fragment) {
+	public function forFragment(Traversable $url, \string $fragment) {
 		$this->url = $url;
 		$this->fragment = $fragment;
 		return $this;

@@ -2,6 +2,7 @@
 
 namespace beatbox;
 
+use \HH\Traversable;
 use \Redis as R;
 
 class Cache {
@@ -124,7 +125,7 @@ class Cache {
 		});
 	}
 
-	private static function add_tags(\string $key, \Traversable $tags) {
+	private static function add_tags(\string $key, Traversable $tags) {
 		// Add the key to a set for each tag.
 		foreach ($tags as $tag) {
 			$tag = self::tag_name($tag);

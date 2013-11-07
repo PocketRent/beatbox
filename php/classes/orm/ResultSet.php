@@ -2,6 +2,8 @@
 
 namespace beatbox\orm;
 
+use HH\Traversable;
+
 class ResultSet implements \Iterable {
 	use \LazyIterable;
 
@@ -14,7 +16,7 @@ class ResultSet implements \Iterable {
 		return $set;
 	}
 
-	public function __construct(\Traversable<Result> $results = \Vector {}) {
+	public function __construct(Traversable<Result> $results = \Vector {}) {
 		if (is_array($results)) {
 			$this->results = \Vector::fromArray($results);
 		} else if ($results instanceof \Vector) {

@@ -2,6 +2,8 @@
 
 namespace beatbox\orm;
 
+use HH\Traversable;
+
 abstract class DataTable {
 	/**
 	 * Updates the fields in the object from the data in the row.
@@ -117,7 +119,7 @@ abstract class DataTable {
 	 *
 	 * @return array
 	 */
-	public static function loadMany(\Traversable $rows) : \Vector {
+	public static function loadMany(Traversable $rows) : \Vector {
 		$v = \Vector {};
 		foreach ($rows as $row) {
 			$v->add(static::load($row));

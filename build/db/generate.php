@@ -964,6 +964,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 		$tbl_data->writeLine("namespace $ns;");
 		$tbl_data->writeLine();
 		$tbl_data->writeLine('use beatbox\\orm\\ORM, beatbox\\orm\\Connection;');
+		$tbl_data->writeLine('use HH\Traversable');
 		$tbl_data->writeLine();
 
 		$tbl_data->startBlock("abstract class $table->name extends \\beatbox\\orm\\DataTable");
@@ -1052,7 +1053,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 					$tbl_data->writeLine("\$this->_$col->name = \$val;");
 					$tbl_data->writeLine('return $this;');
 				} else if ($type->type_cat == PGType::TCAT_ARRAY) {
-					$tbl_data->startBlock("public function set$col->name(\Traversable \$val$def_val)");
+					$tbl_data->startBlock("public function set$col->name(Traversable \$val$def_val)");
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
 					$tbl_data->writeLine("\$this->changed['$col->name'] = true;");
 					$tbl_data->writeLine("\$this->_$col->name = \Vector {};");

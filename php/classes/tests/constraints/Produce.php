@@ -1,6 +1,7 @@
-<?php
+<?hh
 
 namespace beatbox\test\constraint;
+use HH\Traversable;
 
 /**
  * Constraint for iterators/traversables to check to see if they
@@ -26,7 +27,7 @@ class Produce extends \PHPUnit_Framework_Constraint {
 		$this->underrun = $underrun;
 	}
 
-	public function evaluate(\Traversable $other, $description = '', $returnResult = false) {
+	public function evaluate(Traversable $other, $description = '', $returnResult = false) {
 		$success = false;
 
 		$comp_factory = \PHPUnit_Framework_ComparatorFactory::getDefaultInstance();

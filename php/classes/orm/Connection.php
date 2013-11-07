@@ -2,6 +2,8 @@
 
 namespace beatbox\orm;
 
+use HH\Traversable;
+
 /**
  * This class represents the Postgres connection used for interacting with the
  * database. It is intended for use as a singleton, with the constructor
@@ -278,7 +280,7 @@ final class Connection {
 			throw new DatabaseException("Database Connection closed");
 		if ($val instanceof Type) {
 			return $val->toDBString($this);
-		} else if ($val instanceof \Traversable) {
+		} else if ($val instanceof Traversable) {
 			if ($sub) {
 				$s = '[';
 			} else {

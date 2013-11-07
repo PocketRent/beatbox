@@ -2,6 +2,8 @@
 
 namespace beatbox\errors;
 
+use HH\Traversable;
+
 class PHP {
 	private static $fatal_errors = \Set<\int>{
 		E_ERROR,
@@ -69,7 +71,7 @@ class PHP {
 		}
 	}
 
-	private static function pretty_backtrace(array $stack) : \string {
+	private static function pretty_backtrace($stack) : \string {
 		// pop off the first item, as it's the call to the error handler
 		array_shift($stack);
 		$i = 1;
@@ -107,7 +109,7 @@ class PHP {
 			case 'array':
 				return self::pretty_array($arg);
 			case 'object':
-				if($arg instanceof \Traversable) {
+				if($arg instanceof Traversable) {
 					return get_class($arg) . ' ' . self::pretty_array($arg);
 				} elseif($arg instanceof :x:base) {
 					$class = get_class($arg);
@@ -129,7 +131,7 @@ class PHP {
 		}
 	}
 
-	private static function pretty_array(\Traversable $arg) : \string {
+	private static function pretty_array(Traversable $arg) : \string {
 		$items = [];
 		$expected = 0;
 		foreach($arg as $key => $val) {

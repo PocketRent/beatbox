@@ -5,7 +5,7 @@ class :bb:form:password extends :bb:form:field {
 
 	protected $type = 'password';
 
-	protected function buildField() {
+	protected function buildField() : :input {
 		if($this->isAttributeSet('value')) {
 			$this->removeAttribute('value');
 		}

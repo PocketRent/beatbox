@@ -47,7 +47,7 @@ require __DIR__ . '/../build/classmap';
 // This registers the autoloader map, does it inside
 // a function to avoid any issues from the require of
 // the map file
-function register_autoload_map() {
+function register_autoload_map() : void {
 	$path = realpath(CONF_DIR . '/map.php');
 	if(!$path) {
 		makeMap();

@@ -12,7 +12,7 @@ class :bb:form:confirm-password extends :bb:form:field {
 
 	protected $skipTransfer = Set<string> {'name', 'label'};
 
-	protected function buildField() {
+	protected function buildField() : :div {
 		$first = <bb:form:password name={$this->getAttribute('name') . '[0]'} label={$this->getAttribute('firstLabel')} id={$this->getID()} class="first" />;
 		$second = <bb:form:password name={$this->getAttribute('name') . '[1]'} label={$this->getAttribute('secondLabel')} class="second" />;
 
@@ -25,7 +25,7 @@ class :bb:form:confirm-password extends :bb:form:field {
 		</div>;
 	}
 
-	public function setValue($value) {
+	public function setValue(\mixed $value) : :bb:form:confirm-password {
 		if(!is_array($value)) {
 			parent::setValue($value);
 		} else {
@@ -40,5 +40,6 @@ class :bb:form:confirm-password extends :bb:form:field {
 				parent::setValue($a);
 			}
 		}
+		return $this;
 	}
 }

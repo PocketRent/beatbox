@@ -22,7 +22,7 @@ class Router {
 	/**
 	 * Route the url, generating the fragments
 	 */
-	public static function route(\string $url, Vector<\string> $fragments = Vector {}) {
+	public static function route(\string $url, Vector<\string> $fragments = Vector {}) : \mixed {
 		if(!count($fragments)) {
 			$fragments = Vector {'page'};
 		}
@@ -113,7 +113,7 @@ class Router {
 	 *
 	 * @returns an array of fragment-name => content
 	 */
-	public static function process_pagelet_fragments($url, $fragments) {
+	public static function process_pagelet_fragments(\string $url, Vector<\string> $fragments) : array {
 		assert(pagelet_server_is_enabled() && is_get());
 		$res = [];
 		$tasks = [];
@@ -183,7 +183,7 @@ class Router {
 	/**
 	 * Clear all the known routes and checkers
 	 */
-	public static function reset() {
+	public static function reset() : \void {
 		self::$routes = Map {};
 		self::$regex_routes = Map {};
 		self::$checkers = Map {};
@@ -196,7 +196,7 @@ class Router {
 	/**
 	 * Add routes
 	 */
-	public static function add_routes(Map<\string> $routes, \boolean $regex = false) {
+	public static function add_routes(Map<\string> $routes, \boolean $regex = false) : \void {
 		foreach($routes as $path => $route) {
 			$l = strlen($path);
 			$path = trim($path, '/');
@@ -252,7 +252,7 @@ class Router {
 	/**
 	 * Add a checker for the given metadata key
 	 */
-	public static function add_checker(\string $key, \callable $callback) {
+	public static function add_checker(\string $key, \callable $callback) : \void {
 		self::$checkers[strtolower($key)] = $callback;
 	}
 
@@ -270,7 +270,7 @@ class Router {
 	/**
 	 * Check if we're allowed to access the current fragment based on the metadata
 	 */
-	protected static function check_frag(\string $frag, Map<string> $md) {
+	protected static function check_frag(\string $frag, Map<string> $md) : \void {
 		foreach($md as $key => $val) {
 			if(!$val) {
 				continue;
@@ -294,7 +294,7 @@ class Router {
 		}
 	}
 
-	protected static function render_fragment(\string $fragName, \callable $frag, $url, $extension, $md) {
+	protected static function render_fragment(\string $fragName, \callable $frag, array $url, \string $extension, Map $md) : \mixed {
 		$val = call_user_func($frag, $url, $extension, $md);
 		if($val && $val instanceof \beatbox\FragmentCallback) {
 			return $val->forFragment($url, $fragName);
@@ -302,18 +302,18 @@ class Router {
 		return $val;
 	}
 
-	public static function response_for_fragment(\string $frag) {
+	public static function response_for_fragment(\string $frag) : \mixed {
 		if(isset(self::$last_frags[$frag])) {
 			return self::render_fragment($frag, self::$last_frags[$frag], self::$last_url, self::$last_ext, self::$last_md);
 		}
 		return null;
 	}
 
-	public static function current_path()  {
+	public static function current_path() : array {
 		return self::$last_url;
 	}
 
-	protected static function fragment_timeout() {
+	protected static function fragment_timeout() : \int {
 		if (defined('FRAGMENT_TIMEOUT'))
 			return FRAGMENT_TIMEOUT;
 		return 100;

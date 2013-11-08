@@ -27,7 +27,7 @@ class Outbound {
 	/**
 	 * Set who the email is sent to.
 	 */
-	public function setTo(\string $to) {
+	public function setTo(\string $to) : Outbound {
 		$this->to = $to;
 		return $this;
 	}
@@ -35,7 +35,7 @@ class Outbound {
 	/**
 	 * Add an attachment to the email
 	 */
-	public function addAttachment(\string $file_path) {
+	public function addAttachment(\string $file_path) : Outbound {
 		$this->attachments[$file_path] = get_mime_type($file_path);
 		return $this;
 	}
@@ -43,18 +43,18 @@ class Outbound {
 	/**
 	 * Queue these emails ready for sending
 	 */
-	public function send() {
+	public function send() : void {
 		add_task([get_called_class(), 'real_send'], $this->to, $this->subject, $this->content, $this->from, $this->attachments);
 	}
 
 	// Don't call this directly
-	public static function real_send(\string $to, \string $subject, \string $content, \string $from, \Map $attachments) {
+	public static function real_send(\string $to, \string $subject, \string $content, \string $from, \Map $attachments) : void {
 		if(strpos($content, '<body') === false) {
 			$content = "<!doctype html><html><body>$content</body></html>";
 		} elseif(strpos($content, '<html') === false) {
 			$content = "<!doctype html><html>$content</html>";
 		}
 		$sender = defined('MAIL_SENDER') ? MAIL_SENDER : __NAMESPACE__ . '\Sendmail';
-		return $sender::send($to, $from, $subject, $content, $attachments);
+		$sender::send($to, $from, $subject, $content, $attachments);
 	}
 }

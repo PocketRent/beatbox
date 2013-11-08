@@ -68,7 +68,7 @@ class Asset {
 	 *
 	 * @return Asset or null, if it doesn't exist
 	 */
-	public static function load($id) {
+	public static function load(\mixed $id) : Asset? {
 		$conn = orm\Connection::get();
 
 		$eid = $conn->escapeValue($id);
@@ -92,7 +92,7 @@ class Asset {
 	/**
 	 * Sets the name of the file
 	 */
-	public function setName(\string $name) {
+	public function setName(\string $name) : \void {
 		$this->name = $name;
 	}
 
@@ -106,7 +106,7 @@ class Asset {
 	/**
 	 * Sets the MIME type of the file
 	 */
-	public function setMIME(\string $mime) {
+	public function setMIME(\string $mime) : \void {
 		$this->mime = $mime;
 	}
 
@@ -129,7 +129,7 @@ class Asset {
 	 * Loads a file from the given source path, moving it from
 	 * the original location.
 	 */
-	public function loadSourceFile(\string $source) {
+	public function loadSourceFile(\string $source) : \void {
 		if (!is_file($source)) {
 			throw new \InvalidArgumentException("'$source' is a not a file");
 		}
@@ -159,7 +159,7 @@ class Asset {
 	/**
 	 * Writes the Asset information to the database
 	 */
-	public function write() {
+	public function write() : \void {
 		$conn = orm\Connection::get();
 
 		$name = $conn->escapeValue($this->name);
@@ -184,7 +184,7 @@ class Asset {
 		}
 	}
 
-	public function delete() {
+	public function delete() : \void {
 		$conn = orm\Connection::get();
 
 		if ($this->id !== null) {
@@ -234,10 +234,11 @@ class Asset {
 	 * the asset can be thumbnailed
 	 *
 	 */
-	public function icon($thumnail = true) {
+	public function icon(\bool $thumnail = true) : :bb:icon {
 		if ($thumnail && $this->thumbnailable()) {
-			$icon = <bb:thumnail />;
+			$icon = <bb:thumbnail />;
 			$icon->setAsset($this);
+			return $icon;
 		} else {
 			return <bb:icon src={$this->iconName()} />;
 		}
@@ -272,7 +273,7 @@ class Asset {
 		}
 	}
 
-	public function __clone() {
+	public function __clone() : \void {
 		$this->id = null;
 	}
 

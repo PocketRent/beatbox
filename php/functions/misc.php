@@ -66,7 +66,7 @@ function check_token(string $check, string $token) : bool {
 /**
  * Returns if $left is strictly less than $right
  */
-function compare_items<T>(T $left, T $right) {
+function compare_items<T>(T $left, T $right) : bool {
 	if ($left instanceof \beatbox\orm\DateTimeType) {
 		return $left->lt($right);
 	}
@@ -76,7 +76,7 @@ function compare_items<T>(T $left, T $right) {
 /**
  * Calculates the difference between two items
  */
-function item_difference<T>(T $left, T $right) {
+function item_difference<T>(T $left, T $right) : int {
 	if(is_string($left) && !is_numeric($left)) {
 		return strcmp($left, $right);
 	}
@@ -98,7 +98,7 @@ function item_difference<T>(T $left, T $right) {
 /**
  * Gets the mime type of a file
  */
-function get_mime_type(string $filename) {
+function get_mime_type(string $filename) : string {
 	if(class_exists('finfo', false)) {
 		return (new finfo(FILEINFO_MIME))->file($filename);
 	} else {
@@ -110,7 +110,7 @@ function get_mime_type(string $filename) {
 /**
  * Vector equivalent of array_unshift
  */
-function vector_unshift(MutableVector $v, $val) {
+function vector_unshift(MutableVector $v, mixed $val) : void {
 	$v->add(null); // Add a null element to the end
 	for ($i = $v->count()-1; $i > 0; $i--) {
 		$v[$i] = $v[$i-1];

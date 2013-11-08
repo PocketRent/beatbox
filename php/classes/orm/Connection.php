@@ -96,7 +96,7 @@ final class Connection {
 	/**
 	 * This sets the default connection that would be returned by Connection::get()
 	 */
-	public static function setDefault(Connection $conn) {
+	public static function setDefault(Connection $conn) : \void {
 		self::$connection = $conn;
 	}
 
@@ -107,7 +107,7 @@ final class Connection {
 	 * progress, this creates a savepoint instead that can be rolled back
 	 * to.
 	 */
-	public function begin() {
+	public function begin() : \void {
 		if ($this->in_transaction) {
 			$savepoint = "__savepoint_".($this->savepoints->count()+1);
 			$this->savepoints->add($savepoint);
@@ -123,7 +123,7 @@ final class Connection {
 	 * Sets the transaction mode as described at:
 	 *     http://www.postgresql.org/docs/9.1/static/sql-set-transaction.html
 	 */
-	public function setTransactionMode($mode) {
+	public function setTransactionMode(\string $mode) : \void {
 		if ($this->in_transaction) {
 			$this->queryBlock('SET TRANSACTION '.$mode);
 		}
@@ -138,7 +138,7 @@ final class Connection {
 	 *
 	 * If the connection is not in a transaction, nothing happens.
 	 */
-	public function commit() {
+	public function commit() : \void {
 		if ($this->in_transaction) {
 			if ($this->savepoints->count() > 0) {
 				$savepoint = $this->savepoints->pop();
@@ -156,7 +156,7 @@ final class Connection {
 	 *
 	 * If the connection is not in a transaction, nothing happens.
 	 */
-	public function rollback() {
+	public function rollback() : \void {
 		if ($this->in_transaction) {
 			if ($this->savepoints->count() > 0) {
 				$savepoint = $this->savepoints->pop();
@@ -175,7 +175,7 @@ final class Connection {
 	 *
 	 * This method returns the same thing as the callable
 	 */
-	public function inTransaction(\callable $fn) {
+	public function inTransaction(\callable $fn) : \mixed {
 		$this->begin();
 		try {
 			$ret = call_user_func($fn, $this);
@@ -275,7 +275,7 @@ final class Connection {
 	 * Everything else is escaped using the low-level pg_escape_literal
 	 * function.
 	 */
-	public function escapeValue($val, \bool $sub = false) : \string {
+	public function escapeValue(\mixed $val, \bool $sub = false) : \string {
 		if ($this->pg_conn == null)
 			throw new DatabaseException("Database Connection closed");
 		if ($val instanceof Type) {
@@ -306,7 +306,7 @@ final class Connection {
 	/**
 	 * Closes the connection.
 	 */
-	public function close() {
+	public function close() : \void {
 		if ($this->pg_conn) {
 			pg_close($this->pg_conn);
 			$this->pg_conn = null;
@@ -317,7 +317,7 @@ final class Connection {
 	 * Gets the raw underlying connection, only to be used
 	 * by other ORM classes.
 	 */
-	public function _getRawConn() {
+	public function _getRawConn() : \resource {
 		return $this->pg_conn;
 	}
 }

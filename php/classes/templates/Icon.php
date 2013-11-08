@@ -5,7 +5,7 @@ class :bb:icon extends :bb:base {
 
 	protected $skipTransfer = Set<string> {'src'};
 
-	protected function compose() {
+	protected function compose() : :x:element {
 		$src = $this->getAttribute('src');
 
 		$base = BASE_DOC_DIR . '/';
@@ -50,7 +50,7 @@ class :bb:icon extends :bb:base {
 	 *
 	 * @param DOMElement $root  The root element which should be formatted.
 	 */
-	protected static function formatDOMElement(DOMElement $root) {
+	protected static function formatDOMElement(DOMElement $root) : void {
 		/* Check what this element contains. */
 		$fullText = ''; /* All text in this element. */
 		$textNodes = array(); /* Text nodes which should be deleted. */
@@ -115,10 +115,10 @@ class :bb:icon extends :bb:base {
 }
 
 //TODO: Implement thumbnails
-class :bb:thumnail extends :bb:icon {
+class :bb:thumbnail extends :bb:icon {
 	private $asset = null;
 
-	public function setAsset(\beatbox\Asset $asset) {
+	public function setAsset(\beatbox\Asset $asset) : void {
 		$this->asset = $asset;
 	}
 }

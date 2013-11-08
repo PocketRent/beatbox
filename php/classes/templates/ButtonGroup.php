@@ -10,7 +10,7 @@ class :bb:button-group extends :bb:base {
 
 	children (:bb:button)+;
 
-	protected function compose() {
+	protected function compose() : :x:frag {
 		$children = $this->getChildren();
 
 		if (count($children) == 1) {

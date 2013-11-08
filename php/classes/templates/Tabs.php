@@ -5,7 +5,7 @@ class :bb:tabs extends :bb:base {
 
 	children (:bb:tab)+;
 
-	protected function compose() {
+	protected function compose() : :div {
 		$root = <div class="tabsOuter" />;
 
 		$switcher = <bb:button-group />;
@@ -47,7 +47,7 @@ class :bb:tab extends :bb:base {
 
 	protected $skipTransfer = Set<string> {'title'};
 
-	protected function compose() {
+	protected function compose() : :div {
 		return <div class="tab hide" id={$this->getID()}>
 			{$this->getChildren()}
 		</div>;

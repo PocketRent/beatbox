@@ -6,7 +6,7 @@ class Inbound {
 	/**
 	 * Receive and handle an email
 	 */
-	public static function receive() {
+	public static function receive() : void {
 
 	}
 }

@@ -11,7 +11,7 @@ class :bb:button extends :bb:base {
 		string fragment, // Used for modal-kind buttons
 		string href;
 
-	protected function compose() {
+	protected function compose() : :button {
 		$kind = $this->getAttribute('kind');
 
 		$button = <button />;

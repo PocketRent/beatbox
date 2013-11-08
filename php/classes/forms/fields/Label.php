@@ -5,22 +5,23 @@ class :bb:form:label extends :bb:form:field {
 		:label,
 		:bb:form:field for @required;
 
-	protected function buildField() {
+	protected function buildField() : :label {
 		$root = <label for={$this->getAttribute('for')->getID()} />;
 		$root->appendChild($this->getChildren());
 		return $root;
 	}
 
-	public function setValue($value) {
+	public function setValue(mixed $value) : :bb:form:label {
 		// nop
+		return $this;
 	}
 
-	public function getValue() {
+	public function getValue() : null {
 		return null;
 	}
 
 	// a label is always valid
-	public function validate() {
+	public function validate() : array {
 		return [true, null];
 	}
 }

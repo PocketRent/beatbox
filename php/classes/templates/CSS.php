@@ -6,7 +6,7 @@ final class :bb:css extends :bb:base {
 		string dev @required,
 		string live;
 
-	public function compose() {
+	public function compose() : :link {
 		if(in_dev()) {
 			$path = $this->getAttribute('dev');
 			$base = BASE_DIR;

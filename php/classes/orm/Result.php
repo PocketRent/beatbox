@@ -9,7 +9,7 @@ abstract class Result {
 	private $oid = 0;
 	protected $count = -1;
 
-	public static function from_raw_result($res) : Result {
+	public static function from_raw_result(\resource $res) : Result {
 		// Log the command tag, this contains enough information for simple
 		// analysis.
 		send_event("db::result", pg_result_status($res, PGSQL_STATUS_STRING));
@@ -50,7 +50,7 @@ abstract class Result {
 		return $this->tag;
 	}
 
-	private function parseTag() {
+	private function parseTag() : \void {
 		if ($this->tag == null) {
 			$cmd_tag = pg_result_status($this->result, PGSQL_STATUS_STRING);
 			$parts = explode(' ', $cmd_tag);
@@ -64,7 +64,7 @@ abstract class Result {
 		}
 	}
 
-	public function __construct($result) {
+	public function __construct(\resource $result) {
 		$this->result = $result;
 	}
 
@@ -72,13 +72,13 @@ abstract class Result {
 	 * Returns the number of rows associated with this query,
 	 * either the number returned, or the number affected
 	 */
-	abstract function numRows() : int;
+	abstract function numRows() : \int;
 }
 
 class ModifyResult extends Result {
 	private $num_rows = -1;
 
-	public function numRows() : int {
+	public function numRows() : \int {
 		$this->getTag();
 		return $this->count;
 	}
@@ -91,7 +91,7 @@ class QueryResult extends Result implements \IteratorAggregate {
 
 	private $rows = \Vector {};
 
-	public function __construct($result) {
+	public function __construct(\resource $result) {
 		parent::__construct($result);
 
 		$this->rows->reserve($this->numRows());
@@ -109,7 +109,7 @@ class QueryResult extends Result implements \IteratorAggregate {
 	 *
 	 * Will throw an exception if the given position is out of bounds
 	 */
-	public function nthRow(\int $pos) {
+	public function nthRow(\int $pos) : array {
 		if ($pos >= 0 && $pos < $this->numRows()) {
 			if ($pos >= $this->rows->count()) {
 				$iter = $this->getIterator();
@@ -160,7 +160,7 @@ class ResultIterator implements \Iterator {
 
 	private $cur_idx = 0;
 
-	public function __construct($result, \Vector $rows, \int $num_rows) {
+	public function __construct(\resource $result, \Vector $rows, \int $num_rows) {
 		$this->result = $result;
 		$this->rows = $rows;
 		$this->num_rows = $num_rows;
@@ -181,19 +181,19 @@ class ResultIterator implements \Iterator {
 		return $this->rows->at($this->cur_idx);
 	}
 
-	public function key() {
+	public function key() : \int {
 		return $this->cur_idx;
 	}
 
-	public function next() {
+	public function next() : \void {
 		$this->cur_idx++;
 	}
 
-	public function rewind() {
+	public function rewind() : \void {
 		$this->cur_idx = 0;
 	}
 
-	public function valid() {
+	public function valid() : \bool {
 		return $this->cur_idx < $this->num_rows;
 	}
 }

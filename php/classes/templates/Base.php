@@ -5,11 +5,11 @@ abstract class :bb:base extends :x:element {
 		int devices = DEVICE_ALL,
 		string id;
 
-	abstract protected function compose();
+	abstract protected function compose() : :x:element;
 
 	protected $skipTransfer = Set<string> {};
 
-	final public function addClass($class) {
+	final public function addClass($class) : :bb:base {
 		$this->setAttribute(
 			'class',
 			trim($this->getAttribute('class').' '.$class)
@@ -17,18 +17,18 @@ abstract class :bb:base extends :x:element {
 		return $this;
 	}
 
-	public function getID() {
+	public function getID() : string {
 		return $this->requireUniqueID();
 	}
 
-	public function requireUniqueID() {
+	public function requireUniqueID() : string {
 		if(!($id = $this->getAttribute('id'))) {
 			$this->setAttribute('id', $id = 'pr_' . (<div />)->getID());
 		}
 		return $id;
 	}
 
-	final protected function render() {
+	final protected function render() : :x:element {
 		$allowed = $this->getAttribute('devices');
 		if(!($allowed & device_type())) {
 			return <x:frag />;
@@ -56,7 +56,7 @@ abstract class :bb:base extends :x:element {
 		return $root;
 	}
 
-	final protected function cascadeAttributes($root) {
+	final protected function cascadeAttributes(:x:element $root) : void {
 		// Get all attributes declared on this instance
 		$attributes = $this->getAttributes();
 		// Get all allowed attributes on the node returned

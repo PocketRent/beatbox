@@ -71,7 +71,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		}
 	}
 
-	protected static function add_to_map(Map $base, string $name, $value) {
+	protected static function add_to_map(Map $base, string $name, mixed $value) : void {
 		if(preg_match('#^(.+?)\[(.*?)\](.*)$#', $name, $matches)) {
 			if(!$matches[2]) {
 				if(!isset($base[$matches[1]])) {
@@ -89,7 +89,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		}
 	}
 
-	protected function getData() {
+	protected function getData() : Map {
 		$data = Map {};
 		foreach($this->getFields() as $field) {
 			if(!$field->getAttribute('name')) {
@@ -102,7 +102,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 
 	protected static $load_count;
 
-	protected static function get_value($data, $name, $base) {
+	protected static function get_value(mixed $data, string $name, string $base) : mixed {
 		if(!$name) {
 			return $data;
 		} elseif(preg_match('#^(.+?)\[(.*?)\](.*)$#', $name, $matches)) {
@@ -128,7 +128,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		}
 	}
 
-	public function loadData($data, bool $empty = false) {
+	public function loadData(mixed $data, bool $empty = false) : :bb:form {
 		self::$load_count = [];
 		foreach($this->getFields() as $field) {
 			$name = $field->getAttribute('name');

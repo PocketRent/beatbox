@@ -13,15 +13,15 @@ class Exception extends \Exception {
 	/**
 	 * Returns a prefix for the event logger to prepend
 	 */
-	public function getEventPrefix() : string {
+	public function getEventPrefix() : \string {
 		return "";
 	}
 
-	public function __construct($message, $code=0, $previous=null) {
+	public function __construct(\string $message, \int $code=0, \Exception $previous=null) {
 		parent::__construct($message, $code+self::MIN_EXCEPTION_CODE, $previous);
 	}
 
-	public function getBaseCode() {
+	public function getBaseCode() : \int {
 		return $this->getCode() - self::MIN_EXCEPTION_CODE;
 	}
 }

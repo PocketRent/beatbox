@@ -9,12 +9,12 @@ class Compare extends \PHPUnit_Framework_Constraint {
 	private $obj = null;
 	private $type = 0;
 
-	public function __construct($expected, $type) {
+	public function __construct(\mixed $expected, \int $type) {
 		$this->obj = $expected;
 		$this->type = $type;
 	}
 
-	public function matches($other) {
+	public function matches(\mixed $other) : \bool {
 		$res = $this->obj->cmp($other);
 
 		if ($this->type == 0) return $res == 0;
@@ -22,7 +22,7 @@ class Compare extends \PHPUnit_Framework_Constraint {
 		if ($this->type < 0) return $res < 0;
 	}
 
-	public function failureDescription($other) {
+	public function failureDescription(\mixed $other) : \string {
 		if (method_exists($other, '__toString'))
 			$val = (string)$other;
 		else
@@ -31,7 +31,7 @@ class Compare extends \PHPUnit_Framework_Constraint {
 		return $val.' '.$this->toString();
 	}
 
-	public function toString() {
+	public function toString() : \string {
 		if (method_exists($this->obj, '__toString'))
 			$val = (string)$this->obj;
 		else

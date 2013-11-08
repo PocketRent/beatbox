@@ -5,12 +5,12 @@ namespace beatbox;
 use \Redis as R;
 
 trait Redis {
-	abstract protected static function config_redis(R $redis);
+	abstract protected static function config_redis(R $redis) : \void;
 
 	/**
 	 * Gets a redis object to do operations on
 	 */
-	protected static function redis() {
+	protected static function redis() : R {
 		static $inst = null;
 		if(!$inst) {
 			$inst = new R;
@@ -40,7 +40,7 @@ trait Redis {
 	 *
 	 * @returns the returned value from $fn
 	 */
-	protected static function redis_transaction(\callable $fn) {
+	protected static function redis_transaction(\callable $fn) : \mixed {
 		$r = self::redis();
 		$r->multi();
 		$val = call_user_func($fn, $r);

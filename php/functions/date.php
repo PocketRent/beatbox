@@ -40,7 +40,7 @@ function weekday_name(int $daynum, bool $long = false) : string {
  *
  * $format is the '<ordinal> <dayname>' of the modification string
  */
-function date_modify_this_month(DateTime &$date, string $format) {
+function date_modify_this_month(DateTime &$date, string $format) : DateTime {
 	$desc = sprintf("%s of %s %d", $format, $date->format('M'), $date->format('Y'));
 	// So the DateTime class is super odd and if it's constructed with something like
 	// 'first day of june 2012' then you can't change the day (but only the day)

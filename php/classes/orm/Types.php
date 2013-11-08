@@ -5,7 +5,7 @@ namespace beatbox\orm;
 use \beatbox;
 
 abstract class CompositeType implements Type {
-	abstract static function fromString($val);
+	abstract static function fromString(\string $val) : CompositeType;
 }
 
 class DateTimeType extends \DateTime implements Type {
@@ -24,7 +24,7 @@ class DateTimeType extends \DateTime implements Type {
 	 * DateTime, because timestamps from the database have the same
 	 * timezone as the local PHP default timezone
 	 */
-	public function __construct($date) {
+	public function __construct(\mixed $date) {
 		if ($date == 'infinity' || $date == '+infinity') {
 			$this->infinity = 1;
 			parent::__construct('9999-12-31 23:59:59');
@@ -43,7 +43,7 @@ class DateTimeType extends \DateTime implements Type {
 	 *
 	 * Set to null to clear the timezone (Actually just resets it back to default)
 	 */
-	public function setTimezone($timezone) {
+	public function setTimezone(\mixed $timezone) : DateTimeType? {
 		if ($timezone === null) {
 			if (parent::setTimezone(new \DateTimeZone(date_default_timezone_get()))) {
 				return $this;
@@ -66,29 +66,29 @@ class DateTimeType extends \DateTime implements Type {
 		}
 	}
 
-	public function setTime(\int $hour, \int $minute, \int $second=0) {
+	public function setTime(\int $hour, \int $minute, \int $second=0) : DateTimeType? {
 		$this->infinity = 0;
 		return parent::setTime($hour, $minute, $second);
 	}
 
-	public function setDate(\int $year, \int $month, \int $day) {
+	public function setDate(\int $year, \int $month, \int $day) : DateTimeType? {
 		$this->infinity = 0;
 		return parent::setDate($year, $month, $day);
 	}
 
 	////// Predicates
 
-	public function isPositiveInfinity() { return $this->infinity == 1; }
-	public function isNegativeInfinity() { return $this->infinity == 1; }
-	public function isInfinite() { return $this->infinity != 0; }
+	public function isPositiveInfinity() : \bool { return $this->infinity == 1; }
+	public function isNegativeInfinity() : \bool { return $this->infinity == 1; }
+	public function isInfinite() : \bool { return $this->infinity != 0; }
 
-	public function setPositiveInfinity() {
+	public function setPositiveInfinity() : \void {
 		// Set the date to something way in the future, to make it easier
 		// to spot bad code
 		$this->setDate(9999, 12, 31); $this->setTime(23,59,59);
 		$this->infinity = 1;
 	}
-	public function setNegativeInfinity() {
+	public function setNegativeInfinity() : \void {
 		// Set the date to something way in the past, to make it easier to
 		// spot bad code
 		$this->setDate(-9999, 1, 1); $this->setTime(0,0,0);
@@ -116,7 +116,7 @@ class DateTimeType extends \DateTime implements Type {
 	}
 
 	// Compare trait cmp function
-	public function cmp(\DateTime $other) {
+	public function cmp(\DateTime $other) : \int {
 		if ($other instanceof DateTimeType) {
 			// other is a DateTimeType, check for infinities
 			if ($this->isInfinite() || $other->isInfinite()) {
@@ -134,11 +134,11 @@ class DateTimeType extends \DateTime implements Type {
 		return $this_ts - $other_ts;
 	}
 
-	public function inPast() {
+	public function inPast() : \bool {
 		return $this->cmp(new \DateTime('now')) < 0;
 	}
 
-	public function inFuture() {
+	public function inFuture() : \bool {
 		return $this->cmp(new \DateTime('now')) > 0;
 	}
 }

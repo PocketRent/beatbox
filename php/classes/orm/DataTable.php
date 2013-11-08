@@ -10,7 +10,7 @@ abstract class DataTable {
 	 * This assumes that the given row is from the database and
 	 * therefore resets and marked changes for this object.
 	 */
-	abstract protected function updateFromRow($row);
+	abstract protected function updateFromRow(\mixed $row) : \void;
 
 	/**
 	 * Get a map of updated columns for this object, the keys are the
@@ -74,7 +74,7 @@ abstract class DataTable {
 	 *
 	 * Returns null if there is no matching object in the database
 	 */
-	public static function get_by_pk($id) : DataTable {
+	public static function get_by_pk(\mixed $id) : DataTable {
 		if(!$id) {
 			return null;
 		}
@@ -100,7 +100,7 @@ abstract class DataTable {
 	/**
 	 * Wrapper method for get_by_pk.
 	 */
-	public static function get_by_id($id) : DataTable {
+	public static function get_by_id(\mixed $id) : DataTable {
 		return static::get_by_pk($id);
 	}
 
@@ -221,13 +221,13 @@ abstract class DataTable {
 	 * The object shouldn't be used after deletion and will cause exceptions
 	 * to be thrown if this happens.
 	 */
-	public function delete() {
+	public function delete() : \void {
 		if ($this->deleted)
 			throw new \DeletedObjectException('delete', get_called_class());
 		$this->deleteWithConn(Connection::get());
 	}
 
-	public function deleteWithConn(Connection $conn) {
+	public function deleteWithConn(Connection $conn) : \void {
 		if ($this->deleted)
 			throw new \DeletedObjectException('delete', get_called_class());
 		$this->deleted = true;

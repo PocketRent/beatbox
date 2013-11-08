@@ -9,7 +9,7 @@ class :bb:form:dropdown extends :bb:form:field {
 		string default,
 		Traversable items;
 
-	protected function buildField() {
+	protected function buildField() : :select {
 		$base = <select class="dropdown" />;
 		if($this->getAttribute('default')) {
 			$base->appendChild(<option value="">{$this->getAttribute('default')}</option>);
@@ -29,7 +29,7 @@ class :bb:form:dropdown extends :bb:form:field {
 		return $base;
 	}
 
-	protected function childValueFields(:x:base $base = null) {
+	protected function childValueFields(:x:base $base = null) : Continuation {
 		if(!$base) {
 			$base = $this;
 		}
@@ -45,7 +45,7 @@ class :bb:form:dropdown extends :bb:form:field {
 		}
 	}
 
-	protected function selectValue(string $value, :x:base $base) {
+	protected function selectValue(string $value, :x:base $base) : void {
 		foreach($this->childValueFields($base) as $item) {
 			if($value !== '' && $item->getAttribute('value') == $value) {
 				$item->setAttribute('selected', true);
@@ -55,7 +55,7 @@ class :bb:form:dropdown extends :bb:form:field {
 		}
 	}
 
-	public function getValue() {
+	public function getValue() : mixed {
 		$check = $this->getAttribute('value');
 		$items = $this->getAttribute('items') ?: $this->getChildren();
 		if($items instanceof Continuation) {

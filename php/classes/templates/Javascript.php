@@ -6,7 +6,7 @@ final class :bb:js extends :bb:base {
 		Vector dev @required,
 		string live;
 
-	public function compose() {
+	public function compose() : :x:element {
 		if(in_live() && ($path = $this->getAttribute('live'))) {
 			if(file_exists(BASE_DOC_DIR . '/' . $path)) {
 				$path .= '?m=' . filemtime(BASE_DOC_DIR . '/'. $path);

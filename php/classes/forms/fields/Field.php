@@ -30,7 +30,7 @@ abstract class :bb:form:field extends :bb:base {
 		return $this;
 	}
 
-	public function getValue() {
+	public function getValue() : mixed {
 		return $this->getAttribute('value');
 	}
 
@@ -73,17 +73,17 @@ abstract class :bb:form:field extends :bb:base {
 		return $root;
 	}
 
-	protected function reset() {
+	protected function reset() : void {
 		$this->valid = true;
 		$this->error = null;
 	}
 
-	public function setValid(bool $valid, \string $error=null) {
+	public function setValid(bool $valid, string $error=null) : void {
 		$this->valid = $valid;
 		$this->error = $error;
 	}
 
-	public function getValid() : \bool {
+	public function getValid() : bool {
 		return $this->valid;
 	}
 

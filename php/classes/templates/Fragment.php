@@ -7,7 +7,7 @@ final class :bb:fragment extends :bb:base {
 
 	protected $skipTransfer = Set<string>{'name'};
 
-	protected function compose() {
+	protected function compose() : :div {
 		$name = $this->getAttribute('name');
 		$fragment = beatbox\Router::response_for_fragment($name);
 

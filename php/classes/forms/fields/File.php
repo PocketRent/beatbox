@@ -7,7 +7,7 @@ class :bb:form:file extends :bb:form:field {
 
 	protected $type = 'file';
 
-	public function validate() {
+	public function validate() : array {
 		$value = $this->getAttribute('value');
 		if($this->valid && $value) {
 			if(is_array($value['error'])) {
@@ -27,7 +27,7 @@ class :bb:form:file extends :bb:form:field {
 		return parent::validate();
 	}
 
-	protected function validateFile(array $file) {
+	protected function validateFile(array $file) : void {
 		if($file['error'] != UPLOAD_ERR_OK) {
 			if(in_array($file['error'], [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE])) {
 				$this->valid = false;
@@ -63,7 +63,7 @@ class :bb:form:file extends :bb:form:field {
 		}
 	}
 
-	public function getValue() {
+	public function getValue() : array? {
 		$value = $this->getAttribute('value');
 		if($value) {
 			if(is_array($value['error'])) {

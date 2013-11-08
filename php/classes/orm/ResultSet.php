@@ -48,14 +48,14 @@ class ResultSet implements \Iterable {
 	 * Returns whether or not this result set is "lazy". Whether the actual
 	 * results have been retrieved yet or not
 	 */
-	public function isLazy() : bool {
+	public function isLazy() : \bool {
 		return $this->conn != null;
 	}
 
 	/**
 	 * Forces the result set to load the entire set of results
 	 */
-	public function loadRest() {
+	public function loadRest() : \void {
 		if ($this->conn) {
 			// iterating over the result set causes them all to be loaded
 			foreach ($this as $res) { }
@@ -69,7 +69,7 @@ class ResultSet implements \Iterable {
 		return new ResultSetIterator($this->results, $this->conn);
 	}
 
-	private function resultsFrom(Connection $conn) {
+	private function resultsFrom(Connection $conn) : \void {
 		$this->conn = $conn;
 	}
 }
@@ -101,7 +101,7 @@ class ResultSetIterator implements \Iterator {
 		return $this->cur_idx;
 	}
 
-	public function next() {
+	public function next() : \void {
 		$this->cur_idx++;
 		if ($this->cur_idx >= $this->results->count() && $this->conn) {
 			// We seem to have run out of results, try to get the next one
@@ -117,11 +117,11 @@ class ResultSetIterator implements \Iterator {
 		}
 	}
 
-	public function rewind() {
+	public function rewind() : \void {
 		$this->cur_idx = 0;
 	}
 
-	public function valid() {
+	public function valid() : \bool {
 		return $this->cur_idx < $this->results->count();
 	}
 }

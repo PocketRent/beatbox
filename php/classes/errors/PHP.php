@@ -16,7 +16,7 @@ class PHP {
 	/**
 	 * Handler for a PHP error
 	 */
-	public static function errors(\int $number, \string $message, \string $file, \int $line) {
+	public static function errors(\int $number, \string $message, \string $file, \int $line) : \bool {
 		if(error_reporting() == 0 && !self::$fatal_errors->contains($number)) {
 			return false;
 		}
@@ -71,7 +71,7 @@ class PHP {
 		}
 	}
 
-	private static function pretty_backtrace($stack) : \string {
+	private static function pretty_backtrace(array $stack) : \string {
 		// pop off the first item, as it's the call to the error handler
 		array_shift($stack);
 		$i = 1;
@@ -104,7 +104,7 @@ class PHP {
 		return implode(', ', $pretty);
 	}
 
-	private static function pretty_arg($arg) : \string {
+	private static function pretty_arg(\mixed $arg) : \string {
 		switch(gettype($arg)) {
 			case 'array':
 				return self::pretty_array($arg);

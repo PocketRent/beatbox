@@ -6,7 +6,7 @@ require_once 'Mail.php';
 require_once 'Mail/mime.php';
 
 class Sendmail implements Mailer {
-	public static function send(\string $to, \string $from, \string $subject, \string $htmlContent, \Map $attachments) {
+	public static function send(\string $to, \string $from, \string $subject, \string $htmlContent, \Map $attachments) : void {
 		$email = new \Mail_mime([
 			'html_charset' => 'utf8',
 			'text_charset' => 'utf8',

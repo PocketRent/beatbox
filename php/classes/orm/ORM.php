@@ -31,7 +31,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	 *
 	 * The underlying tables must, however, be the same.
 	 */
-	public function setDataClass($data_class) {
+	public function setDataClass(\string $data_class) : ORM {
 		$new = clone $this;
 		$new->data_class = $data_class;
 		$new->table = $data_class::getTableName();
@@ -70,7 +70,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	 *
 	 * The field must be a field on the object being queried for.
 	 */
-	public function filter(\string $field, $value, \string $comp = '=') : ORM {
+	public function filter(\string $field, \mixed $value, \string $comp = '=') : ORM {
 		$this->validateField($field);
 		$field = $this->conn->escapeIdentifier($field);
 		if(is_null($value)) {
@@ -149,7 +149,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	 *
 	 * If no arguments are provided, returns the actual count
 	 */
-	public function count(\string $field = '*', $as = null) : AggregateORM {
+	public function count(\string $field = '*', \string $as = null) : AggregateORM {
 		if(func_num_args() == 0) {
 			return $this->agg()->count('*', 'C')->getNth(0)['C'];
 		}
@@ -161,7 +161,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	 * Helper method to create an AggregateORM and add the given
 	 * max field to it.
 	 */
-	public function max(\string $field, $as = null) : AggregateORM {
+	public function max(\string $field, \string $as = null) : AggregateORM {
 		$agg = $this->agg();
 		return $agg->max($field, $as);
 	}
@@ -170,7 +170,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	 * Helper method to create an AggregateORM and add the given
 	 * min field to it.
 	 */
-	public function min(\string $field, $as = null) : AggregateORM {
+	public function min(\string $field, \string $as = null) : AggregateORM {
 		$agg = $this->agg();
 		return $agg->min($field, $as);
 	}
@@ -242,18 +242,18 @@ class ORM implements \IteratorAggregate, \Countable {
 		return $query;
 	}
 
-	protected function getWHERE() {
+	protected function getWHERE() : \string? {
 		if ($this->conds->count() > 0)
 			return 'WHERE ('.pr_join(') AND (', $this->conds).')';
 		else
 			return false;
 	}
 
-	protected function getGROUP_BY() { return false; }
+	protected function getGROUP_BY() : \string? { return false; }
 
-	protected function getHAVING() { return false; }
+	protected function getHAVING() : \string? { return false; }
 
-	protected function getORDER_BY() {
+	protected function getORDER_BY() : \string? {
 		if ($this->sorts->count() > 0)
 			return "ORDER BY ".pr_join(', ', $this->sorts);
 		else
@@ -284,7 +284,7 @@ class ORM implements \IteratorAggregate, \Countable {
 		}
 	}
 
-	public function __clone() {
+	public function __clone() : \void {
 		$this->result = null;
 		$this->conds = clone $this->conds;
 		$this->sorts = clone $this->sorts;
@@ -301,7 +301,7 @@ class ORM implements \IteratorAggregate, \Countable {
 		return $this->result;
 	}
 
-	protected function validateField($field) {
+	protected function validateField(\string $field) : \void {
 		if (!$this->valid_fields->contains($field)) {
 			throw new InvalidFieldException($field, $this->valid_fields);
 		}
@@ -337,7 +337,7 @@ class AggregateORM extends ORM {
 	 *
 	 * If no alias is given, then it defaults to 'max_<FieldName>'
 	 */
-	public function max($field, $as = null) : AggregateORM {
+	public function max(\string $field, \string $as = null) : AggregateORM {
 		$this->validateField($field);
 
 		if (!$as) {
@@ -362,7 +362,7 @@ class AggregateORM extends ORM {
 	 *
 	 * If no alias is given, then it defaults to 'max_<FieldName>'
 	 */
-	public function min($field, $as = null) : AggregateORM {
+	public function min(\string $field, \string $as = null) : AggregateORM {
 		$this->validateField($field);
 
 		if (!$as) {
@@ -389,7 +389,7 @@ class AggregateORM extends ORM {
 	 * given, then it defaults to 'count_<FieldName>' unless the field
 	 * is '*', in which case it is 'count_<NumExtraFields>'
 	 */
-	public function count($field = '*', $as = null) : AggregateORM {
+	public function count(\string $field = '*', \string $as = null) : AggregateORM {
 		if ($field != '*') {
 			$this->validateField($field);
 
@@ -448,14 +448,14 @@ class AggregateORM extends ORM {
 		return $new;
 	}
 
-	protected function getGROUP_BY() {
+	protected function getGROUP_BY() : \string? {
 		if ($this->group_bys->count() > 0)
 			return "GROUP BY ".pr_join(', ', $this->group_bys);
 		else
 			return false;
 	}
 
-	protected function getHAVING() {
+	protected function getHAVING() : \string? {
 		if ($this->having->count() > 0)
 			return "HAVING (".pr_join(') AND (', $this->having).')';
 		else
@@ -491,7 +491,7 @@ class AggregateORM extends ORM {
 	/**
 	 * Returns the nth row or null
 	 */
-	public function getNth(\int $n) {
+	public function getNth(\int $n) : array? {
 		$result = $this->getResult();
 		if ($n < $result->numRows()) {
 			return $result->nthRow($n);
@@ -500,7 +500,7 @@ class AggregateORM extends ORM {
 		}
 	}
 
-	public function __clone() {
+	public function __clone() : \void {
 		parent::__clone();
 		$this->extra_fields = clone $this->extra_fields;
 		$this->group_bys = clone $this->group_bys;

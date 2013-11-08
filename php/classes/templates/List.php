@@ -15,7 +15,7 @@ class :bb:listbox extends :bb:base {
 
 	protected $skipTransfer = Set<string> { 'fallback' };
 
-	protected function compose() {
+	protected function compose() : :ul {
 		$list = <ul class="listbox" role="listbox" />;
 		$list->addClass($this->getAttribute('size'));
 
@@ -41,7 +41,7 @@ class :bb:list-item extends :bb:base {
 
 	protected $skipTransfer = Set<string> {'icon'};
 
-	protected function compose() {
+	protected function compose() : :li {
 		return <li role="option">{$this->getChildren()}</li>;
 	}
 }

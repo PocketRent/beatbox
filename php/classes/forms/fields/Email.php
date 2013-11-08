@@ -5,7 +5,7 @@ class :bb:form:email extends :bb:form:field {
 
 	protected $type = 'email';
 
-	public function validate() {
+	public function validate() : array {
 		$value = $this->getValue();
 		if($value) {
 			if($this->getAttribute('multiple')) {

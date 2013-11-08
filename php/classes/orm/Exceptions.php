@@ -8,7 +8,7 @@ use beatbox\errors\Exception;
  * Common exception for database-related errors
  */
 class DatabaseException extends Exception {
-	public final function getEventPrefix() : string {
+	public final function getEventPrefix() : \string {
 		return "db";
 	}
 }
@@ -20,13 +20,13 @@ class DatabaseException extends Exception {
 class ConnectionException extends DatabaseException {
 	protected $dbError;
 
-	public function __construct(Connection $conn, $message, $previous=null) {
+	public function __construct(Connection $conn, \string $message, \Exception $previous=null) {
 		$this->dbError = $conn->getLastError();
 		$message = $message . ": '" . $this->dbError . "'";
 		parent::__construct($message, 1, $previous);
 	}
 
-	public function dbError() {
+	public function dbError() : \string {
 		return $this->dbError;
 	}
 }
@@ -35,7 +35,7 @@ class ConnectionException extends DatabaseException {
  * Exception for errors that occur with results and result sets.
  */
 class ResultException extends DatabaseException {
-	public function __construct($result, $message="", $previous=null) {
+	public function __construct(\resource $result, \string $message="", \Exception $previous=null) {
 		$err = pg_result_error($result);
 		if ($message != "") {
 			$message = $message . ": '" . $err . "'";
@@ -53,7 +53,7 @@ class ResultException extends DatabaseException {
 class InvalidFieldException extends DatabaseException {
 	private static $num_fields = 4; // number of valid fields to show in the error message
 
-	public function __construct(\string $field, $valid_fields, $previous=null) {
+	public function __construct(\string $field, \mixed $valid_fields, \Exception $previous=null) {
 		$trunc = 0;
 		if ($valid_fields->count() > self::$num_fields && $valid_fields instanceof \Vector) {
 			$trunc = $valid_fields->count() - self::$num_fields;
@@ -75,7 +75,7 @@ class InvalidFieldException extends DatabaseException {
  * Exception thrown when trying to perform an action on a deleted object.
  */
 class DeletedObjectException extends DatabaseException {
-	public function __construct(\string $action, \string $object, $previous = null) {
+	public function __construct(\string $action, \string $object, \Exception $previous = null) {
 		$message = "Tried to $action a deleted object '$object'";
 		parent::__construct($message, 4, $previous);
 	}

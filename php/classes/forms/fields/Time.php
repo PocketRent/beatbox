@@ -12,7 +12,7 @@ class :bb:form:time extends :bb:form:field {
 
 	protected $skipTransfer = Set<string> { 'label', 'name' };
 
-	protected function buildField() {
+	protected function buildField() : :div {
 		$step = $this->getAttribute('minuteStep');
 		$min = $this->getAttribute('minHour');
 		$max = $this->getAttribute('maxHour');
@@ -60,7 +60,7 @@ class :bb:form:time extends :bb:form:field {
 		return <div class="time">{$hours}:{$minutes}</div>;
 	}
 
-	public function setValue($value) {
+	public function setValue(mixed $value) : :bb:form:time {
 		if(is_a($value, 'DateTime')) {
 			parent::setValue($value->Format('H:i'));
 		} elseif(is_array($value)) {
@@ -69,9 +69,10 @@ class :bb:form:time extends :bb:form:field {
 		} else {
 			parent::setValue($value);
 		}
+		return $this;
 	}
 
-	public function validate() {
+	public function validate() : array {
 		$value = $this->getAttribute('value');
 		if($value) {
 			list($hours, $minutes) = explode(':', $value, 2);

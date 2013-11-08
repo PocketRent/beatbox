@@ -7,7 +7,7 @@ class :bb:t extends :bb:base {
 		string label @required,
 		Traversable args = [];
 
-	protected function compose() {
+	protected function compose() : :x:frag {
 		$message = (string)((<bb:raw />)->appendChild($this->getChildren()));
 		if(($args = $this->getAttribute('args'))) {
 			$callingArgs = [$message];

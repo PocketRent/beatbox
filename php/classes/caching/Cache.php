@@ -10,7 +10,7 @@ class Cache {
 
 	const DEFAULT_EXPIRE = 21600; // Default expiration is 6 hours
 
-	protected static function config_redis(R $r) {
+	protected static function config_redis(R $r) : \void {
 		$r->setOption(R::OPT_SERIALIZER, R::SERIALIZER_PHP);
 		$r->select(REDIS_DB_CACHE);
 	}
@@ -18,7 +18,7 @@ class Cache {
 	/**
 	 * Test to see if a key is in the cache
 	 */
-	public static function test(\string $key) : bool {
+	public static function test(\string $key) : \bool {
 		$key = self::key_name($key);
 		return self::redis()->exists($key);
 	}
@@ -27,7 +27,7 @@ class Cache {
 	 * Get the value of a key from the cache, returns
 	 * null if the key doesn't exist
 	 */
-	public static function get(\string $key) : mixed {
+	public static function get(\string $key) : \mixed {
 		$key = self::key_name($key);
 		return self::redis()->get($key);
 	}
@@ -45,7 +45,7 @@ class Cache {
 	 *	});
 	 *
 	 */
-	public static function get_or_set(\string $key, \callable $fn, $expire = Cache::DEFAULT_EXPIRE, $tags = []) {
+	public static function get_or_set(\string $key, \callable $fn, \int $expire = Cache::DEFAULT_EXPIRE, array $tags = []) : \mixed {
 		if (self::test($key)) {
 			return self::get($key);
 		} else {
@@ -60,7 +60,7 @@ class Cache {
 	 *
 	 * An expire value <= 0 means no expiration.
 	 */
-	public static function set($key, $value, $expire = Cache::DEFAULT_EXPIRE, $tags = []) {
+	public static function set(\string $key, \mixed $value, \int $expire = Cache::DEFAULT_EXPIRE, array $tags = []) : \void {
 		$key = self::key_name($key);
 		self::redis()->set($key, $value, $expire);
 		// If expire is already over (so < 1) then don't bother adding it to
@@ -76,7 +76,7 @@ class Cache {
 	 * $expire is either an integer representing the unix timestamp, or a
 	 * DateTime object instance.
 	 */
-	public static function set_until($key, $value, $expire, $tags = []) {
+	public static function set_until(\string $key, \mixed $value, \mixed $expire, \array $tags = []) : \void {
 		$key = self::key_name($key);
 
 		if ($expire instanceof \DateTime) {
@@ -97,7 +97,7 @@ class Cache {
 	/**
 	 * Remove a value from the cache
 	 */
-	public static function remove($key) {
+	public static function remove(\string $key) : \void {
 		$key = self::key_name($key);
 		self::redis()->del($key);
 	}
@@ -107,7 +107,7 @@ class Cache {
 	 * the given tags and will unconditionally delete the member
 	 * keys.
 	 */
-	public static function delete_tags(/* ... */) {
+	public static function delete_tags(/* ... */) : \void {
 		$args = func_get_args();
 		$tags = array_map(function ($t) { return self::tag_name($t); }, $args);
 		// Get the members of the tags
@@ -125,7 +125,7 @@ class Cache {
 		});
 	}
 
-	private static function add_tags(\string $key, Traversable $tags) {
+	private static function add_tags(\string $key, Traversable $tags) : \void {
 		// Add the key to a set for each tag.
 		foreach ($tags as $tag) {
 			$tag = self::tag_name($tag);

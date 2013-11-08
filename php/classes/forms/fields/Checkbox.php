@@ -5,7 +5,7 @@ class :bb:form:checkbox extends :bb:form:field {
 
 	protected $type = 'checkbox';
 
-	public function setValue($value) {
+	public function setValue(\mixed $value) : :bb:form:checkbox {
 		$v = $this->getAttribute('value');
 		if(($v && (string)$value == $v) || (!$v && $value)) {
 			$this->setAttribute('checked', true);
@@ -13,9 +13,10 @@ class :bb:form:checkbox extends :bb:form:field {
 			$this->setAttribute('checked', false);
 		}
 		$this->reset();
+		return $this;
 	}
 
-	public function getValue() {
+	public function getValue() : \mixed {
 		if($this->getAttribute('checked')) {
 			return $this->getAttribute('value') ?: true;
 		}

@@ -16,7 +16,7 @@ class :bb:form:date extends :bb:form:field {
 
 	protected $skipTransfer = Set<string> { 'label', 'value', 'name' };
 
-	protected function buildField() {
+	protected function buildField() : :div {
 		$withDay = $this->getAttribute('withDay');
 		$value = $this->getAttribute('value');
 
@@ -56,12 +56,13 @@ class :bb:form:date extends :bb:form:field {
 		</div>;
 	}
 
-	public function setValue($value) {
+	public function setValue(mixed $value) : :bb:form:date {
 		if(is_array($value)) {
 			$value = "$value[Year]-$value[Month]-$value[Day]";
 			parent::setValue(new DateTimeType($value));
 		} else {
 			parent::setValue(new DateTimeType($value));
 		}
+		return $this;
 	}
 }

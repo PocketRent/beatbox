@@ -9,7 +9,7 @@ class HTTP {
 	 * @param int $code The HTTP status code
 	 * @param string $status The status description
 	 */
-	public static function error($code, $status = null) {
+	public static function error(\int $code, \string $status = null) : \void {
 		throw new HTTP_Exception($status, $code);
 	}
 
@@ -22,7 +22,7 @@ class HTTP {
 	 * @param string $to the URL to redirect to
 	 * @param string $fallback the URL to fallback to
 	 */
-	public static function redirect(\string $to, $fallback=null) {
+	public static function redirect(\string $to, \string $fallback=null) : \void {
 		$e = new HTTP_Exception(null, 302);
 
 		if($to) {
@@ -57,7 +57,7 @@ class HTTP {
 	 *
 	 * @param string $fallback the URL to fallback to
 	 */
-	public static function redirect_back(\string $fallback = null) {
+	public static function redirect_back(\string $fallback = null) : \void {
 		$referer = empty($_SERVER['HTTP_REFERER']) ? '' : $_SERVER['HTTP_REFERER'];
 		self::redirect($referer, $fallback);
 	}
@@ -142,7 +142,7 @@ class HTTP_Exception extends Exception {
 		599 => 'Network connect timeout error',
 	};
 
-	public function __construct($message, $code=0, $previous=null) {
+	public function __construct(\string $message, \int $code=0, \Exception $previous=null) {
 		if(!$message && isset(self::$status_map[$code])) {
 			$message = self::$status_map[$code];
 		}
@@ -151,15 +151,15 @@ class HTTP_Exception extends Exception {
 
 	protected $headers = \Vector<\Pair<\string, \boolean>> {};
 
-	public function setHeader(\string $header, \string $value, \bool $replace = true) {
+	public function setHeader(\string $header, \string $value, \bool $replace = true) : \void {
 		$this->headers[] = \Pair {"$header: $value", $replace };
 	}
 
-	public function getEventPrefix() {
+	public function getEventPrefix() : \string {
 		return 'http:';
 	}
 
-	public function sendToBrowser() {
+	public function sendToBrowser() : \void {
 		$line = 'HTTP/1.1 ' . $this->getBaseCode();
 		if(isset($this->status_map[$this->getBaseCode()])) {
 			$line .= ' ' . $this->status_map[$this->getBaseCode()];

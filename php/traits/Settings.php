@@ -10,12 +10,12 @@ trait Settings {
 	/**
 	 * Returns the name of the table for this object. Is used as the ObjectType value.
 	 */
-	abstract protected static function getTableName();
+	abstract protected static function getTableName() : \string;
 
 	/**
 	 * Returns the ID for this object. This should be unique across objects that have the same table name.
 	 */
-	abstract protected function getID();
+	abstract protected function getID() : \mixed;
 
 	private $settings_loaded = false;
  	private $settings_data = \Map<\string> {};
@@ -23,12 +23,12 @@ trait Settings {
 
 	private $settings_key;
 
-	protected static function config_redis(\Redis $inst) {
+	protected static function config_redis(\Redis $inst) : \void {
 		$inst->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
 		$inst->select(REDIS_DB_SETTINGS);
 	}
 
-	protected function loadSettings() {
+	protected function loadSettings() : \void {
 		if($this->settings_loaded) return;
 		$this->settings_loaded = true;
 		$this->settings_key = self::getTableName() . ':' . $this->getID();
@@ -40,7 +40,7 @@ trait Settings {
 		register_shutdown_function([$this, 'endSettings']);
 	}
 
-	public function getSetting(\string $key) {
+	public function getSetting(\string $key) : \mixed {
 		if($this->hasSetting($key)) {
 			return $this->settings_data[$key];
 		}
@@ -52,17 +52,17 @@ trait Settings {
 		return isset($this->settings_data[$key]);
 	}
 
-	public function setSetting(\string $key, $value) {
+	public function setSetting(\string $key, \mixed $value) : \void {
 		$this->loadSettings();
 		$this->settings_data[$key] = $value;
 	}
 
-	public function clearSetting(\string $key) {
+	public function clearSetting(\string $key) : \void {
 		$this->loadSettings();
 		unset($this->settings_data[$key]);
 	}
 
-	public function endSettings() {
+	public function endSettings() : \void {
 		if($this->settings_loaded) {
 			self::redis_transaction(function(\Redis $r) {
 				$set = [];

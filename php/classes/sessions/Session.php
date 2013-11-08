@@ -15,18 +15,18 @@ class Session {
 
 	private static $id;
 
-	protected static function getTableName() {
+	protected static function getTableName() : \string {
 		return 'session';
 	}
 
-	protected function getID() {
+	protected function getID() : \string {
 		return self::$id;
 	}
 
 	/**
 	 * Start the session if needed
 	 */
-	protected static function start(\bool $force = false) {
+	protected static function start(\bool $force = false) : Session {
 		if(!self::$inst) {
 			if($force || !empty($_COOKIE[self::NAME])) {
 				self::$inst = new self;
@@ -49,7 +49,7 @@ class Session {
 	/**
 	 * Initialise a session
 	 */
-	protected function init() {
+	protected function init() : \void {
 		if(!self::$inst->hasSetting('CSRF')) {
 			self::$inst->setSetting('CSRF', generate_random_token());
 		}
@@ -58,11 +58,9 @@ class Session {
 	/**
 	 * Get the item out of the session for the given key
 	 */
-	public static function get(\string $key) {
+	public static function get(\string $key) : \mixed {
 		if(self::start($key === 'CSRF') && self::exists($key)) {
 			return self::$inst->getSetting($key);
-		} elseif($key === 'CSRF') {
-			var_dump(self::$inst);
 		}
 		return null;
 	}
@@ -77,7 +75,7 @@ class Session {
 	/**
 	 * Set the session value for the given key
 	 */
-	public static function set(\string $key, $value) {
+	public static function set(\string $key, \mixed $value) : \void {
 		if($key === 'CSRF') {
 			throw new \InvalidArgumentException('Unable to set CSRF key.');
 		}
@@ -87,14 +85,14 @@ class Session {
 	/**
 	 * Clear the value from the session for the given key
 	 */
-	public static function clear(\string $key) {
+	public static function clear(\string $key) : \void {
 		self::start(false) && self::$inst->clearSetting($key);
 	}
 
 	/**
 	 * Close and write the session
 	 */
-	public static function end() {
+	public static function end() : \void {
 		if(self::$inst) {
 			self::$inst->endSettings();
 			self::redis()->expire('session:' . self::$id, self::EXPIRE);
@@ -104,7 +102,7 @@ class Session {
 	/**
 	 * Completely reset the session
 	 */
-	public static function reset() {
+	public static function reset() : \void {
 		self::end();
 		self::$inst = null;
 		$_COOKIE[self::NAME] = null;

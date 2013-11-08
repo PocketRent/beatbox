@@ -5,7 +5,7 @@
  *
  * @uses beatbox\Session::get()
  */
-function session_get($key) {
+function session_get(string $key) : mixed {
 	return beatbox\Session::get($key);
 }
 
@@ -14,7 +14,7 @@ function session_get($key) {
  *
  * @uses beatbox\Session::isset()
  */
-function session_exists($key) {
+function session_exists(string $key) : bool {
 	return beatbox\Session::exists($key);
 }
 
@@ -23,7 +23,7 @@ function session_exists($key) {
  *
  * @uses beatbox\Session::set()
  */
-function session_set($key, $value) {
+function session_set(string $key, mixed $value) : void {
 	return beatbox\Session::set($key, $value);
 }
 
@@ -32,6 +32,6 @@ function session_set($key, $value) {
  *
  * @uses beatbox\Session::clear()
  */
-function session_clear($key) {
+function session_clear(string $key) : void {
 	return beatbox\Session::clear($key);
 }

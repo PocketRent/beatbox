@@ -6,14 +6,14 @@ trait Compare {
 	// Returns a value that is less than, equal to or greater than
 	// zero if $this is less than, equal to or greater than $other,
 	// respectively
-	abstract function cmp($other);
+	abstract function cmp(\mixed $other) : \int;
 
-	public function eq($other) { return $this->cmp($other) == 0; }
-	public function ne($other) { return $this->cmp($other) != 0; }
+	public function eq(\mixed $other) : \bool { return $this->cmp($other) == 0; }
+	public function ne(\mixed $other) : \bool { return $this->cmp($other) != 0; }
 
-	public function lt($other) { return $this->cmp($other) <  0; }
-	public function le($other) { return $this->cmp($other) <= 0; }
+	public function lt(\mixed $other) : \bool { return $this->cmp($other) <  0; }
+	public function le(\mixed $other) : \bool { return $this->cmp($other) <= 0; }
 
-	public function gt($other) { return $this->cmp($other) >  0; }
-	public function ge($other) { return $this->cmp($other) >= 0; }
+	public function gt(\mixed $other) : \bool { return $this->cmp($other) >  0; }
+	public function ge(\mixed $other) : \bool { return $this->cmp($other) >= 0; }
 }

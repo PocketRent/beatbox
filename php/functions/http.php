@@ -14,7 +14,7 @@ define('HTTP_URL_STRIP_ALL', HTTP_URL_STRIP_AUTH | HTTP_URL_STRIP_PORT | HTTP_UR
 define('HTTP_URL_FROM_ENV', 0x1000);
 define('HTTP_URL_SANITIZE_PATH', 0x2000);
 
-function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTTP_URL_FROM_ENV, array &$ret_array = null) {
+function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTTP_URL_FROM_ENV, array &$ret_array = null) : string {
 	if($flags & HTTP_URL_FROM_ENV) {
 		$url = http_build_url(_http_url_from_env(), $url, $flags ^ HTTP_URL_FROM_ENV, $ret_array);
 	}
@@ -129,7 +129,7 @@ function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTT
 	return _http_url_to_string($new_url);
 }
 
-function _http_url_to_string(array $url) {
+function _http_url_to_string(array $url) : string {
 	$str = '';
 	if(isset($url['scheme']) && $url['scheme'] !== '') {
 		$str = $url['scheme'] . '://';
@@ -170,7 +170,7 @@ function _http_url_to_string(array $url) {
 	return $str;
 }
 
-function _http_url_from_env() {
+function _http_url_from_env() : array {
 	$url = [];
 	// Port
 	if(isset($_SERVER['SERVER_PORT'])) {

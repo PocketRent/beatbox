@@ -5,7 +5,7 @@ final class :bb:raw extends :xhp:raw-pcdata-element {
 
 	children (pcdata*);
 
-	protected function stringify() {
+	protected function stringify() : string {
 		$buf = '';
 		foreach ($this->getChildren() as $child) {
 			if (!is_string($child)) {

@@ -76,7 +76,7 @@ class Cache {
 	 * $expire is either an integer representing the unix timestamp, or a
 	 * DateTime object instance.
 	 */
-	public static function set_until(\string $key, \mixed $value, \mixed $expire, \array $tags = []) : \void {
+	public static function set_until(\string $key, \mixed $value, \mixed $expire, array $tags = []) : \void {
 		$key = self::key_name($key);
 
 		if ($expire instanceof \DateTime) {

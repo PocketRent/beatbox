@@ -43,7 +43,7 @@ class DateTimeType extends \DateTime implements Type {
 	 *
 	 * Set to null to clear the timezone (Actually just resets it back to default)
 	 */
-	public function setTimezone(\mixed $timezone) : DateTimeType? {
+	public function setTimezone(\mixed $timezone) : ?DateTimeType {
 		if ($timezone === null) {
 			if (parent::setTimezone(new \DateTimeZone(date_default_timezone_get()))) {
 				return $this;
@@ -66,12 +66,12 @@ class DateTimeType extends \DateTime implements Type {
 		}
 	}
 
-	public function setTime(\int $hour, \int $minute, \int $second=0) : DateTimeType? {
+	public function setTime(\int $hour, \int $minute, \int $second=0) : ?DateTimeType {
 		$this->infinity = 0;
 		return parent::setTime($hour, $minute, $second);
 	}
 
-	public function setDate(\int $year, \int $month, \int $day) : DateTimeType? {
+	public function setDate(\int $year, \int $month, \int $day) : ?DateTimeType {
 		$this->infinity = 0;
 		return parent::setDate($year, $month, $day);
 	}

@@ -68,7 +68,7 @@ class Asset {
 	 *
 	 * @return Asset or null, if it doesn't exist
 	 */
-	public static function load(\mixed $id) : Asset? {
+	public static function load(\mixed $id) : ?Asset {
 		$conn = orm\Connection::get();
 
 		$eid = $conn->escapeValue($id);

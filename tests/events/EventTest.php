@@ -45,14 +45,14 @@ class EventTest extends beatbox\Test {
 
 		$this->assertEquals(['test'], $this->called);
 		$this->assertEquals([['ing']], $this->args);
-		$this->assertEquals([3], $vals);
+		$this->assertEquals(\Vector {3}, $vals);
 
 		$event = new Event('prefix', 'something', 'else');
 		$vals = $event->blockSend();
 
 		$this->assertEquals(['test', 'prefix'], $this->called);
 		$this->assertEquals([['ing'], ['something', 'else']], $this->args);
-		$this->assertEquals([1], $vals);
+		$this->assertEquals(\Vector {1}, $vals);
 	}
 
 	/**
@@ -86,13 +86,13 @@ class EventTest extends beatbox\Test {
 
 		$this->assertEquals([], $this->called);
 		$this->assertEquals([], $this->args);
-		$this->assertEquals([], $vals);
+		$this->assertEquals(\Vector {}, $vals);
 
 		$event = new Event('prefix:suffix', 'first');
 		$vals = $event->blockSend();
 
 		$this->assertSetsEquals(['prefix', 'prefix:suffix'], $this->called);
 		$this->assertEquals([['first'], ['first']], $this->args);
-		$this->assertSetsEquals([1, 2], $vals);
+		$this->assertSetsEquals(\Vector {1, 2}, $vals);
 	}
 }

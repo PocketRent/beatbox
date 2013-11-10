@@ -63,7 +63,7 @@ class :bb:form:file extends :bb:form:field {
 		}
 	}
 
-	public function getValue() : array? {
+	public function getValue() : ?array {
 		$value = $this->getAttribute('value');
 		if($value) {
 			if(is_array($value['error'])) {

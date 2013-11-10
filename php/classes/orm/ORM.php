@@ -242,18 +242,18 @@ class ORM implements \IteratorAggregate, \Countable {
 		return $query;
 	}
 
-	protected function getWHERE() : \string? {
+	protected function getWHERE() : ?\string {
 		if ($this->conds->count() > 0)
 			return 'WHERE ('.pr_join(') AND (', $this->conds).')';
 		else
 			return false;
 	}
 
-	protected function getGROUP_BY() : \string? { return false; }
+	protected function getGROUP_BY() : ?\string { return false; }
 
-	protected function getHAVING() : \string? { return false; }
+	protected function getHAVING() : ?\string { return false; }
 
-	protected function getORDER_BY() : \string? {
+	protected function getORDER_BY() : ?\string {
 		if ($this->sorts->count() > 0)
 			return "ORDER BY ".pr_join(', ', $this->sorts);
 		else
@@ -448,14 +448,14 @@ class AggregateORM extends ORM {
 		return $new;
 	}
 
-	protected function getGROUP_BY() : \string? {
+	protected function getGROUP_BY() : ?\string {
 		if ($this->group_bys->count() > 0)
 			return "GROUP BY ".pr_join(', ', $this->group_bys);
 		else
 			return false;
 	}
 
-	protected function getHAVING() : \string? {
+	protected function getHAVING() : ?\string {
 		if ($this->having->count() > 0)
 			return "HAVING (".pr_join(') AND (', $this->having).')';
 		else
@@ -491,7 +491,7 @@ class AggregateORM extends ORM {
 	/**
 	 * Returns the nth row or null
 	 */
-	public function getNth(\int $n) : array? {
+	public function getNth(\int $n) : ?array {
 		$result = $this->getResult();
 		if ($n < $result->numRows()) {
 			return $result->nthRow($n);

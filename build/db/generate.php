@@ -964,7 +964,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 		$tbl_data->writeLine("namespace $ns;");
 		$tbl_data->writeLine();
 		$tbl_data->writeLine('use beatbox\\orm\\ORM, beatbox\\orm\\Connection;');
-		$tbl_data->writeLine('use HH\Traversable');
+		$tbl_data->writeLine('use HH\Traversable;');
 		$tbl_data->writeLine();
 
 		$tbl_data->startBlock("abstract class $table->name extends \\beatbox\\orm\\DataTable");

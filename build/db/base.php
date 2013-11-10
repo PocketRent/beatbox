@@ -97,7 +97,7 @@ function parse_common_args(Vector<string> &$args): Map<string,string> {
 	return $info;
 }
 
-function do_connect(Map<string,string> $info) {
+function do_connect(Map<string,string> $info) : resource {
 
 	$conn_string = '';
 	if ($info['host']) $conn_string .= ' host=\''.$info['host'].'\'';
@@ -131,11 +131,11 @@ function format_desc(string $desc): int {
 
 class CommandException extends Exception { }
 
-function command_fail(string $msg, int $code=1) {
+function command_fail(string $msg, int $code=1) : void {
 	throw new CommandException($msg, $code);
 }
 
-function vprint(string $msg) {
+function vprint(string $msg) : void {
 	global $verbose;
 	if ($verbose) {
 		echo $msg . "\n";

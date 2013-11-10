@@ -22,7 +22,7 @@ class Browser {
 	 * Returns an array with the width and height of the screen, in that order
 	 * [w, h]
 	 */
-	public static function size() : \array {
+	public static function size() : array {
 		return [self::info('width'), self::info('height')];
 	}
 

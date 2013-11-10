@@ -2,11 +2,11 @@
 
 namespace beatbox;
 
-use Map, List;
+use Map, Vector;
 
 class Event {
-	protected static $exact_listeners = Map <\string, List <callable>> {};
-	protected static $prefix_listeners = Map <\string, List <callable>> {};
+	protected static $exact_listeners = Map <\string, Vector <callable>> {};
+	protected static $prefix_listeners = Map <\string, Vector <callable>> {};
 
 	protected $name;
 	protected $args;
@@ -20,13 +20,13 @@ class Event {
 	public static function attach_listener(callable $callback, \string $name, \bool $prefix = false) {
 		if($prefix) {
 			if(!isset(self::$prefix_listeners[$name])) {
-				self::$prefix_listeners[$name] = List<callable> {$callback};
+				self::$prefix_listeners[$name] = Vector<callable> {$callback};
 			} else {
 				self::$prefix_listeners[$name][] = $callback;
 			}
 		} else {
 			if(!isset(self::$exact_listeners[$name])) {
-				self::$exact_listeners[$name] = List<callable> {$callback};
+				self::$exact_listeners[$name] = Vector<callable> {$callback};
 			} else {
 				self::$exact_listeners[$name][] = $callback;
 			}
@@ -64,8 +64,8 @@ class Event {
 	/**
 	 * Send the event out to be processed synchronously
 	 */
-	public function blockSend() : List<\mixed> {
-		$vals = List<\mixed> {};
+	public function blockSend() : Vector<\mixed> {
+		$vals = Vector<\mixed> {};
 		foreach(self::listeners_for($this->name) as $cb) {
 			$vals[] = call_user_func_array($cb, $this->args);
 		}
@@ -75,8 +75,8 @@ class Event {
 	/**
 	 * Async endpoint
 	 */
-	public static function async_run(\string $name, array $args) : List<\mixed> {
-		$vals = List<\mixed> {};
+	public static function async_run(\string $name, array $args) : Vector<\mixed> {
+		$vals = Vector<\mixed> {};
 		foreach(self::listeners_for($name) as $cb) {
 			$vals[] = call_user_func_array($cb, $args);
 		}
@@ -84,7 +84,7 @@ class Event {
 	}
 
 	public static function reset() {
-		self::$exact_listeners = Map <\string, List <callable>> {};
-		self::$prefix_listeners = Map <\string, List <callable>> {};
+		self::$exact_listeners = Map <\string, Vector <callable>> {};
+		self::$prefix_listeners = Map <\string, Vector <callable>> {};
 	}
 }

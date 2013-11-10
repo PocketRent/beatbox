@@ -142,7 +142,7 @@ class HTTP_Exception extends Exception {
 		599 => 'Network connect timeout error',
 	};
 
-	public function __construct(\string $message, \int $code=0, \Exception $previous=null) {
+	public function __construct(\string $message = null, \int $code=0, \Exception $previous=null) {
 		if(!$message && isset(self::$status_map[$code])) {
 			$message = self::$status_map[$code];
 		}

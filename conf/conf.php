@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 define('CONF_DIR', __DIR__);
 define('BASE_DIR', dirname(dirname(__DIR__)));

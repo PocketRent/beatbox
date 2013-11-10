@@ -32,7 +32,7 @@ class Router {
 			$ext = substr($url, $pos+1);
 			$url = substr($url, 0, $pos);
 		} else {
-			$ext = null;
+			$ext = '';
 		}
 		if($url) {
 			$parts = explode('/', $url);

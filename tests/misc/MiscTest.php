@@ -21,16 +21,6 @@ class MiscTest extends beatbox\Test {
 	/**
 	 * @group sanity
 	 */
-	public function testVectorUnshift() {
-		$vector = \Vector { 1, 2, 3 };
-		vector_unshift($vector, 0);
-
-		$this->assertEquals(\Vector { 0, 1, 2, 3 }, $vector);
-	}
-
-	/**
-	 * @group sanity
-	 */
 	public function testCheckToken() {
 		$this->assertTrue(check_token("abcde", "abcde"));
 	}

@@ -108,17 +108,6 @@ function get_mime_type(string $filename) : string {
 }
 
 /**
- * Vector equivalent of array_unshift
- */
-function vector_unshift(MutableVector $v, mixed $val) : void {
-	$v->add(null); // Add a null element to the end
-	for ($i = $v->count()-1; $i > 0; $i--) {
-		$v[$i] = $v[$i-1];
-	}
-	$v[0] = $val;
-}
-
-/**
  * Gets the domain from the HTTP_HOST server variable
  */
 function host_domain() : \string {

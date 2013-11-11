@@ -1,6 +1,7 @@
 <?hh
 
 // Load all defined functions, since we can't autoload them
+require __DIR__ . '/collections.php';
 require __DIR__ . '/date.php';
 require __DIR__ . '/env/Env.php';
 require __DIR__ . '/errors/HTTP.php';

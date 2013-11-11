@@ -82,7 +82,7 @@ function register_autoload_map() : void {
 		});
 
 	} else {
-		fb_autoload_map($map, BASE_DIR.'/');
+		fb_autoload_map($map->toArray(), BASE_DIR.'/');
 	}
 
 }

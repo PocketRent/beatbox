@@ -2,17 +2,18 @@
 <?hh
 
 require __DIR__ . '/../xhp/init.php';
+require __DIR__ . '/../php/functions/collections.php';
 
-function makeMap() {
+function makeMap() : Map<string, Map<string, string>> {
 	$lookIn = __DIR__ . '/../..';
 
-	$map = [];
+	$map = Map<string, Map<string, string>> {};
 
 	global $base;
 	$base = realpath(__DIR__ . '/../..');
 
 	foreach(glob($lookIn, GLOB_ONLYDIR) as $dir) {
-		$map = array_merge_recursive($map, handleDir($dir));
+		$map = map_merge_recursive($map, handleDir($dir));
 	}
 
 
@@ -32,22 +33,22 @@ PHP;
 	return $map;
 }
 
-function handleDir($dir) {
+function handleDir(string $dir) : Map<string, Map<string, string>> {
 	global $base;
 	$dir = realpath($dir);
-	if(!$dir) return [];
+	if(!$dir) return Map<string, Map<string, string>> {};
 
-	$map = [
-		'class' => [],
-		'function' => [],
-		'constant' => [],
-		'type' => []
-	];
+	$map = Map<string, Map<string, string>> {
+		'class' => Map <string, string> {},
+		'function' => Map <string, string> {},
+		'constant' => Map <string, string> {},
+		'type' => Map <string, string> {}
+	};
 
 	foreach(glob($dir . '/*') as $file) {
 		if($file[0] == '.') continue;
 		if(is_dir($file)) {
-			$map = array_merge_recursive($map, handleDir($file));
+			$map = map_merge_recursive($map, handleDir($file));
 		} else {
 			$filename = str_replace($base, '', $file);
 			$filename = ltrim($filename, '/');

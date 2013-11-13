@@ -59,7 +59,7 @@ function register_autoload_map() : void {
 		trigger_error("Cannot find class map", E_USER_ERROR);
 	}
 
-	$map['function'] = [];
+	$map['function'] = Map {};
 
 	// fb_autoload_map doesn't play nice with syntax errors, so during development
 	// using the spl autoloader is prefered. In production, fb_autoload_map is
@@ -72,7 +72,7 @@ function register_autoload_map() : void {
 			} elseif (!defined('RUNNING_TEST')) {
 				// Regenerate the map to try and load the new class
 				$new_map = makeMap();
-				if (count(array_diff_assoc($new_map['class'], $map['class'])) > 0) {
+				if ($map['class']->differenceByKey($new_map['class'])->count() > 0) {
 					$map = $new_map;
 					if (isset($map['class'][$canon_name])) {
 						require BASE_DIR.'/'.$map['class'][$canon_name];
@@ -80,12 +80,11 @@ function register_autoload_map() : void {
 				}
 			}
 		});
-
 	} else {
 		fb_autoload_map($map->toArray(), BASE_DIR.'/');
 	}
-
 }
+
 register_autoload_map();
 
 if (DEV_MODE) {

@@ -22,8 +22,8 @@ class HTTP {
 	 * @param string $to the URL to redirect to
 	 * @param string $fallback the URL to fallback to
 	 */
-	public static function redirect(\string $to, \string $fallback=null) : \void {
-		$e = new HTTP_Exception(null, 302);
+	public static function redirect(\string $to, \string $fallback=null, \int $code = 302) : \void {
+		$e = new HTTP_Exception(null, $code);
 
 		if($to) {
 			$uri = base_url();

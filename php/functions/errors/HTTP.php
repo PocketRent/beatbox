@@ -21,8 +21,8 @@ function http_error(int $code, \string $status = null) : void {
  * @param string $fallback the URL to fallback to
  * @uses beatbox\errors\HTTP::redirect()
  */
-function redirect(string $to, $fallback=null) : void {
-	return beatbox\errors\HTTP::redirect($to, $fallback);
+function redirect(string $to, string $fallback=null, int $code = 302) : void {
+	return beatbox\errors\HTTP::redirect($to, $fallback, $code);
 }
 
 /**

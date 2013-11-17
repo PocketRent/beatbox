@@ -65,6 +65,7 @@ trait Settings {
 	public function endSettings() : \void {
 		if($this->settings_loaded) {
 			self::redis_transaction(function(\Redis $r) {
+				// Redis::hmset wants an array
 				$set = [];
 				foreach($this->settings_data as $k => $v) {
 					if(!isset($this->settings_original[$k]) || $this->settings_original[$k] != $v) {
@@ -74,6 +75,7 @@ trait Settings {
 				if(count($set)) {
 					$r->hmset($this->settings_key, $set);
 				}
+				// call_user_func_array wants an array
 				$del = [$this->settings_key];
 				foreach($this->settings_original->differenceByKey($this->settings_data)->keys() as $key) {
 					$del[] = $key;

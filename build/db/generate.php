@@ -1,6 +1,6 @@
 <?hh
 
-function generateHelp() {
+function generateHelp() : void {
 	global $exe;
 	echo <<<HELP
 Usage: $exe generate [options] <dest-directory>
@@ -31,7 +31,7 @@ HELP;
 
 }
 
-function doGenerate(Vector<string> $args) {
+function doGenerate(Vector<string> $args) : void {
 	global $verbose;
 	$verbose = false;
 
@@ -137,7 +137,7 @@ class ExcludePattern {
 
 		if (count($parts) > 1) {
 			$cols = Vector::fromArray(explode(',', $parts[1]));
-			$cols = Vector::fromItems($cols->map(function ($col) {
+			$cols = Vector::fromItems($cols->map(function (string $col) : string {
 				$col = trim($col);
 				if (preg_match('#^[\d\w_]*$#', $col)) {
 					return $col;
@@ -145,7 +145,7 @@ class ExcludePattern {
 					vprint("Ignoring invalid column name: '$col'");
 					return "";
 				}
-			})->filter(function ($col) {
+			})->filter(function (string $col) : bool {
 				return strlen($col) > 0;
 			}));
 
@@ -153,7 +153,7 @@ class ExcludePattern {
 		}
 	}
 
-	public static function fromFile($file) {
+	public static function fromFile(string $file) : Map<string, ExcludePattern> {
 		$excludes = Map {};
 		if (file_exists($file) && is_readable($file)) {
 			$pats = file_get_contents($file);
@@ -163,9 +163,9 @@ class ExcludePattern {
 			}
 			$pats = Vector::fromArray(explode("\n", $pats));
 			// Filter out empty lines and comments
-			$pats_iter = $pats->filter(function ($pat) {
+			$pats_iter = $pats->filter(function (string $pat) : bool {
 				return strlen($pat) > 0 && $pat[0] != '#';
-			})->map(function ($pat) { // Strip off a trailing comment
+			})->map(function (string $pat) : string { // Strip off a trailing comment
 				$hp = strpos($pat, '#');
 				return $hp === false ? $pat : substr($pat, 0, $hp);
 			});

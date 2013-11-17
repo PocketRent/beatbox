@@ -14,7 +14,7 @@ function parse_common_args(Vector<string> &$args): Map<string,string> {
 	$iter = $args->getIterator();
 	$iter->rewind();
 
-	$getNext = function($opt) use ($iter) {
+	$getNext = function(string $opt) : string use ($iter) {
 		$iter->next();
 		if (!$iter->valid()) command_fail("Expected value for $opt");
 		return $iter->current();
@@ -119,7 +119,7 @@ function do_connect(Map<string,string> $info) : resource {
 	return $conn;
 }
 
-function format_desc(string $desc): int {
+function format_desc(string $desc): string {
 	$width = 50;
 	$wrapped = wordwrap($desc, $width);
 	$lines = explode("\n", $desc);

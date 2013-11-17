@@ -1,6 +1,6 @@
 <?hh
 
-function createHelp() {
+function createHelp() : void {
 	global $exe;
 	echo <<<HELP
 Usage: $exe create [options] <source-directory>
@@ -13,7 +13,7 @@ Usage: $exe create [options] <source-directory>
 HELP;
 }
 
-function doCreate(Vector<string> $args) {
+function doCreate(Vector<string> $args) : void {
 	global $verbose;
 	$verbose = false;
 	// Info for creation
@@ -27,7 +27,7 @@ function doCreate(Vector<string> $args) {
 	$iter = $args->getIterator();
 	$iter->rewind();
 
-	$getNext = function($opt) use ($iter) {
+	$getNext = function(string $opt) : string use ($iter) {
 		$iter->next();
 		if (!$iter->valid()) command_fail("Expected value for $opt");
 		return $iter->current();
@@ -44,7 +44,7 @@ function doCreate(Vector<string> $args) {
 			$info['ignore_buildfiles'] = true;
 			break;
 		case "--buildfile-dir":
-			$info['buildfile_dir'] = getNext('buildfile-dir');
+			$info['buildfile_dir'] = $getNext('buildfile-dir');
 			break;
 		default:
 			if ($arg[0] == '-') {
@@ -75,19 +75,19 @@ function doCreate(Vector<string> $args) {
 
 	// Filter out create files that have matching build files
 	// Make a set with all the names of the .build files we have
-	$builds = Set::fromItems($files->filter(function ($info) {
+	$builds = Set::fromItems($files->filter(function (DBFile $info) : bool {
 		return $info->type == DBFile::TYPE_BUILD; // Filter only .build files
-	})->map(function ($info) {
+	})->map(function (DBFile $info) : string {
 		return $info->name; // Map to the name
 	}));
 
-	$files = Vector::fromItems($files->filter(function ($info) use ($builds) {
+	$files = Vector::fromItems($files->filter(function (DBFile $info) : bool use ($builds) {
 		// Filter out create files that exist in the .build set
 		return $info->type != DBFile::TYPE_CREATE || !($builds->contains($info->name));
 	}));
 
 	// Sort the vector
-	usort($files, function (DBFile $a, DBFile $b) { return $a->compareTo($b); });
+	usort($files, function (DBFile $a, DBFile $b) : int { return $a->compareTo($b); });
 
 	echo "Processing..."; vprint("");
 	run_sql(DBFile::TYPE_PRE_SQL, $conn, $files);
@@ -113,11 +113,10 @@ class DBFile {
 	public $priority = PHP_INT_MAX;
 	public $timestamp = 0;
 
-	public function __construct($path) {
+	public function __construct(string $path) {
 		$this->path = $path;
 		$filename = basename($path);
 
-		$matches = [];
 		$re = '#^'. // Start
 			  '((?<priority>(?i)[0-9]+)\.)?'. //Priority
 			  '(?<name>[a-zA-Z][\w\d_-]*)'. //Name
@@ -244,8 +243,8 @@ class DBFile {
 	}
 }
 
-function get_db_files(string $src_dir, $buildfile_dir, $ignore_buildfiles) {
-	$files = Vector {};
+function get_db_files(string $src_dir, string $buildfile_dir, bool $ignore_buildfiles) : Vector<string> {
+	$files = Vector<string> {};
 
 	vprint("Searching for files...");
 
@@ -259,7 +258,7 @@ function get_db_files(string $src_dir, $buildfile_dir, $ignore_buildfiles) {
 	return $files;
 }
 
-function get_db_files_r(string $dirname, Vector<DBFile> &$files, $buildfiles=false) {
+function get_db_files_r(string $dirname, Vector<DBFile> &$files, bool $buildfiles=false) : Pair<int, int> {
 	$dir = dir($dirname);
 	if (!$dir) {
 		command_fail("Unable to open directory '$dirname'");
@@ -295,11 +294,11 @@ function get_db_files_r(string $dirname, Vector<DBFile> &$files, $buildfiles=fal
 		}
 	}
 
-	return [$sqls, $exes];
+	return Pair<int, int> {$sqls, $exes};
 }
 
-function run_sql(int $type, $conn, Vector<DBFile> $files) {
-	$scripts = $files->filter(function ($info) use ($type) {
+function run_sql(int $type, resource $conn, Vector<DBFile> $files) : void {
+	$scripts = $files->filter(function (DBFile $info) : bool use ($type) {
 		return $info->type == $type;
 	});
 
@@ -321,12 +320,12 @@ function run_sql(int $type, $conn, Vector<DBFile> $files) {
 	}
 }
 
-function create_tables($conn, $buildfile_dir, Vector<DBFile> $files) {
+function create_tables(resource $conn, string $buildfile_dir, Vector<DBFile> $files) : void {
 	$dbs = 0;
 	$count = 0;
 	$errors = 0;
 
-	$creates = $files->filter(function ($info) use (&$dbs) {
+	$creates = $files->filter(function (DBFile $info) : bool use (&$dbs) {
 		if ($info->type == DBFile::TYPE_CREATE) {
 			$dbs++; return true;
 		}
@@ -370,19 +369,19 @@ function create_tables($conn, $buildfile_dir, Vector<DBFile> $files) {
 	}
 }
 
-function alter_and_migrate($conn, $buildfile_dir, Vector<DBFile> $files) {
+function alter_and_migrate(resource $conn, string $buildfile_dir, Vector<DBFile> $files) : void {
 	$nscripts = 0;
 	$count = 0;
 	$skipped = 0;
 	$errors = Set {};
 
-	$builds = Map::fromItems($files->filter(function ($info): bool {
+	$builds = Map::fromItems($files->filter(function (DBFile $info): bool {
 		return $info->type == DBFile::TYPE_BUILD;
-	})->map(function ($info): Pair<string,int> {
+	})->map(function (DBFile $info): Pair<string,int> {
 		return Pair { $info->name, $info->timestamp };
 	}));
 
-	$alters = $files->filter(function ($info): bool use (&$nscripts, $builds, $buildfile_dir) {
+	$alters = $files->filter(function (DBFile $info): bool use (&$nscripts, $builds, $buildfile_dir) {
 		if ($info->type == DBFile::TYPE_ALTER ||
 			$info->type == DBFile::TYPE_MIGRATE) {
 

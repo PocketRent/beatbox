@@ -62,7 +62,7 @@ class Task implements \Serializable {
 	 * Valid options are always, different args and never.
 	 */
 	public function setConcurrent(\int $policy) : Task {
-		if(!in_array($policy, [self::CON_ALWAYS, self::CON_NEVER, self::CON_DIFF])) {
+		if(!(\Set<\int> {self::CON_ALWAYS, self::CON_NEVER, self::CON_DIFF})->contains($policy)) {
 			throw new \InvalidArgumentException('Concurrency policy must be one of the CON_ constants');
 		}
 		$this->policy = $policy;
@@ -178,7 +178,7 @@ class Task implements \Serializable {
 	 * Serialize this object. Should not be called directly.
 	 */
 	public function serialize() : \string {
-		$data = ['c' => unserialize($this->callback), 'a' => unserialize($this->arguments), 'p' => $this->policy];
+		$data = \Map<\string, \mixed> {'c' => unserialize($this->callback), 'a' => unserialize($this->arguments), 'p' => $this->policy};
 		return serialize($data);
 	}
 

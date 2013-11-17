@@ -1,29 +1,31 @@
-#!/usr/bin/env hhvm
+#!/usr/bin/hhvm -c/etc/hhvm/config.hdf
 <?hh
 
 require_once __DIR__.'/db/base.php';
 
-$commands = StableMap {
-    "create" => [
+$commands = StableMap<string, Map<string, string>> {
+    "create" => Map<string, string> {
         "description" => "Create the database",
         "run" => "doCreate",
         "help" => "createHelp"
-    ],
-    "generate" => [
+    },
+    "generate" => Map<string, string> {
         "description" => "Generate PHP classes from Database schema",
         "run" => "doGenerate",
         "help" => "generateHelp"
-    ]
+    }
 };
 
-function main($args) {
+function main(Vector<string> $args) : int {
     global $commands;
 
     if ($args->count() < 2) {
-        return usage();
+        usage();
+        return 1;
     }
     if ($args->linearSearch("-h") > 0 || $args->linearSearch("--help") > 0) {
-        return usage($args[1]);
+        usage($args[1]);
+        return 0;
     }
 
     $command = $args[1];
@@ -42,7 +44,7 @@ function main($args) {
     return 0;
 }
 
-function usage($command=null) {
+function usage(string $command=null) : void {
     global $exe, $commands;
     if ($command && $commands->containsKey($command)) {
         $cmd = $commands[$command];

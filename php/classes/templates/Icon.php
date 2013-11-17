@@ -53,8 +53,8 @@ class :bb:icon extends :bb:base {
 	protected static function formatDOMElement(DOMElement $root) : void {
 		/* Check what this element contains. */
 		$fullText = ''; /* All text in this element. */
-		$textNodes = array(); /* Text nodes which should be deleted. */
-		$childNodes = array(); /* Other child nodes. */
+		$textNodes = Vector<DOMText>{}; /* Text nodes which should be deleted. */
+		$childNodes = Vector<DOMElement>{}; /* Other child nodes. */
 		for ($i = 0; $i < $root->childNodes->length; $i++) {
 			$child = $root->childNodes->item($i);
 

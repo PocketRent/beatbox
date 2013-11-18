@@ -339,10 +339,17 @@ class PGType {
 	}
 
 	public function needsWrite(): bool {
+		if(($this->type_cat == PGType::TCAT_ARRAY || $this->type == PGType::T_DOMAIN) && $this->type_dict) {
+			$subType = $this->type_dict->typeByOid($this->sub_type);
+			return $subType && $subType->needsWrite();
+		}
 		return $this->type == PGType::T_COMPOSITE && !$this->written;
 	}
 
 	public function writeTo(CodeFile $file) {
+		if($this->type_cat == PGType::TCAT_ARRAY || $this->type == PGType::T_DOMAIN) {
+			return $this->type_dict->typeByOid($this->sub_type)->writeTo($file);
+		}
 		vprint("Generating type code for $this->name");
 
 		if ($this->type == PGType::T_COMPOSITE) {

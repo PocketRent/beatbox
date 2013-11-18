@@ -13,6 +13,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	private $sorts = \Vector {};
 	private $joins = \Vector {};
 	private $limit = -1;
+	private $offset = -1;
 	private $from = null;
 
 	private $result = null;
@@ -136,10 +137,25 @@ class ORM implements \IteratorAggregate, \Countable {
 	 *
 	 * If $value is less than 0, then no LIMIT is added.
 	 */
-	public function limit(\int $value) : ORM {
+	public function limit(?\int $value, \int $offset = null) : ORM {
 		if ($value === null) $value = -1;
 		$new = clone $this;
 		$new->limit = (int)$value;
+		if($offset !== null) {
+			$new->offset = (int)$offset;
+		}
+		return $new;
+	}
+
+	/**
+	 * Add an OFFSET value.
+	 *
+	 * If $value is less than 0, then no OFFSET is added.
+	 */
+	public function offset(?\int $value) : ORM {
+		if ($value === null) $value = -1;
+		$new = clone $this;
+		$new->offset = (int)$value;
 		return $new;
 	}
 
@@ -237,6 +253,10 @@ class ORM implements \IteratorAggregate, \Countable {
 
 		if ($this->limit >= 0) {
 			$query .= "\nLIMIT ".((int)$this->limit);
+		}
+
+		if ($this->offset >= 0) {
+			$query .= "\nOFFSET ".((int)$this->offset);
 		}
 
 		return $query;

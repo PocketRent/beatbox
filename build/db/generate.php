@@ -1057,9 +1057,13 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
 					$tbl_data->writeLine("\$this->changed['$col->name'] = true;");
 					$tbl_data->writeLine("\$this->_$col->name = \Vector {};");
-					$tbl_data->startBlock("foreach (\$val as \$elem)");
-					$tbl_data->writeLine("\$this->_$col->name->add(\$elem);");
+					$tbl_data->writeLine("\$this->_$col->name->addAll(\$val);");
+					$tbl_data->writeLine('return $this;');
 					$tbl_data->endBlock();
+					$tbl_data->startBlock("public function append$col->name(Traversable \$val$def_val)");
+					$tbl_data->writeLine('assert(func_num_args() > 0);');
+					$tbl_data->writeLine("\$this->changed['$col->name'] = true;");
+					$tbl_data->writeLine("\$this->_$col->name->addAll(\$val);");
 					$tbl_data->writeLine('return $this;');
 				} else {
 					$tbl_data->startBlock("public function set$col->name($type_arg\$val$def_val)");

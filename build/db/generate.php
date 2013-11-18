@@ -1070,6 +1070,9 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 					$tbl_data->startBlock("public function append$col->name(Traversable \$val$def_val)");
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
 					$tbl_data->writeLine("\$this->changed['$col->name'] = true;");
+					$tbl_data->startBlock("if(\$this->_$col->name === null)");
+					$tbl_data->writeLine("\$this->_$col->name = \Vector {};");
+					$tbl_data->endBlock();
 					$tbl_data->writeLine("\$this->_$col->name->addAll(\$val);");
 					$tbl_data->writeLine('return $this;');
 				} else {

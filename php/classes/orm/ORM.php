@@ -341,7 +341,7 @@ class AggregateORM extends ORM {
 		$this->validateField($field);
 
 		if (!$as) {
-			$as = 'count_$field';
+			$as = 'max_$field';
 		}
 
 		$table = $this->conn->escapeIdentifier($this->table);

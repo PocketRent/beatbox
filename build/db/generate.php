@@ -361,7 +361,7 @@ class PGType {
 			}
 			$file->writeLine();
 
-			$file->startBlock('public static function fromString($val): '.$this->name);
+			$file->startBlock('public static function fromString(\string $val): '.$this->name);
 
 			$file->writeLine('if ($val === null) return 0;');
 			$file->writeLine('$parts = db_parse_composite($val);');

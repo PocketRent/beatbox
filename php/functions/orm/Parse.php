@@ -39,6 +39,7 @@ function db_parse_array(string $delimiter, string $val): Vector<string> {
 }
 
 function db_parse_composite(string $val): Vector<string> {
+	$val = trim($val, '"');
 	$generator = function () : Continutaion use ($val) {
 		$len = strlen($val);
 		if ($len > 0 && $val != '()') {

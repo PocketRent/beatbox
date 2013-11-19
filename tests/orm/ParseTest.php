@@ -135,4 +135,8 @@ class ParseTest extends beatbox\Test {
 	public function testCompositeNestedString() {
 		$this->assertEquals(Vector {'("123""456")', '1'}, db_parse_composite('("(""123""""456"")",1)'));
 	}
+
+	public function testCompositeFromArray() {
+		$this->assertEquals(Vector { "abc" }, db_parse_composite('"(abc)"'));
+	}
 }

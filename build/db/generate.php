@@ -402,7 +402,11 @@ class PGType {
 					$file->writeLine("\$str .= ',';");
 				$i++;
 			}
-			$file->writeLine('$str .= ")";');
+			if ($this->elements->count() == 1) {
+				$file->writeLine('$str .= ")";');
+			} else {
+				$file->writeLine("\$str .= ')::\"$this->name\"';");
+			}
 			$file->writeLine('return $str;');
 
 			$file->endBlock();

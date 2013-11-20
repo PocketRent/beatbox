@@ -3,7 +3,7 @@
 class :bb:form:checkbox extends :bb:form:field {
 	attribute :input;
 
-	protected $type = 'checkbox';
+	protected string $type = 'checkbox';
 
 	public function setValue(\mixed $value) : :bb:form:checkbox {
 		$v = $this->getAttribute('value');

@@ -64,7 +64,7 @@ class HTTP {
 }
 
 class HTTP_Exception extends Exception {
-	protected static $status_map = \Map<\int, \string> {
+	protected static \Map<\int, \string> $status_map = \Map<\int, \string> {
 		100 => 'Continue',
 		101 => 'Switching Protocols',
 		102 => 'Processing',

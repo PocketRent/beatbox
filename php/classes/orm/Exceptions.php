@@ -18,7 +18,7 @@ class DatabaseException extends Exception {
  * being unable to connect
  */
 class ConnectionException extends DatabaseException {
-	protected $dbError;
+	protected \string $dbError;
 
 	public function __construct(Connection $conn, \string $message, \Exception $previous=null) {
 		$this->dbError = $conn->getLastError();
@@ -51,7 +51,7 @@ class ResultException extends DatabaseException {
  * Exception thrown when an invalid field is referenced.
  */
 class InvalidFieldException extends DatabaseException {
-	private static $num_fields = 4; // number of valid fields to show in the error message
+	private static int $num_fields = 4; // number of valid fields to show in the error message
 
 	public function __construct(\string $field, \mixed $valid_fields, \Exception $previous=null) {
 		$trunc = 0;

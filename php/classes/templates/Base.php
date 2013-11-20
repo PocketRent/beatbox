@@ -7,7 +7,7 @@ abstract class :bb:base extends :x:element {
 
 	abstract protected function compose() : :x:element;
 
-	protected $skipTransfer = Set<string> {};
+	protected Set<string> $skipTransfer = Set<string> {};
 
 	final public function addClass($class) : :bb:base {
 		$this->setAttribute(

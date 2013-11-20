@@ -12,9 +12,9 @@ class :bb:form:date extends :bb:form:field {
 		DateTime min,
 		DateTime max;
 
-	protected $type = 'date';
+	protected string $type = 'date';
 
-	protected $skipTransfer = Set<string> { 'label', 'value', 'name' };
+	protected Set<string> $skipTransfer = Set<string> { 'label', 'value', 'name' };
 
 	protected function buildField() : :div {
 		$withDay = $this->getAttribute('withDay');

@@ -11,9 +11,9 @@ class Session {
 
 	const NAME = 'PR';
 
-	private static $inst = null;
+	private static ?self $inst = null;
 
-	private static $id;
+	private static \string $id;
 
 	protected static function getTableName() : \string {
 		return 'session';

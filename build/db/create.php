@@ -100,18 +100,18 @@ function doCreate(Vector<string> $args) : void {
 class DBFile {
 	const TYPE_BUILD	 = 0;
 	const TYPE_PRE_SQL   = 1;
-	const TYPE_CREATE	= 2;
+	const TYPE_CREATE	 = 2;
 	const TYPE_ALTER	 = 3;
 	const TYPE_MIGRATE   = 4;
 	const TYPE_POST_SQL  = 5;
 	const TYPE_UNKNOWN   = 255;
 
-	public $path = null;
-	public $name = null;
+	public ?string $path = null;
+	public ?string $name = null;
 
-	public $type = DBFile::TYPE_UNKNOWN;
-	public $priority = PHP_INT_MAX;
-	public $timestamp = 0;
+	public int $type = DBFile::TYPE_UNKNOWN;
+	public int $priority = PHP_INT_MAX;
+	public int $timestamp = 0;
 
 	public function __construct(string $path) {
 		$this->path = $path;

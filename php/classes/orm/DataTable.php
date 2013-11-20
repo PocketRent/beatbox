@@ -45,12 +45,12 @@ abstract class DataTable {
 	/**
 	 * Returns a set of column names for this object
 	 */
-	abstract static function getColumnNames() : \Set<string>;
+	abstract static function getColumnNames() : \Set<\string>;
 
 	/**
 	 * Returns a set of column names that are primary keys
 	 */
-	abstract static function getPrimaryKeys() : \Set<string>;
+	abstract static function getPrimaryKeys() : \Set<\string>;
 
 	/**
 	 * ORM-getter for this class (uses LSB)
@@ -127,7 +127,7 @@ abstract class DataTable {
 		return $v;
 	}
 
-	private $deleted = false;
+	private \bool $deleted = false;
 
 	/**
 	 * Write this object to the database.

@@ -7,8 +7,8 @@ use HH\Traversable;
 class ResultSet implements \Iterable {
 	use \LazyIterable;
 
-	private $results = null;
-	private $conn = null;
+	private \Vector<Result> $results = null;
+	private ?Connection $conn = null;
 
 	public static function lazy_result_set(Connection $conn) : ResultSet {
 		$set = new ResultSet();
@@ -75,10 +75,10 @@ class ResultSet implements \Iterable {
 }
 
 class ResultSetIterator implements \Iterator {
-	private $results = null;
-	private $conn = null;
+	private \Vector<Result> $results = null;
+	private Connection $conn = null;
 
-	private $cur_idx = 0;
+	private \int $cur_idx = 0;
 
 	public function __construct(\Vector<Result> $results, Connection $conn) {
 		$this->results = $results;

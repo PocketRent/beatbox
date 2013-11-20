@@ -17,11 +17,11 @@ trait Settings {
 	 */
 	abstract protected function getID() : \mixed;
 
-	private $settings_loaded = false;
- 	private $settings_data = \Map<\string> {};
-	private $settings_original = \Map<\string> {};
+	private \bool $settings_loaded = false;
+ 	private \Map<\string, \mixed> $settings_data = \Map<\string, \mixed> {};
+	private \Map<\string, \mixed> $settings_original = \Map<\string, \mixed> {};
 
-	private $settings_key;
+	private \string $settings_key;
 
 	protected static function config_redis(\Redis $inst) : \void {
 		$inst->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);

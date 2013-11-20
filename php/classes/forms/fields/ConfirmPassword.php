@@ -8,9 +8,9 @@ class :bb:form:confirm-password extends :bb:form:field {
 		string firstLabel,
 		string secondLabel;
 
-	protected $type = 'password';
+	protected string $type = 'password';
 
-	protected $skipTransfer = Set<string> {'name', 'label'};
+	protected Set<string> $skipTransfer = Set<string> {'name', 'label'};
 
 	protected function buildField() : :div {
 		$first = <bb:form:password name={$this->getAttribute('name') . '[0]'} label={$this->getAttribute('firstLabel')} id={$this->getID()} class="first" />;

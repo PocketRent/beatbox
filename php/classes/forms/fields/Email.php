@@ -3,7 +3,7 @@
 class :bb:form:email extends :bb:form:field {
 	attribute :input;
 
-	protected $type = 'email';
+	protected string $type = 'email';
 
 	public function validate() : array {
 		$value = $this->getValue();

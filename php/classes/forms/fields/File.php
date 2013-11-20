@@ -5,7 +5,7 @@ class :bb:form:file extends :bb:form:field {
 		:input,
 		array value;
 
-	protected $type = 'file';
+	protected string $type = 'file';
 
 	public function validate() : array {
 		$value = $this->getAttribute('value');

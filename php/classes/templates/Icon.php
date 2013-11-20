@@ -3,7 +3,7 @@
 class :bb:icon extends :bb:base {
 	attribute :img;
 
-	protected $skipTransfer = Set<string> {'src'};
+	protected Set<string> $skipTransfer = Set<string> {'src'};
 
 	protected function compose() : :x:element {
 		$src = $this->getAttribute('src');
@@ -116,7 +116,7 @@ class :bb:icon extends :bb:base {
 
 //TODO: Implement thumbnails
 class :bb:thumbnail extends :bb:icon {
-	private $asset = null;
+	private ?beatbox\Asset $asset = null;
 
 	public function setAsset(\beatbox\Asset $asset) : void {
 		$this->asset = $asset;

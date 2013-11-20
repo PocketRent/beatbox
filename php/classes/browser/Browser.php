@@ -4,7 +4,6 @@ namespace beatbox;
 
 class Browser {
 
-
 	public static function device_type(\bool $long=false) : \mixed {
 		if ($long) {
 			return self::info('device_type');

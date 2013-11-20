@@ -1,7 +1,7 @@
 <?hh
 
 class :bb:form:dropdown extends :bb:form:field {
-	protected $type = 'dropdown';
+	protected string $type = 'dropdown';
 
 	attribute
 		:select,

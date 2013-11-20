@@ -1,3 +1,0 @@
-<?hh
-
-namespace beatbox\cache;

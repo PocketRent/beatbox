@@ -3,7 +3,7 @@
 class :bb:form:radio extends :bb:form:field {
 	attribute :input;
 
-	protected $type = 'radio';
+	protected string $type = 'radio';
 
 	public function setValue(mixed $value) : :bb:form:radio {
 		$v = $this->getAttribute('value');

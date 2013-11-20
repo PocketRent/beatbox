@@ -3,11 +3,11 @@
 namespace beatbox\orm;
 
 abstract class Result {
-	protected $result = null;
+	protected \resource $result = null;
 
-	private $tag = null;
-	private $oid = 0;
-	protected $count = -1;
+	private \string $tag = null;
+	private \int $oid = 0;
+	protected \int $count = -1;
 
 	public static function from_raw_result(\resource $res) : Result {
 		// Log the command tag, this contains enough information for simple
@@ -76,7 +76,7 @@ abstract class Result {
 }
 
 class ModifyResult extends Result {
-	private $num_rows = -1;
+	private \int $num_rows = -1;
 
 	public function numRows() : \int {
 		$this->getTag();
@@ -87,9 +87,9 @@ class ModifyResult extends Result {
 
 class QueryResult extends Result implements \IteratorAggregate {
 
-	private $num_rows = -1;
+	private \int $num_rows = -1;
 
-	private $rows = \Vector {};
+	private \Vector $rows = \Vector {};
 
 	public function __construct(\resource $result) {
 		parent::__construct($result);
@@ -142,7 +142,7 @@ class QueryResult extends Result implements \IteratorAggregate {
 class ResultIterable implements \Iterable {
 	use \LazyIterable;
 
-	private $result = null;
+	private QueryResult $result = null;
 
 	public function __construct(QueryResult $result) {
 		$this->result = $result;
@@ -154,11 +154,11 @@ class ResultIterable implements \Iterable {
 }
 
 class ResultIterator implements \Iterator {
-	private $result;
-	private $rows;
-	private $num_rows;
+	private \resource $result;
+	private \Vector $rows;
+	private \int $num_rows;
 
-	private $cur_idx = 0;
+	private \int $cur_idx = 0;
 
 	public function __construct(\resource $result, \Vector $rows, \int $num_rows) {
 		$this->result = $result;

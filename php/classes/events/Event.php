@@ -5,8 +5,8 @@ namespace beatbox;
 use Map, Vector;
 
 class Event {
-	protected static $exact_listeners = Map <\string, Vector <callable>> {};
-	protected static $prefix_listeners = Map <\string, Vector <callable>> {};
+	protected static Map<\string, Vector<\callable>> $exact_listeners = Map <\string, Vector <\callable>> {};
+	protected static Map<\string, Vector<\callable>> $prefix_listeners = Map <\string, Vector <\callable>> {};
 
 	protected $name;
 	protected $args;
@@ -20,13 +20,13 @@ class Event {
 	public static function attach_listener(\callable $callback, \string $name, \bool $prefix = false) {
 		if($prefix) {
 			if(!isset(self::$prefix_listeners[$name])) {
-				self::$prefix_listeners[$name] = Vector<callable> {$callback};
+				self::$prefix_listeners[$name] = Vector<\callable> {$callback};
 			} else {
 				self::$prefix_listeners[$name][] = $callback;
 			}
 		} else {
 			if(!isset(self::$exact_listeners[$name])) {
-				self::$exact_listeners[$name] = Vector<callable> {$callback};
+				self::$exact_listeners[$name] = Vector<\callable> {$callback};
 			} else {
 				self::$exact_listeners[$name][] = $callback;
 			}
@@ -84,7 +84,7 @@ class Event {
 	}
 
 	public static function reset() {
-		self::$exact_listeners = Map <\string, Vector <callable>> {};
-		self::$prefix_listeners = Map <\string, Vector <callable>> {};
+		self::$exact_listeners = Map <\string, Vector <\callable>> {};
+		self::$prefix_listeners = Map <\string, Vector <\callable>> {};
 	}
 }

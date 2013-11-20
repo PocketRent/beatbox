@@ -5,13 +5,13 @@ abstract class :bb:form:field extends :bb:base {
 		string label,
 		integer minlength;
 
-	protected $type;
+	protected string $type;
 
-	private static $rangeVal = Set<string> {'date', 'number'};
+	private static Set<string> $rangeVal = Set<string> {'date', 'number'};
 
-	private static $lenVal = Set<string> {'text', 'email', 'password', 'textarea'};
+	private static Set<string> $lenVal = Set<string> {'text', 'email', 'password', 'textarea'};
 
-	private static $patternVal = Set<string> {'text', 'email', 'password'};
+	private static Set<string> $patternVal = Set<string> {'text', 'email', 'password'};
 
 	protected $valid = true;
 	protected $error;

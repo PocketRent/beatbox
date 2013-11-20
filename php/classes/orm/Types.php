@@ -17,7 +17,7 @@ class DateTimeType extends \DateTime implements Type {
 		return $date_type->setTimezone($date->getTimezone());
 	}
 
-	private $infinity = 0;
+	private \int $infinity = 0;
 
 	/**
 	 * Construct a new DateTimeType, doesn't take a timezone like

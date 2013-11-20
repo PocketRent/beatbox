@@ -45,7 +45,7 @@ class :bb:tab extends :bb:base {
 		string title @required,
 		string icon;
 
-	protected $skipTransfer = Set<string> {'title'};
+	protected Set<string> $skipTransfer = Set<string> {'title'};
 
 	protected function compose() : :div {
 		return <div class="tab hide" id={$this->getID()}>

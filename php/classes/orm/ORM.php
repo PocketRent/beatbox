@@ -3,20 +3,20 @@
 namespace beatbox\orm;
 
 class ORM implements \IteratorAggregate, \Countable {
-	private $data_class;
-	protected $table;
-	protected $conn;
+	private \string $data_class;
+	protected \string $table;
+	protected \resource $conn;
 
-	private $valid_fields;
+	private \Set<\string> $valid_fields;
 
-	private $conds = \Vector {};
-	private $sorts = \Vector {};
-	private $joins = \Vector {};
-	private $limit = -1;
-	private $offset = -1;
-	private $from = null;
+	private \Vector $conds = \Vector {};
+	private \Vector $sorts = \Vector {};
+	private \Vector $joins = \Vector {};
+	private \int $limit = -1;
+	private \int $offset = -1;
+	private ?\string $from = null;
 
-	private $result = null;
+	private Result $result = null;
 	/**
 	 * Create an ORM-instance for getting this class
 	 */
@@ -330,9 +330,9 @@ class ORM implements \IteratorAggregate, \Countable {
 
 class AggregateORM extends ORM {
 
-	private $extra_fields = \Set {};
-	private $group_bys = \Vector {};
-	private $having = \Vector {};
+	private \Set $extra_fields = \Set {};
+	private \Vector $group_bys = \Vector {};
+	private \Vector $having = \Vector {};
 
 	/**
 	 * Adds a field to select from the database, use $force to

@@ -45,7 +45,7 @@ function doGenerate(Vector<string> $args) : void {
 	$iter = $args->getIterator();
 	$iter->rewind();
 
-	$getNext = function($opt) use ($iter) {
+	$getNext = function(string $opt) : string use ($iter) {
 		$iter->next();
 		if (!$iter->valid()) command_fail("Expected value for $opt");
 		return $iter->current();
@@ -118,10 +118,10 @@ function doGenerate(Vector<string> $args) : void {
 
 class ExcludePattern {
 
-	public $table = null;
-	public $columns = Vector<string> {};
+	public ?string $table = null;
+	public Vector<string> $columns = Vector<string> {};
 
-	public $src;
+	public string $src;
 
 	public function __construct(string $pat) {
 		$this->src = trim($pat);
@@ -211,25 +211,25 @@ class PGType {
 	const TCAT_BITSTRING    = 'V';
 	const TCAT_UNKNOWN      = 'X';
 
-	public $name;
-	public $oid;
-	public $delim = ',';
+	public string $name;
+	public int $oid;
+	public string $delim = ',';
 
-	public $type;
-	public $description = "";
+	public string $type;
+	public string $description = "";
 
-	public $type_cat = 'X';
-	public $type_pref = false;
+	public string $type_cat = 'X';
+	public bool $type_pref = false;
 
-	public $sub_type = null;
+	public ?int $sub_type = null;
 
-	public $elements = null;
+	public ?Collection $elements = null;
 
-	public $rel_id = 0;
+	public int $rel_id = 0;
 
-	public $type_dict = null;
+	public ?TypeDict $type_dict = null;
 
-	public $written = false;
+	public bool $written = false;
 
 	public function __construct($row, $tydict) {
 		$this->oid = (int)$row['oid'];
@@ -346,7 +346,7 @@ class PGType {
 		return $this->type == PGType::T_COMPOSITE && !$this->written;
 	}
 
-	public function writeTo(CodeFile $file) {
+	public function writeTo(CodeFile $file) : void {
 		if($this->type_cat == PGType::TCAT_ARRAY || $this->type == PGType::T_DOMAIN) {
 			return $this->type_dict->typeByOid($this->sub_type)->writeTo($file);
 		}
@@ -469,7 +469,7 @@ class PGType {
 		return $this->name;
 	}
 
-	public static function categoryName($cat) {
+	public static function categoryName($cat) : string {
 		switch ($cat) {
 		case PGType::TCAT_ARRAY:
 			return 'array';
@@ -507,9 +507,9 @@ class PGType {
 
 class TypeDict {
 
-	private $types = Vector {};
-	private $oid_map = Map {};
-	private $name_map = Map {};
+	private Vector $types = Vector {};
+	private Map $oid_map = Map {};
+	private Map $name_map = Map {};
 
 
 	public function __construct($conn) {
@@ -558,29 +558,29 @@ class TypeDict {
 
 class Table {
 
-	public $oid;
-	public $name;
-	public $columns = StableMap {};
+	public int $oid;
+	public string $name;
+	public StableMap $columns = StableMap {};
 
-	public $description = null;
-	public $constraints = Map {};
+	public ?string $description = null;
+	public Map $constraints = Map {};
 
-	public $has_ones = Map {};
-	public $has_manys = Map {};
+	public Map $has_ones = Map {};
+	public Map $has_manys = Map {};
 
-	private $cols_sorted = false;
+	private bool $cols_sorted = false;
 
 	public function __construct(string $name, int $oid) {
 		$this->name = $name;
 		$this->oid = $oid;
 	}
 
-	public function addColumn(array $col) {
+	public function addColumn(array $col) : void {
 		$this->columns[$col['column_name']] = new Column($col);
 		$this->cols_sorted = false;
 	}
 
-	public function loadComments($conn) {
+	public function loadComments(resource $conn) : void {
 		vprint("Loading comments for {$this->name}");
 
 		$q = pg_query_params($conn,
@@ -605,7 +605,7 @@ class Table {
 		vprint("Loaded $n comments");
 	}
 
-	public function getColumn($idx) {
+	public function getColumn(int $idx) : ?Column {
 		$this->sortColumns();
 		foreach ($this->columns as $col) {
 			if ($col->position == $idx) return $col;
@@ -613,7 +613,7 @@ class Table {
 		return null;
 	}
 
-	public function sortColumns() {
+	public function sortColumns() : void {
 		if (!$this->cols_sorted) {
 			uasort($this->columns, function (Column $a, Column $b): int {
 				if ($a->position == $b->position) return 0;
@@ -623,7 +623,7 @@ class Table {
 		}
 	}
 
-	public function setPrimaryKey($cols) {
+	public function setPrimaryKey(Traversable $cols) : void {
 		foreach($cols as $col) {
 			$this->columns[$col]->primary = true;
 		}
@@ -631,16 +631,16 @@ class Table {
 
 	public function primaryKeys(): Iterator {
 		$this->sortColumns();
-		return $this->columns->values()->filter(function ($val) {
+		return $this->columns->values()->filter(function (Column $val) : bool {
 			return $val->primary;
 		});
 	}
 
-	public function addHasOne(string $name, string $table, Vector<string> $cols) {
+	public function addHasOne(string $name, string $table, Vector<string> $cols) : void {
 		$this->has_ones[$name] = Pair { $table, $cols };
 	}
 
-	public function addHasMany(string $name, string $table, Vector<string> $cols) {
+	public function addHasMany(string $name, string $table, Vector<string> $cols) : void {
 		$this->has_manys[$name] = Pair { $table, $cols };
 	}
 
@@ -688,20 +688,20 @@ class Table {
 }
 
 class Column {
-	public $name;
+	public string $name;
 
-	public $data_type = null;
-	public $udt_name = null;
-	public $element_type = null;
+	public ?string $data_type = null;
+	public ?string $udt_name = null;
+	public ?string $element_type = null;
 
-	public $updatable;
-	public $position;
+	public bool $updatable;
+	public int $position;
 
-	public $description = null;
+	public ?string $description = null;
 
-	public $primary = false;
+	public bool $primary = false;
 
-	public $nullable = false;
+	public bool $nullable = false;
 
 	public function __construct(array $data) {
 		$this->name = $data['column_name'];
@@ -721,14 +721,14 @@ class Column {
 }
 
 class Constraint {
-	public $type;
-	public $name;
-	public $on_table; // Table this constraint is on
-	public $to_table;
+	public string $type;
+	public string $name;
+	public string $on_table; // Table this constraint is on
+	public ?string $to_table;
 
-	public $columns = Vector {};
+	public Vector $columns = Vector {};
 
-	public function __construct(string $type, string $name, string $on_table, $to_table) {
+	public function __construct(string $type, string $name, string $on_table, ?string $to_table) {
 		$this->type = $type;
 		$this->name = $name;
 		$this->on_table = $on_table;
@@ -740,17 +740,17 @@ class Constraint {
 	}
 }
 
-function load_tables($conn, string $ns, Map<string,ExcludePattern> $excludes): Vector<Table> {
+function load_tables(resource $conn, string $ns, Map<string,ExcludePattern> $excludes): Vector<Table> {
 	vprint("Reading tables...");
 
-	$ex_tables_it = $excludes->filter(function ($pat): bool {
+	$ex_tables_it = $excludes->filter(function (ExcludePattern $pat): bool {
 		return $pat->columns->count() == 0;
 	})->keys();
 
 	$ex_cols_it = new AppendIterator;
-	foreach ($excludes->filter(function($pat): bool {
+	foreach ($excludes->filter(function(ExcludePattern $pat): bool {
 		return $pat->columns->count() > 0;
-	})->map(function ($pat): VectorIterator<string> {
+	})->map(function (ExcludePattern $pat): VectorIterator<string> {
 		return $pat->columns->items();
 	}) as $it) {
 		$ex_cols_it->append($it);
@@ -820,7 +820,7 @@ function load_tables($conn, string $ns, Map<string,ExcludePattern> $excludes): V
 	return Vector::fromItems($tables->values());
 }
 
-function load_constraints($conn): Vector<Constraint> {
+function load_constraints(resource $conn): Vector<Constraint> {
 
 	vprint("Loading Column Constraints");
 	$fkc = pg_query_params($conn, "SELECT
@@ -863,7 +863,7 @@ function load_constraints($conn): Vector<Constraint> {
 	return Vector::fromItems($constraints->values());
 }
 
-function resolve_fk_constraints(Vector<Table> $tables, Vector<Constraint> $constraints) {
+function resolve_fk_constraints(Vector<Table> $tables, Vector<Constraint> $constraints) : void {
 	vprint("Resolving constraints");
 
 	foreach ($constraints as $constraint) {
@@ -887,11 +887,11 @@ function resolve_fk_constraints(Vector<Table> $tables, Vector<Constraint> $const
 
 class CodeFile {
 
-	public $path;
-	public $file = null;
+	public string $path;
+	public ?resource $file = null;
 
-	private $indent = 0;
-	private $braces = Vector {};
+	private int $indent = 0;
+	private Vector $braces = Vector {};
 
 	public function __construct(string $path) {
 		$this->path = $path;
@@ -902,20 +902,20 @@ class CodeFile {
 		}
 	}
 
-	public function writeLine(string $line="", int $indent=null) {
+	public function writeLine(string $line="", int $indent=null) : void {
 		if ($this->file == null) command_fail("Code file closed!");
 		$indent = str_repeat("\t", $indent === null ? $this->indent : (int)$indent);
 		$line = sprintf("%s%s", $indent, $line);
 		fwrite($this->file, rtrim($line)."\n");
 	}
 
-	public function startBlock(string $before="", string $brace_char='{') {
+	public function startBlock(string $before="", string $brace_char='{') : void {
 		$this->writeLine(trim($before." ".$brace_char));
 		$this->braces->append(reverse_brace($brace_char));
 		$this->indent++;
 	}
 
-	public function endBlock() {
+	public function endBlock() : void {
 		$this->indent--;
 		$end = $this->braces->pop();
 		if ($end != '') {
@@ -923,7 +923,7 @@ class CodeFile {
 		}
 	}
 
-	public function writePHPPreamble(bool $dne=true) {
+	public function writePHPPreamble(bool $dne=true) : void {
 		if ($this->file == null) command_fail("Code file closed!");
 		fwrite($this->file, "<?hh\n");
 
@@ -932,7 +932,7 @@ class CodeFile {
 		}
 	}
 
-	public function blockComment(string $comment, bool $doc=false) {
+	public function blockComment(string $comment, bool $doc=false) : void {
 		$lines = explode("\n", $comment);
 		if (count($lines) > 0) {
 			if ($doc) {
@@ -947,13 +947,13 @@ class CodeFile {
 		}
 	}
 
-	public function close() {
+	public function close() : void {
 		fclose($this->file);
 		$this->file = null;
 	}
 }
 
-function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, string $ns=null) {
+function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, string $ns=null) : void {
 	$ns = $ns ? $ns : "";
 
 	$types_file = new CodeFile($directory.'/types.php', "w");

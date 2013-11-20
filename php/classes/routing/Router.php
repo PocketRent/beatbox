@@ -5,19 +5,19 @@ namespace beatbox;
 use Map, Pair, Vector;
 
 class Router {
-	protected static $routes = Map<\string, Pair<Map<\string, \callable>, Map<\string>>> {};
+	protected static Map<\string, Pair<Map<\string, (function(array, ?\string, \Map):\mixed)>, Map<\string>>> $routes = Map<\string, Pair<Map<\string, (function(array, ?\string, \Map):\mixed)>, Map<\string>>> {};
 
-	protected static $regex_routes = Map<\string, Pair<Map<\string, \callable>, Map<\string>>> {};
+	protected static Map<\string, Pair<Map<\string, (function(array, ?\string, \Map):\mixed)>, Map<\string>>> $regex_routes = Map<\string, Pair<Map<\string, (function(array, ?\string, \Map):\mixed)>, Map<\string>>> {};
 
-	protected static $checkers = Map<\string, \callable> {};
+	protected static Map<\string, (function(\string, \Map):\bool)> $checkers = Map<\string, (function(\string, \Map):\bool)> {};
 
-	protected static $last_md = Map<\string> {};
+	protected static Map<\string> $last_md = Map<\string> {};
 
-	protected static $last_frags = Map<\string, \callable> {};
+	protected static Map<\string, (function(array, ?\string, \Map):\mixed)> $last_frags = Map<\string, (function(array, ?\string, \Map):\mixed)> {};
 
-	protected static $last_url = [];
+	protected static array $last_url = [];
 
-	protected static $last_ext = null;
+	protected static ?\string $last_ext = null;
 
 	/**
 	 * Route the url, generating the fragments

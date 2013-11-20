@@ -19,9 +19,9 @@ use HH\Traversable;
  */
 final class Connection {
 
-	private static $connection = null;
+	private static self $connection = null;
 
-	private $pg_conn = null;
+	private resource $pg_conn = null;
 
 	/**
 	 * Returns the singleton instance of Connection, creating it if necessary.
@@ -100,8 +100,8 @@ final class Connection {
 		self::$connection = $conn;
 	}
 
-	private $in_transaction = false;
-	private $savepoints = \Vector {};
+	private \bool $in_transaction = false;
+	private \Vector $savepoints = \Vector {};
 	/**
 	 * Starts an SQL transaction. If there is already a transaction in
 	 * progress, this creates a savepoint instead that can be rolled back
@@ -187,7 +187,7 @@ final class Connection {
 		return $ret;
 	}
 
-	private $_currentResultSet = null;
+	private ResultSet $_currentResultSet = null;
 	/**
 	 * Send a parameterized query to the database.
 	 *

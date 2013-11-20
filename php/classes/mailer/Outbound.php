@@ -5,11 +5,11 @@ namespace beatbox\mailer;
 class Outbound {
 	const default_from = 'PocketRent <help@pro.pocketrent.com>';
 
-	protected $to;
-	protected $subject;
-	protected $content;
-	protected $from;
-	protected $attachments = \Map<\string, \string> {};
+	protected \string $to;
+	protected \string $subject;
+	protected \string $content;
+	protected \string $from;
+	protected \Map<\string, \string> $attachments = \Map<\string, \string> {};
 
 	/**
 	 * Construct an outbound email

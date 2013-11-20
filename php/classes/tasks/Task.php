@@ -13,11 +13,11 @@ class Task implements \Serializable {
 
 	const QUEUE_NAME = 'bb:queue';
 
-	protected $callback;
+	protected \string $callback;
 
-	protected $arguments;
+	protected \string $arguments;
 
-	protected $policy = self::CON_ALWAYS;
+	protected \int $policy = self::CON_ALWAYS;
 
 	protected static function config_redis(R $r) : \void {
 		$r->setOption(R::OPT_SERIALIZER, R::SERIALIZER_NONE);

@@ -57,7 +57,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		return $this;
 	}
 
-	protected function getFields(:x:base $base = null) : Generator {
+	protected function getFields(:x:base $base = null) : Continuation {
 		if(!$base) {
 			$base = $this;
 		}
@@ -100,7 +100,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		return $data;
 	}
 
-	protected static $load_count;
+	protected static array $load_count;
 
 	protected static function get_value(mixed $data, string $name, string $base) : mixed {
 		if(!$name) {

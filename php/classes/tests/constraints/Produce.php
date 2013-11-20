@@ -9,9 +9,9 @@ use HH\Traversable;
  */
 class Produce extends \PHPUnit_Framework_Constraint {
 
-	private $expected;
-	private $overrun = false;
-	private $underrun = false;
+	private array $expected;
+	private \bool $overrun = false;
+	private \bool $underrun = false;
 
 	/**
 	 * $expected is an array of the expected values from

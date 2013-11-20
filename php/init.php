@@ -65,7 +65,7 @@ function register_autoload_map() : void {
 	// using the spl autoloader is prefered. In production, fb_autoload_map is
 	// faster, so we use that.
 	if (in_dev()) {
-		spl_autoload_register(function($name) use ($map) {
+		spl_autoload_register(function(string $name):void use ($map) {
 			$canon_name = strtolower($name);
 			if (isset($map['class'][$canon_name])) {
 				require BASE_DIR.'/'.$map['class'][$canon_name];

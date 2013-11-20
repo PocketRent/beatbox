@@ -7,21 +7,21 @@ class Asset {
 	/**
 	 * The unique ID for this asset
 	 */
-	private $id = null;
+	private ?\mixed $id = null;
 	/**
 	 * The name of this asset (normally the original
 	 * filename)
 	 */
-	private $name;
+	private \string $name;
 	/**
 	 * The mime type of this asset
 	 */
-	private $mime;
+	private \string $mime;
 
 	/**
 	 * The source path for this file
 	 */
-	private $source_path;
+	private \string $source_path;
 
 	/**
 	 * Store a file in the assets store
@@ -121,7 +121,7 @@ class Asset {
 	 * Returns the unique ID for the Asset.
 	 * If there is no ID, this returns null.
 	 */
-	public function id() {
+	public function id() : \mixed {
 		return $this->id;
 	}
 

@@ -135,7 +135,7 @@
 				this.titleBar.insertBefore(title, firstChild);
 			}
 		} else {
-			this.titleBar.appendChild(title);
+			this.titleBar.appendChild(titleText);
 		}
 	}
 
@@ -442,6 +442,10 @@
 			this.root.style.margin = "auto";
 		}
 	}
+
+	Popup.currentPopup = function() {
+		return currentPopup;
+	};
 
 	window.Popup = Popup;
 	window.Dialog = Dialog;

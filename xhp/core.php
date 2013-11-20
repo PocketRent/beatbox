@@ -75,28 +75,18 @@ abstract class :x:composable-element extends :x:base {
   private static $specialAttributes = array('data' => true, 'aria' => true);
 
   // Private constants indicating the declared types of attributes
-  const TYPE_STRING = 1;
-  const TYPE_BOOL   = 2;
-  const TYPE_NUMBER = 3;
-  const TYPE_ARRAY  = 4;
-  const TYPE_OBJECT = 5;
-  const TYPE_VAR    = 6;
-  const TYPE_ENUM   = 7;
-  const TYPE_FLOAT  = 8;
+  const TYPE_STRING   = 1;
+  const TYPE_BOOL     = 2;
+  const TYPE_NUMBER   = 3;
+  const TYPE_ARRAY    = 4;
+  const TYPE_OBJECT   = 5;
+  const TYPE_VAR      = 6;
+  const TYPE_ENUM     = 7;
+  const TYPE_FLOAT    = 8;
+  const TYPE_CALLABLE = 9;
 
   protected function init() {}
 
-  protected function __clone() {
-    $children = $this->children;
-    $this->replaceChildren([]);
-    foreach($children as $c) {
-      if(is_object($c)) {
-        $this->appendChild(clone $c);
-      } else {
-        $this->appendChild($c);
-      }
-    }
-  }
   /**
    * A new :x:composable-element is instantiated for every literal tag
    * expression in the script.
@@ -111,6 +101,10 @@ abstract class :x:composable-element extends :x:base {
    * @param $children      list of children
    */
   final public function __construct($attributes, $children) {
+    foreach ($children as $child) {
+      $this->appendChild($child);
+    }
+    $this->setAttributes($attributes);
     if (:x:base::$ENABLE_VALIDATION) {
       // There is some cost to having defaulted unused arguments on a function
       // so we leave these out and get them with func_get_args().
@@ -125,10 +119,6 @@ abstract class :x:composable-element extends :x:base {
           'validation errors will be painful to debug at best.';
       }
     }
-    foreach ($children as $child) {
-      $this->appendChild($child);
-    }
-    $this->setAttributes($attributes);
     $this->init();
   }
 
@@ -377,13 +367,12 @@ abstract class :x:composable-element extends :x:base {
    */
   final public function removeAttribute($attr) {
     if (!self::isAttributeSpecial($attr)) {
-      $value = null;
-      $this->validateAttributeValue($attr, $value);
+      $this->validateAttributeValue($attr, $value = null);
     }
     unset($this->attributes[$attr]);
     return $this;
   }
-
+  
   /**
    * Sets an attribute in this element's attribute store. Always foregoes
    * validation.
@@ -499,9 +488,63 @@ abstract class :x:composable-element extends :x:base {
         }
         return;
 
+      case self::TYPE_CALLABLE:
+        if (!is_callable($val)) {
+          throw new XHPInvalidAttributeException($this, 'callable', $attr, $val);
+        }
+        return;
+
       case self::TYPE_ARRAY:
         if (!is_array($val)) {
           throw new XHPInvalidAttributeException($this, 'array', $attr, $val);
+        }
+        if ($decl[$attr][1]) {
+          if ($decl[$attr][1][0]) {
+            if ($decl[$attr][1][0] == self::TYPE_STRING) {
+              $type = 'string';
+              $func = 'is_string';
+            } else {
+              $type = 'int';
+              $func = 'is_int';
+            }
+            if (count($val) != count(array_filter(array_keys($val), $func))) {
+              $bad = $type == 'string' ? 'int' : 'string';
+              throw new XHPInvalidArrayKeyAttributeException($this, $type, $attr, $bad);
+            }
+          }
+          switch ($decl[$attr][1][1]) {
+            case self::TYPE_STRING:
+              $type = 'string';
+              $func = 'is_string';
+              break;
+            case self::TYPE_BOOL:
+              $type = 'bool';
+              $func = 'is_bool';
+              break;
+            case self::TYPE_NUMBER:
+              $type = 'int';
+              $func = 'is_int';
+              break;
+            case self::TYPE_FLOAT:
+              $type = 'float';
+              $func = 'is_numeric';
+              break;
+            case self::TYPE_ARRAY:
+              $type = 'array';
+              $func = 'is_array';
+              break;
+            case self::TYPE_OBJECT:
+              $type = $decl[$attr][1][2];
+              $func = function($item) use ($type) {
+                return $item instanceof $type;
+              };
+              break;
+          }
+          $filtered = array_filter($val, $func);
+          if (count($val) != count($filtered)) {
+            $bad = array_diff($val, $filtered);
+            throw new XHPInvalidArrayAttributeException($this, $type, $attr, reset($bad));
+          }
         }
         return;
 
@@ -719,6 +762,11 @@ abstract class :x:composable-element extends :x:base {
 
   final public function categoryOf($c) {
     $categories = $this->__xhpCategoryDeclaration();
+    if (isset($categories[$c])) {
+      return true;
+    }
+    // XHP parses the category string
+    $c = str_replace(array(':', '-'), array('__', '_'), $c);
     return isset($categories[$c]);
   }
 }
@@ -767,8 +815,6 @@ abstract class :x:primitive extends :x:composable-element {
  * of markup.
  */
 abstract class :x:element extends :x:composable-element {
-  protected abstract function render();
-
   final public function __toString() {
     $that = $this;
 
@@ -849,6 +895,31 @@ class XHPCoreRenderException extends XHPException {
 }
 
 class XHPRenderArrayException extends XHPException {
+}
+
+class XHPInvalidArrayAttributeException extends XHPException {
+  public function __construct($that, $type, $attr, $val) {
+    if (is_object($val)) {
+      $val_type = get_class($val);
+    } else {
+      $val_type = gettype($val);
+    }
+    parent::__construct(
+      "Invalid attribute `$attr` of type array<`$val_type`> supplied to element `".
+      :x:base::class2element(get_class($that))."`, expected array<`$type`>.\n\n".
+      $that->source
+    );
+  }
+}
+
+class XHPInvalidArrayKeyAttributeException extends XHPException {
+  public function __construct($that, $type, $attr, $val_type) {
+    parent::__construct(
+      "Invalid key in attribute `$attr` of type array<$val_type => ?> supplied to element `".
+      :x:base::class2element(get_class($that))."`, expected array<$type => ?>.\n\n".
+      $that->source
+    );
+  }
 }
 
 class XHPAttributeNotSupportedException extends XHPException {

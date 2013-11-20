@@ -23,7 +23,7 @@ abstract class :bb:base extends :x:element {
 
 	public function requireUniqueID() : string {
 		if(!($id = $this->getAttribute('id'))) {
-			$this->setAttribute('id', $id = 'pr_' . (<div />)->getID());
+			$this->setAttribute('id', $id = 'bb_' . (<div />)->getID());
 		}
 		return $id;
 	}

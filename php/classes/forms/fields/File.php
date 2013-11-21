@@ -50,6 +50,7 @@ class :bb:form:file extends :bb:form:field {
 			}
 			// get mime type
 			$mime = get_mime_type($file['tmp_name']);
+			$mime = explode(';', $mime)[0];
 			if(in_array($mime, $allowed)) {
 				return;
 			}
@@ -59,7 +60,7 @@ class :bb:form:file extends :bb:form:field {
 				return;
 			}
 			$this->valid = false;
-			$this->error = 'Files of that type are not allowed.';
+			$this->error = "Files of type '$mime' are not allowed.";
 		}
 	}
 

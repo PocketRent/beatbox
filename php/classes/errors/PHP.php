@@ -126,8 +126,7 @@ class PHP {
 			case 'double':
 				return $arg;
 			default:
-				var_dump(gettype($arg));
-				return $arg;
+				return (string)$arg;
 		}
 	}
 

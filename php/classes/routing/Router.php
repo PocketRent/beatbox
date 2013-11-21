@@ -296,6 +296,12 @@ class Router {
 
 	protected static function render_fragment(\string $fragName, \callable $frag, array $url, \string $extension, Map $md) : \mixed {
 		$val = call_user_func($frag, $url, $extension, $md);
+		// If the response from the fragment is awaitable, then block on it here. This is a nice
+		// convenience for fragment writers, meaning they can write fragments as async functions
+		// when that is easier to work with.
+		if ($val instanceof \Awaitable) {
+			$val = $val->getWaithandle()->join();
+		}
 		if($val && $val instanceof \beatbox\FragmentCallback) {
 			return $val->forFragment($url, $fragName);
 		}

@@ -68,12 +68,12 @@ class Asset {
 	 *
 	 * @return Asset or null, if it doesn't exist
 	 */
-	public static function load(\mixed $id) : ?Asset {
+	public static async function load(\mixed $id) : ?Asset {
 		$conn = orm\Connection::get();
 
 		$eid = $conn->escapeValue($id);
 		$query = "SELECT * FROM \"Asset\" WHERE \"ID\"=$eid LIMIT 1";
-		$res = $conn->queryBlock($query);
+		$res = await $conn->query($query);
 		if ($res->numRows() == 0) {
 			send_event("asset::db-miss", $id);
 			return null;
@@ -172,14 +172,14 @@ class Asset {
 				(\"Name\", \"Type\", \"SourcePath\") VALUES
 				($name, $type, $source_path) RETURNING \"ID\"";
 
-			$res = $conn->queryBlock($query);
+			$res = $conn->query($query)->join();
 			assert($res->numRows() == 1);
 			$this->id = $res->nthRow(0)['ID'];
 		} else {
 			$id = $conn->escapeValue($this->id);
 			$query = "UPDATE \"Asset\" SET \"Name\"=$name, \"Type\"=$type,
 				\"SourcePath\"=$source_path WHERE \"ID\"=$id";
-			$res = $conn->queryBlock($query);
+			$res = $conn->query($query)->join();
 			assert($res->numRows() == 1);
 		}
 	}

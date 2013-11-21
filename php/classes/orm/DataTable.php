@@ -140,15 +140,15 @@ abstract class DataTable {
 	 * current values of the primary key columns for the WHERE clause
 	 * in the UPDATE query.
 	 */
-	public function write(\bool $force=false) : \bool {
-		return $this->writeWithConn(Connection::get(), $force);
+	public async function write(\bool $force=false) : \bool {
+		return await $this->writeWithConn(Connection::get(), $force);
 	}
 
 	/**
 	 * Write this object to the database using the given connection,
 	 * $force has the same meaning as for write
 	 */
-	public function writeWithConn(Connection $conn, \bool $force=false) : \bool {
+	public async function writeWithConn(Connection $conn, \bool $force=false) : \bool {
 		if ($conn == null)
 			throw new \InvalidArgumentException("Connection object is null");
 		if ($this->deleted)
@@ -204,7 +204,7 @@ abstract class DataTable {
 				pr_join(' AND ', $pks).'RETURNING *;';
 		}
 
-		$result = $conn->queryBlock($query);
+		$result = await $conn->query($query);
 		assert($result instanceof QueryResult && "Object write should always return rows");
 		assert($result->numRows() == 1 && "Object write should only return one row");
 
@@ -221,13 +221,13 @@ abstract class DataTable {
 	 * The object shouldn't be used after deletion and will cause exceptions
 	 * to be thrown if this happens.
 	 */
-	public function delete() : \void {
+	public async function delete() : \void {
 		if ($this->deleted)
 			throw new \DeletedObjectException('delete', get_called_class());
-		$this->deleteWithConn(Connection::get());
+		return await $this->deleteWithConn(Connection::get());
 	}
 
-	public function deleteWithConn(Connection $conn) : \void {
+	public async function deleteWithConn(Connection $conn) : \void {
 		if ($this->deleted)
 			throw new \DeletedObjectException('delete', get_called_class());
 		$this->deleted = true;
@@ -250,7 +250,7 @@ abstract class DataTable {
 
 		$query = "DELETE FROM $table WHERE ".pr_join(' AND ', $pks).';';
 
-		$result = $conn->queryBlock($query);
+		$result = await $conn->query($query);
 		assert($result instanceof ModifyResult);
 		assert($result->isDelete());
 		/*

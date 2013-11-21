@@ -167,7 +167,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	 */
 	public function count(\string $field = '*', \string $as = null) : AggregateORM {
 		if(func_num_args() == 0) {
-			return $this->agg()->count('*', 'C')->getNth(0)['C'];
+			return $this->agg()->count('*', 'C')->getNth(0)->join()['C'];
 		}
 		$agg = $this->agg();
 		return $agg->count($field, $as);
@@ -209,7 +209,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	 * Returns a lazy iterator over the result set
 	 */
 	public function fetch() : \Iterable {
-		$result = $this->getResult();
+		$result = $this->getResult()->join();
 		$cls = $this->data_class;
 		// Making the objects pretty much just consists of throwing
 		// each row at the class' `load` static method, so there's no
@@ -293,8 +293,8 @@ class ORM implements \IteratorAggregate, \Countable {
 	/**
 	 * Gets the nth result from the results, starting at 0
 	 */
-	public function getNth(\int $n) : DataTable {
-		$result = $this->getResult();
+	public async function getNth(\int $n) : DataTable {
+		$result = await $this->getResult();
 		if ($n < $result->numRows()) {
 			$cls = $this->data_class;
 			$row = $result->nthRow($n);
@@ -311,10 +311,10 @@ class ORM implements \IteratorAggregate, \Countable {
 		$this->joins = clone $this->joins;
 	}
 
-	protected function getResult() : Result {
+	protected async function getResult() : Result {
 		if ($this->result === null) {
 			$q = $this->getQueryString();
-			$this->result = $this->conn->queryBlock($q);
+			$this->result = await $this->conn->query($q);
 			assert($this->result instanceof QueryResult);
 		}
 
@@ -361,7 +361,7 @@ class AggregateORM extends ORM {
 		$this->validateField($field);
 
 		if (!$as) {
-			$as = 'max_$field';
+			$as = "max_$field";
 		}
 
 		$table = $this->conn->escapeIdentifier($this->table);
@@ -380,13 +380,13 @@ class AggregateORM extends ORM {
 	/**
 	 * Adds a MAX field over the given field with the provided alias
 	 *
-	 * If no alias is given, then it defaults to 'max_<FieldName>'
+	 * If no alias is given, then it defaults to 'min_<FieldName>'
 	 */
 	public function min(\string $field, \string $as = null) : AggregateORM {
 		$this->validateField($field);
 
 		if (!$as) {
-			$as = 'count_$field';
+			$as = "min_$field";
 		}
 
 		$table = $this->conn->escapeIdentifier($this->table);
@@ -414,7 +414,7 @@ class AggregateORM extends ORM {
 			$this->validateField($field);
 
 			if (!$as) {
-				$as = 'count_$field';
+				$as = "count_$field";
 			}
 
 			$table = $this->conn->escapeIdentifier($this->table);
@@ -492,7 +492,7 @@ class AggregateORM extends ORM {
 	 * the rows as associative arrays, not objects.
 	 */
 	public function fetch() : \Iterable {
-		return $this->getResult()->rows();
+		return $this->getResult()->join()->rows();
 	}
 
 	/**
@@ -511,8 +511,8 @@ class AggregateORM extends ORM {
 	/**
 	 * Returns the nth row or null
 	 */
-	public function getNth(\int $n) : ?array {
-		$result = $this->getResult();
+	public async function getNth(\int $n) : ?array {
+		$result = await $this->getResult();
 		if ($n < $result->numRows()) {
 			return $result->nthRow($n);
 		} else {

@@ -70,7 +70,9 @@ abstract class :x:base {
 abstract class :x:composable-element extends :x:base {
   private
     $attributes = array(),
-    $children = array();
+	$children = array();
+
+  public $source = "";
 
   private static $specialAttributes = array('data' => true, 'aria' => true);
 
@@ -104,7 +106,6 @@ abstract class :x:composable-element extends :x:base {
     foreach ($children as $child) {
       $this->appendChild($child);
     }
-    $this->setAttributes($attributes);
     if (:x:base::$ENABLE_VALIDATION) {
       // There is some cost to having defaulted unused arguments on a function
       // so we leave these out and get them with func_get_args().
@@ -119,6 +120,7 @@ abstract class :x:composable-element extends :x:base {
           'validation errors will be painful to debug at best.';
       }
     }
+    $this->setAttributes($attributes);
     $this->init();
   }
 
@@ -367,7 +369,8 @@ abstract class :x:composable-element extends :x:base {
    */
   final public function removeAttribute($attr) {
     if (!self::isAttributeSpecial($attr)) {
-      $this->validateAttributeValue($attr, $value = null);
+		$value = null;
+		$this->validateAttributeValue($attr, $value);
     }
     unset($this->attributes[$attr]);
     return $this;

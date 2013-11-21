@@ -85,8 +85,8 @@ final class Connection {
 
 		// Set some connection options, the timezone is set to the local default one
 		// DateStyle should be 'ISO'. This makes dealing with the date output easier
-		$this->queryBlock("SET timezone=".pg_escape_literal($conn, date_default_timezone_get()));
-		$this->queryBlock("SET datestyle='ISO'");
+		$this->query("SET timezone=".pg_escape_literal($conn, date_default_timezone_get()))->join();
+		$this->query("SET datestyle='ISO'")->join();
 
 		// This is the first connection, so make it the default one.
 		if (self::$connection === null)
@@ -112,9 +112,9 @@ final class Connection {
 			$savepoint = "__savepoint_".($this->savepoints->count()+1);
 			$this->savepoints->add($savepoint);
 			$sp = $this->escapeIdentifier($savepoint);
-			$this->queryBlock('SAVEPOINT '.$sp);
+			$this->query('SAVEPOINT '.$sp)->join();
 		} else {
-			$this->queryBlock('BEGIN');
+			$this->query('BEGIN')->join();
 			$this->in_transaction = true;
 		}
 	}
@@ -125,7 +125,7 @@ final class Connection {
 	 */
 	public function setTransactionMode(\string $mode) : \void {
 		if ($this->in_transaction) {
-			$this->queryBlock('SET TRANSACTION '.$mode);
+			$this->query('SET TRANSACTION '.$mode)->join();
 		}
 	}
 
@@ -143,9 +143,9 @@ final class Connection {
 			if ($this->savepoints->count() > 0) {
 				$savepoint = $this->savepoints->pop();
 				$sp = $this->escapeIdentifier($savepoint);
-				$this->queryBlock('RELEASE SAVEPOINT '.$sp);
+				$this->query('RELEASE SAVEPOINT '.$sp)->join();
 			} else {
-				$this->queryBlock('COMMIT');
+				$this->query('COMMIT')->join();
 				$this->in_transaction = false;
 			}
 		}
@@ -161,9 +161,9 @@ final class Connection {
 			if ($this->savepoints->count() > 0) {
 				$savepoint = $this->savepoints->pop();
 				$sp = $this->escapeIdentifier($savepoint);
-				$this->queryBlock('ROLLBACK TO SAVEPOINT '.$sp);
+				$this->query('ROLLBACK TO SAVEPOINT '.$sp)->join();
 			} else {
-				$this->queryBlock('ROLLBACK');
+				$this->query('ROLLBACK')->join();
 				$this->in_transaction = false;
 			}
 		}
@@ -187,28 +187,87 @@ final class Connection {
 		return $ret;
 	}
 
-	private ResultSet $_currentResultSet = null;
+	private \bool $_sentRequest = false;
+	private ?\resource $async_req = null;
 	/**
-	 * Send a parameterized query to the database.
+	 * Send a single parameterized query to the database.
 	 *
-	 * This method does an asynchrounous query to the database. Retrieving
-	 * results from the returned ResultSet will block until the results are
-	 * ready.
+	 * This method returns an awaitable handle that returns a result.
+	 * If multiple queries are supplied in $query, only the Result for the
+	 * last one will be returned.
+	 *
+	 * NOTE: If multiple queries are sent in parallel, the first query will be
+	 * serialized and the remaining queries will block. It is recommended to only
+	 * send one query at a time.
+	 *
+	 * To send multiple queries use the multiQuery method
 	 */
-	public function query(\string $query, array $params=[]) : ResultSet {
+	public async function query(\string $query, array $params=[]) : Awaitable {
 		if ($this->pg_conn == null)
 			throw new DatabaseException("Database Connection closed");
-		/*
-		 * If there is already a result set waiting, tell it to
-		 * load the rest of the results, this means the link between
-		 * the result set and retrieved results is preserved.
-		 * `pg_send_query_params` blocks if there is waiting input
-		 * anyway (and throws a warning), so this just short-circuits
-		 * that.
-		 */
-		if ($this->_currentResultSet) {
-			$this->_currentResultSet->loadRest();
-			$this->_currentResultSet = null;
+
+		if ($this->_sentRequest) {
+			if ($this->_sentRequest) {
+				while ($test_res = pg_get_result($this->pg_conn)) {
+					$this->async_req = $test_res;
+				}
+			}
+
+			if (count($params) == 0) {
+				$result = @pg_query($this->pg_conn, $query);
+			} else {
+				$result = @pg_query_params($this->pg_conn, $query, $params);
+			}
+
+			if (!$result)
+				throw new ConnectionException($this, "Failed querying database");
+
+			send_event("db::query", $query, $params);
+
+			return Result::from_raw_result($result);
+		} else {
+			if (count($params) == 0) {
+				if (!pg_send_query($this->pg_conn, $query)) {
+					throw new ConnectionException($this, "Failed sending query");
+				}
+			} else {
+				if (!pg_send_query_params($this->pg_conn, $query, $params)) {
+					throw new ConnectionException($this, "Failed sending query");
+				}
+			}
+
+			send_event("db::query", $query, $params);
+
+			$this->_sentRequest = true;
+			await \RescheduleWaitHandle::create(\RescheduleWaitHandle::QUEUE_DEFAULT, 5);
+			$this->_sentRequest = false;
+
+			$result = $this->async_req;
+			$this->async_req = null;
+			while ($test_res = pg_get_result($this->pg_conn)) {
+				$result = $test_res;
+			}
+
+			if (!$result)
+				throw new ConnectionException($this, "Failed querying database, no results found");
+
+			return Result::from_raw_result($result);
+		}
+	}
+
+	/**
+	 * Sends multiple queries to the database returning an awaitable handle.
+	 *
+	 * The handle will return a vector of Results when joined.
+	 *
+	 * NOTE: This function cannot be used to send queries in parallel.
+	 */
+	public async function multiQuery(\string $query, array $params=[]) : Awaitable {
+		if ($this->pg_conn == null)
+			throw new DatabaseException("Database Connection closed");
+
+		if ($this->_sentRequest) {
+			throw new DatabaseException("Cannot use multiQuery in parallel with other queries");
 		}
 
 		if (count($params) == 0) {
@@ -220,32 +279,20 @@ final class Connection {
 				throw new ConnectionException($this, "Failed sending query");
 			}
 		}
-		send_event("db::query", $query, $params);
-		$this->_currentResultSet = ResultSet::lazy_result_set($this);
-		assert($this->_currentResultSet->isLazy());
-		return $this->_currentResultSet;
-	}
 
-	/**
-	 * Sends a parameterized query to the database and waits for the
-	 * result.
-	 *
-	 * The returned Result object is only the result of the last query
-	 * in the given string.
-	 */
-	public function queryBlock(\string $query, array $params=[]) : Result {
-		if ($this->pg_conn == null)
-			throw new DatabaseException("Database Connection closed");
-		if (count($params) == 0) {
-			$res = @pg_query($this->pg_conn, $query);
-		} else {
-			$res = @pg_query_params($this->pg_conn, $query, $params);
-		}
-		if (!$res) {
-			throw new ConnectionException($this, "Failed querying database");
-		}
 		send_event("db::query", $query, $params);
-		return Result::from_raw_result($res, $query, $params);
+
+		$this->_sentRequest = true;
+		await \RescheduleWaitHandle::create(\RescheduleWaitHandle::QUEUE_DEFAULT, 5);
+		$this->_sentRequest = false;
+
+		$results = \Vector {};
+
+		while ($result = pg_get_result($this->pg_conn)) {
+			$results->append(Result::from_raw_result($result));
+		}
+
+		return $results;
 	}
 
 	/**

@@ -38,9 +38,11 @@ class ConnectionTest extends beatbox\Test {
 	public function testQueryAsync() {
 		$conn = Connection::get();
 
-		$r1 = $conn->query("SELECT 1 as \"N\"");
-		$r2 = $conn->query("SELECT 2 as \"N\"");
-		$r3 = $conn->query("SELECT 3 as \"N\"");
+		// This causes each query to take just enough to block
+		// on pg_get_result, meaning we exercise the connection_pool
+		$r1 = $conn->query("SELECT 1 as \"N\", pg_sleep(0.1)");
+		$r2 = $conn->query("SELECT 2 as \"N\", pg_sleep(0.1)");
+		$r3 = $conn->query("SELECT 3 as \"N\", pg_sleep(0.1)");
 
 		$this->assertEquals(1, $r1->join()->nthRow(0)['N']);
 		$this->assertEquals(2, $r2->join()->nthRow(0)['N']);

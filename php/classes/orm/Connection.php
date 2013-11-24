@@ -18,10 +18,12 @@ use HH\Traversable;
  * instance of Connection.
  */
 final class Connection {
+	const CONNECTION_POLL_TIME = 1000;//us
 
 	private static self $connection = null;
 
-	private resource $pg_conn = null;
+	private \Vector<resource> $connection_pool = \Vector {};
+	private \string $connection_string;
 
 	/**
 	 * Returns the singleton instance of Connection, creating it if necessary.
@@ -68,29 +70,12 @@ final class Connection {
 			$str .= "$name='".addslashes($value)."' ";
 		}
 
-		$conn = @pg_connect($str);
-		unset($params['password']);
-
-		if (!$conn) {
-			throw new DatabaseException("Failed to connect to database");
-		}
-
-		$this->pg_conn = $conn;
-
-		if (pg_connection_status($conn) != PGSQL_CONNECTION_OK) {
-			throw new ConnectionException($this, "Failed to connect to database");
-		}
-
-		send_event("db::connect", $params);
-
-		// Set some connection options, the timezone is set to the local default one
-		// DateStyle should be 'ISO'. This makes dealing with the date output easier
-		$this->query("SET timezone=".pg_escape_literal($conn, date_default_timezone_get()))->join();
-		$this->query("SET datestyle='ISO'")->join();
-
 		// This is the first connection, so make it the default one.
 		if (self::$connection === null)
 			self::$connection = $this;
+
+		$this->connection_string = $str;
+
 	}
 
 	/**
@@ -98,6 +83,46 @@ final class Connection {
 	 */
 	public static function setDefault(Connection $conn) : \void {
 		self::$connection = $conn;
+	}
+
+	public async function withRawConn<T>((function (\resource) : T) $fn) : T {
+		if ($this->connection_pool->count() == 0) {
+			$conn = $this->newConnection();
+			$this->connection_pool->append($conn);
+		}
+
+		$conn = $this->connection_pool->pop();
+
+		$val = $fn($conn);
+		if ($val instanceof \Awaitable) {
+			$val = await $val;
+		}
+
+		$this->connection_pool->append($conn);
+
+		return $val;
+	}
+
+	private function newConnection() : \resource {
+		assert($this->connection_pool->count() == 0);
+		$conn = @pg_connect($this->connection_string);
+
+		if (!$conn) {
+			throw new DatabaseException("Failed to connect to database");
+		}
+
+		if (pg_connection_status($conn) != PGSQL_CONNECTION_OK) {
+			throw new DatabaseExcept("Failed to connect to database");
+		}
+
+		send_event("db::connect");
+
+		// Set some connection options, the timezone is set to the local default one
+		// DateStyle should be 'ISO'. This makes dealing with the date output easier
+		pg_query($conn, "SET timezone=".pg_escape_literal($conn, date_default_timezone_get()));
+		pg_query($conn, "SET datestyle='ISO'");
+
+		return $conn;
 	}
 
 	private \bool $in_transaction = false;
@@ -196,55 +221,29 @@ final class Connection {
 	 * If multiple queries are supplied in $query, only the Result for the
 	 * last one will be returned.
 	 *
-	 * NOTE: If multiple queries are sent in parallel, the first query will be
-	 * serialized and the remaining queries will block. It is recommended to only
-	 * send one query at a time.
-	 *
 	 * To send multiple queries use the multiQuery method
 	 */
 	public async function query(\string $query, array $params=[]) : Awaitable {
-		if ($this->pg_conn == null)
-			throw new DatabaseException("Database Connection closed");
-
-		if ($this->_sentRequest) {
-			if ($this->_sentRequest) {
-				while ($test_res = pg_get_result($this->pg_conn)) {
-					$this->async_req = $test_res;
-				}
-			}
-
+		return await $this->withRawConn(async function ($conn) use ($query, $params) {
 			if (count($params) == 0) {
-				$result = @pg_query($this->pg_conn, $query);
-			} else {
-				$result = @pg_query_params($this->pg_conn, $query, $params);
-			}
-
-			if (!$result)
-				throw new ConnectionException($this, "Failed querying database");
-
-			send_event("db::query", $query, $params);
-
-			return Result::from_raw_result($result);
-		} else {
-			if (count($params) == 0) {
-				if (!pg_send_query($this->pg_conn, $query)) {
+				if (!pg_send_query($conn, $query)) {
 					throw new ConnectionException($this, "Failed sending query");
 				}
 			} else {
-				if (!pg_send_query_params($this->pg_conn, $query, $params)) {
+				if (!pg_send_query_params($conn, $query, $params)) {
 					throw new ConnectionException($this, "Failed sending query");
 				}
 			}
 
 			send_event("db::query", $query, $params);
 
-			$this->_sentRequest = true;
-			await \RescheduleWaitHandle::create(\RescheduleWaitHandle::QUEUE_DEFAULT, 5);
-			$this->_sentRequest = false;
+			while (pg_connection_busy($conn)) {
+				await \SleepWaitHandle::create(self::CONNECTION_POLL_TIME);
+			}
 
 			$result = $this->async_req;
 			$this->async_req = null;
-			while ($test_res = pg_get_result($this->pg_conn)) {
+			while ($test_res = pg_get_result($conn)) {
 				$result = $test_res;
 			}
 
@@ -252,65 +251,50 @@ final class Connection {
 				throw new ConnectionException($this, "Failed querying database, no results found");
 
 			return Result::from_raw_result($result);
-		}
+		});
 	}
 
 	/**
 	 * Sends multiple queries to the database returning an awaitable handle.
 	 *
 	 * The handle will return a vector of Results when joined.
-	 *
-	 * NOTE: This function cannot be used to send queries in parallel.
 	 */
 	public async function multiQuery(\string $query, array $params=[]) : Awaitable {
-		if ($this->pg_conn == null)
-			throw new DatabaseException("Database Connection closed");
 
-		if ($this->_sentRequest) {
-			throw new DatabaseException("Cannot use multiQuery in parallel with other queries");
-		}
-
-		if (count($params) == 0) {
-			if (!pg_send_query($this->pg_conn, $query)) {
-				throw new ConnectionException($this, "Failed sending query");
+		return await $this->withRawConn(async function ($conn) use ($query, $params) {
+			if (count($params) == 0) {
+				if (!pg_send_query($conn, $query)) {
+					throw new ConnectionException($this, "Failed sending query");
+				}
+			} else {
+				if (!pg_send_query_params($conn, $query, $params)) {
+					throw new ConnectionException($this, "Failed sending query");
+				}
 			}
-		} else {
-			if (!pg_send_query_params($this->pg_conn, $query, $params)) {
-				throw new ConnectionException($this, "Failed sending query");
+
+			send_event("db::query", $query, $params);
+
+
+			while (pg_connection_busy($conn)) {
+				await \SleepWaitHandle::create(self::CONNECTION_POLL_TIME);
 			}
-		}
 
-		send_event("db::query", $query, $params);
+			$results = \Vector {};
+			while ($result = pg_get_result($conn)) {
+				$results->append(Result::from_raw_result($result));
+			}
 
-		$this->_sentRequest = true;
-		await \RescheduleWaitHandle::create(\RescheduleWaitHandle::QUEUE_DEFAULT, 5);
-		$this->_sentRequest = false;
-
-		$results = \Vector {};
-
-		while ($result = pg_get_result($this->pg_conn)) {
-			$results->append(Result::from_raw_result($result));
-		}
-
-		return $results;
-	}
-
-	/**
-	 * Gets the description of the last error that occured in the database
-	 */
-	public function getLastError() : \string {
-		if ($this->pg_conn == null)
-			throw new DatabaseException("Database Connection closed");
-		return pg_last_error($this->pg_conn);
+			return $results;
+		});
 	}
 
 	/**
 	 * Escapes the given identifier according to postgres rules.
 	 */
 	public function escapeIdentifier(\string $id) : \string {
-		if ($this->pg_conn == null)
-			throw new DatabaseException("Database Connection closed");
-		return pg_escape_identifier($this->pg_conn, $id);
+		return $this->withRawConn(function ($conn) use ($id) {
+			return pg_escape_identifier($conn, $id);
+		})->join();
 	}
 
 	/**
@@ -323,8 +307,6 @@ final class Connection {
 	 * function.
 	 */
 	public function escapeValue(\mixed $val, \bool $sub = false) : \string {
-		if ($this->pg_conn == null)
-			throw new DatabaseException("Database Connection closed");
 		if ($val instanceof Type) {
 			return $val->toDBString($this);
 		} else if ($val instanceof Traversable) {
@@ -346,25 +328,17 @@ final class Connection {
 		} elseif(is_bool($val)) {
 			return $val ? 'true' : 'false';
 		} else {
-			return pg_escape_literal($this->pg_conn, $val);
+			return $this->withRawConn(function ($conn) use ($val) {
+				return pg_escape_literal($conn, $val);
+			})->join();
 		}
 	}
 
-	/**
-	 * Closes the connection.
-	 */
-	public function close() : \void {
-		if ($this->pg_conn) {
-			pg_close($this->pg_conn);
-			$this->pg_conn = null;
-			send_event("db::close");
+	public function close() {
+		$this->connection_string = "";
+		foreach ($this->connection_pool as $conn) {
+			pg_close($conn);
 		}
-	}
-	/**
-	 * Gets the raw underlying connection, only to be used
-	 * by other ORM classes.
-	 */
-	public function _getRawConn() : \resource {
-		return $this->pg_conn;
+		$this->connection_pool = \Vector {};
 	}
 }

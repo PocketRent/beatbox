@@ -181,8 +181,8 @@ abstract class DataTable {
 				}
 			}
 
-			$query = "INSERT INTO $table (".pr_join(',', $columns).') '.
-				'VALUES ('.pr_join(',',$values).') '.
+			$query = "INSERT INTO $table (".bb_join(',', $columns).') '.
+				'VALUES ('.bb_join(',',$values).') '.
 				'RETURNING *;';
 		} else {
 			$allVals = $this->toMap();
@@ -200,8 +200,8 @@ abstract class DataTable {
 				return "$col=$val";
 			});
 
-			$query = "UPDATE $table SET ".pr_join(', ', $pairs)." WHERE ".
-				pr_join(' AND ', $pks).'RETURNING *;';
+			$query = "UPDATE $table SET ".bb_join(', ', $pairs)." WHERE ".
+				bb_join(' AND ', $pks).'RETURNING *;';
 		}
 
 		$result = await $conn->query($query);
@@ -248,7 +248,7 @@ abstract class DataTable {
 			return "$col=$val";
 		});
 
-		$query = "DELETE FROM $table WHERE ".pr_join(' AND ', $pks).';';
+		$query = "DELETE FROM $table WHERE ".bb_join(' AND ', $pks).';';
 
 		$result = await $conn->query($query);
 		assert($result instanceof ModifyResult);

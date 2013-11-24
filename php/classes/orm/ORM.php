@@ -229,7 +229,7 @@ class ORM implements \IteratorAggregate, \Countable {
 		$table = $this->getFrom();
 
 		$query = "SELECT DISTINCT ".$this->getFieldList()." FROM $table";
-		$query .= pr_join("\n", $this->joins);
+		$query .= bb_join("\n", $this->joins);
 
 		// WHERE
 		$where = $this->getWHERE();
@@ -264,7 +264,7 @@ class ORM implements \IteratorAggregate, \Countable {
 
 	protected function getWHERE() : ?\string {
 		if ($this->conds->count() > 0)
-			return 'WHERE ('.pr_join(') AND (', $this->conds).')';
+			return 'WHERE ('.bb_join(') AND (', $this->conds).')';
 		else
 			return false;
 	}
@@ -275,7 +275,7 @@ class ORM implements \IteratorAggregate, \Countable {
 
 	protected function getORDER_BY() : ?\string {
 		if ($this->sorts->count() > 0)
-			return "ORDER BY ".pr_join(', ', $this->sorts);
+			return "ORDER BY ".bb_join(', ', $this->sorts);
 		else
 			return false;
 	}
@@ -287,7 +287,7 @@ class ORM implements \IteratorAggregate, \Countable {
 			return "$table.".$this->conn->escapeIdentifier($f);
 		});
 
-		return pr_join(', ', $fields);
+		return bb_join(', ', $fields);
 	}
 
 	/**
@@ -470,21 +470,21 @@ class AggregateORM extends ORM {
 
 	protected function getGROUP_BY() : ?\string {
 		if ($this->group_bys->count() > 0)
-			return "GROUP BY ".pr_join(', ', $this->group_bys);
+			return "GROUP BY ".bb_join(', ', $this->group_bys);
 		else
 			return false;
 	}
 
 	protected function getHAVING() : ?\string {
 		if ($this->having->count() > 0)
-			return "HAVING (".pr_join(') AND (', $this->having).')';
+			return "HAVING (".bb_join(') AND (', $this->having).')';
 		else
 			return false;
 	}
 
 	protected function getFieldList() : \string {
 		assert($this->extra_fields->count() > 0 && "Can't select no fields!");
-		return pr_join(', ', $this->extra_fields);
+		return bb_join(', ', $this->extra_fields);
 	}
 
 	/**

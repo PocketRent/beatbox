@@ -8,7 +8,7 @@
  * A variant of the standard `join`/`implode` function that works
  * for any traversable, not just arrays
  */
-function pr_join(string $delimiter, Traversable $trav) : string {
+function bb_join(string $delimiter, Traversable $trav) : string {
 	$add_delim = false;
 	$str = "";
 	foreach ($trav as $elem) {

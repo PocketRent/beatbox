@@ -10,7 +10,7 @@ class JoinTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testJoinEmpty() {
-		$this->assertEquals(pr_join(',',[]), "");
+		$this->assertEquals(bb_join(',',[]), "");
 	}
 
 	/**
@@ -18,7 +18,7 @@ class JoinTest extends beatbox\Test {
 	 * @depends testJoinEmpty
 	 */
 	public function testJoinOne() {
-		$this->assertEquals(pr_join(',',[123]), "123");
+		$this->assertEquals(bb_join(',',[123]), "123");
 	}
 
 	/**
@@ -26,7 +26,7 @@ class JoinTest extends beatbox\Test {
 	 * @depends testJoinEmpty
 	 */
 	public function testJoinArray() {
-		$this->assertEquals(pr_join(',',[123,456]), "123,456");
+		$this->assertEquals(bb_join(',',[123,456]), "123,456");
 	}
 
 	/**
@@ -36,7 +36,7 @@ class JoinTest extends beatbox\Test {
 	public function testJoinIterator() {
 		$v = Vector {"abc", "def"};
 		$it = $v->getIterator();
-		$this->assertEquals(pr_join(', ', $it), "abc, def");
+		$this->assertEquals(bb_join(', ', $it), "abc, def");
 	}
 
 	/**
@@ -45,7 +45,7 @@ class JoinTest extends beatbox\Test {
 	 */
 	public function testJoinIterable() {
 		$v = Vector {"abc", "def"};
-		$this->assertEquals(pr_join(' => ', $v), "abc => def");
+		$this->assertEquals(bb_join(' => ', $v), "abc => def");
 	}
 
 	/**
@@ -58,6 +58,6 @@ class JoinTest extends beatbox\Test {
 			yield 123;
 			yield 66.66;
 		};
-		$this->assertEquals(pr_join('.', $gen()), "abc.123.66.66");
+		$this->assertEquals(bb_join('.', $gen()), "abc.123.66.66");
 	}
 }

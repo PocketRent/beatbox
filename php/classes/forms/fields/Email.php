@@ -5,6 +5,14 @@ class :bb:form:email extends :bb:form:field {
 
 	protected string $type = 'email';
 
+	protected function buildField() : :bb:form:field {
+		if ($this->getAttribute('multiple')) {
+			return <bb:form:textarea />;
+		} else {
+			return parent::buildField();
+		}
+	}
+
 	public function validate() : array {
 		$value = $this->getValue();
 		if($value) {

@@ -303,7 +303,10 @@ class Router {
 			$val = $val->getWaithandle()->join();
 		}
 		if($val && $val instanceof \beatbox\FragmentCallback) {
-			return $val->forFragment($url, $fragName);
+			$val = $val->forFragment($url, $fragName);
+			if ($val instanceof \Awaitable) {
+				$val = $val->getWaithandle()->join();
+			}
 		}
 		return $val;
 	}

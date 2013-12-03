@@ -1175,6 +1175,12 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 
 		$tbl_data->writeLine();
 
+		$tbl_data->startBlock("protected final function originalValues(): \Map");
+		$tbl_data->writeLine('return clone $this->orig;');
+		$tbl_data->endBlock();
+
+		$tbl_data->writeLine();
+
 		$tbl_data->startBlock('public final function toRow(): \string');
 		$tbl_data->writeLine('$con = Connection::get();');
 		$tbl_data->writeLine('$values = [];');

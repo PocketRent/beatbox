@@ -21,6 +21,11 @@ abstract class DataTable {
 	abstract protected function getUpdatedColumns() : \Map;
 
 	/**
+	 * Get a map of the original values for this object
+	 */
+	abstract protected function originalValues(): \Map;
+
+	/**
 	 * Returns a map of column names to their current values
 	 */
 	abstract public function toMap(): \Map;
@@ -186,6 +191,7 @@ abstract class DataTable {
 				'RETURNING *;';
 		} else {
 			$allVals = $this->toMap();
+			$origVals = $this->originalValues();
 			$primaryKeys = static::getPrimaryKeys();
 
 			$pairs = $values->kvzip()->map(function (\Pair $pair) use ($conn) {
@@ -193,8 +199,8 @@ abstract class DataTable {
 				$val = $conn->escapeValue($pair[1]);
 				return "$col = $val";
 			});
-			$pks = $primaryKeys->map(function ($col) use ($conn, $allVals) {
-				$val = $allVals[$col];
+			$pks = $primaryKeys->map(function ($col) use ($conn, $origVals) {
+				$val = $origVals[$col];
 				$col = $conn->escapeIdentifier($col);
 				$val = $conn->escapeValue($val);
 				return "$col=$val";
@@ -206,7 +212,7 @@ abstract class DataTable {
 
 		$result = await $conn->query($query);
 		assert($result instanceof QueryResult && "Object write should always return rows");
-		assert($result->numRows() == 1 && "Object write should only return one row");
+		assert($result->numRows() == 1 && "Object write should only return one row" || (var_dump($query) && false));
 
 		$row = $result->nthRow(0);
 

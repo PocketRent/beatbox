@@ -20,8 +20,8 @@ class DatabaseException extends Exception {
 class ConnectionException extends DatabaseException {
 	protected \string $dbError;
 
-	public function __construct(Connection $conn, \string $message, \Exception $previous=null) {
-		$this->dbError = $conn->getLastError();
+	public function __construct(\resource $conn, \string $message, \Exception $previous=null) {
+		$this->dbError = pg_last_error($conn);
 		$message = $message . ": '" . $this->dbError . "'";
 		parent::__construct($message, 1, $previous);
 	}

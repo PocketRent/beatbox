@@ -7,7 +7,7 @@ class :bb:form:email extends :bb:form:field {
 
 	protected function buildField() : :bb:form:field {
 		if ($this->getAttribute('multiple')) {
-			return <bb:form:textarea />;
+			return <bb:form:textarea>{$this->getValue()}</bb:form:textarea>;
 		} else {
 			return parent::buildField();
 		}

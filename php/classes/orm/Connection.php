@@ -213,7 +213,6 @@ final class Connection {
 	}
 
 	private \bool $_sentRequest = false;
-	private ?\resource $async_req = null;
 	/**
 	 * Send a single parameterized query to the database.
 	 *
@@ -227,11 +226,11 @@ final class Connection {
 		return await $this->withRawConn(async function ($conn) use ($query, $params) {
 			if (count($params) == 0) {
 				if (!pg_send_query($conn, $query)) {
-					throw new ConnectionException($this, "Failed sending query");
+					throw new ConnectionException($conn, "Failed sending query");
 				}
 			} else {
 				if (!pg_send_query_params($conn, $query, $params)) {
-					throw new ConnectionException($this, "Failed sending query");
+					throw new ConnectionException($conn, "Failed sending query");
 				}
 			}
 
@@ -241,14 +240,13 @@ final class Connection {
 				await \SleepWaitHandle::create(self::CONNECTION_POLL_TIME);
 			}
 
-			$result = $this->async_req;
-			$this->async_req = null;
+			$result = null;
 			while ($test_res = pg_get_result($conn)) {
 				$result = $test_res;
 			}
 
 			if (!$result)
-				throw new ConnectionException($this, "Failed querying database, no results found");
+				throw new ConnectionException($conn, "Failed querying database, no results found");
 
 			return Result::from_raw_result($result);
 		});

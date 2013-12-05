@@ -124,6 +124,7 @@ class TestTable extends orm\DataTable {
 
 	protected function updateFromRow($row) { }
 	protected function getUpdatedColumns() : \Map { return \Map {}; }
+	protected function originalValues() : \Map { return \Map {}; }
 
 	public function toMap() : \Map { return \Map {}; }
 	public function toRow() : \string { return ''; }

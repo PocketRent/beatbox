@@ -79,7 +79,7 @@ abstract class DataTable {
 	 *
 	 * Returns null if there is no matching object in the database
 	 */
-	public static function get_by_pk(\mixed $id) : DataTable {
+	public async static function get_by_pk(\mixed $id) : DataTable {
 		if(!$id) {
 			return null;
 		}
@@ -99,7 +99,7 @@ abstract class DataTable {
 			$orm = $orm->filter($col, $id[$col]);
 		}
 
-		return $orm->getNth(0);
+		return await $orm->getNth(0);
 	}
 
 	/**

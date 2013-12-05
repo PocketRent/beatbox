@@ -99,12 +99,7 @@ function item_difference<T>(T $left, T $right) : int {
  * Gets the mime type of a file
  */
 function get_mime_type(string $filename) : string {
-	if(class_exists('finfo', false)) {
-		return (new finfo(FILEINFO_MIME))->file($filename);
-	} else {
-		$filename = escapeshellarg($filename);
-		return trim(`file -b --mime-type $filename`);
-	}
+	return (new finfo(FILEINFO_MIME))->file($filename);
 }
 
 /**

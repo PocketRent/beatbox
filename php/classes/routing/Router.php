@@ -85,7 +85,7 @@ class Router {
 
 					$res[$frag] = self::render_fragment($frag, $available[$frag], $url, $ext, $md);
 					// This mostly handles XHP objects
-					if(is_object($res[$frag]) && !$res[$frag] instanceof \JsonSerializable) {
+					if(is_object($res[$frag]) && !$res[$frag] instanceof \JsonSerializable && !$res[$frag] instanceof \Collection) {
 						$res[$frag] = (string)$res[$frag];
 					}
 				}

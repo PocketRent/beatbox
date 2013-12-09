@@ -42,4 +42,12 @@
 		});
 	});
 
+	$(document).ajaxSuccess(function(event, xhr, options) {
+		var location = xhr.getResponseHeader('x-ajax-location');
+		if(location) {
+			document.location = location;
+			return false;
+		}
+	});
+
 })(jQuery, this);

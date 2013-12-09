@@ -1,13 +1,23 @@
 /**
- * Standard UI Functionality
+ * Helpers for creating simple ui objects, buttons, etc
  */
-(function ($, window) {
-	// Most importantly, set the date
-	var today = new Date();
-	$('svg .todaysDate').text(today.getDate());
-	$('#Main').on('click', '.section .sectionToggle', function(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		$(this).toggleClass('open').next('.sectionTogglable').slideToggle('fast');
-	});
-})(jQuery, this);
+(function (window) {
+	'use strict';
+
+	window.createButton = function (text, colour, kind, size) {
+		var colour = colour || 'blue',
+			kind = kind || 'action',
+			size = size || 'medium';
+
+		var button = document.createElement('button');
+		button.setAttribute('class', [colour, kind, size].join(' '));
+		if (kind == 'link') {
+			button.setAttribute('role', 'link');
+		}
+
+		button.innerText = text;
+
+		return button;
+	}
+
+})(this);

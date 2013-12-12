@@ -1047,7 +1047,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 					$tbl_data->startBlock('if(is_string($val))');
 					$tbl_data->writeLine('$val = new \beatbox\orm\DateTimeType($val);');
 					$tbl_data->endBlock();
-					$tbl_data->startBlock('elseif(is_numeric($val))');
+					$tbl_data->startBlock('else if(is_numeric($val))');
 					$tbl_data->writeLine('$val = new \beatbox\orm\DateTimeType(\'@\' . $val);');
 					$tbl_data->endBlock();
 					$tbl_data->writeLine('assert($val instanceof \beatbox\orm\DateTimeType || $val === null);');
@@ -1055,7 +1055,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 						"\$this->orig == null || (\$this->orig['$col->name']->cmp(\$val) != 0);");
 					$tbl_data->writeLine("\$this->_$col->name = \$val;");
 					$tbl_data->writeLine('return $this;');
-				} elseif ($type->isSimple()) {
+				} else if ($type->isSimple()) {
 					$tbl_data->startBlock("public function set$col->name($type_arg\$val$def_val)");
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
 					$tbl_data->writeLine("\$this->changed['$col->name'] = ".

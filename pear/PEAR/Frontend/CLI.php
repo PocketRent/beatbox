@@ -53,15 +53,15 @@ class PEAR_Frontend_CLI extends PEAR_Frontend
         $term = getenv('TERM'); //(cox) $_ENV is empty for me in 4.1.1
         if (function_exists('posix_isatty') && !posix_isatty(1)) {
             // output is being redirected to a file or through a pipe
-        } elseif ($term) {
+        } else if ($term) {
             if (preg_match('/^(xterm|vt220|linux)/', $term)) {
                 $this->term['bold']   = sprintf("%c%c%c%c", 27, 91, 49, 109);
                 $this->term['normal'] = sprintf("%c%c%c", 27, 91, 109);
-            } elseif (preg_match('/^vt100/', $term)) {
+            } else if (preg_match('/^vt100/', $term)) {
                 $this->term['bold']   = sprintf("%c%c%c%c%c%c", 27, 91, 49, 109, 0, 0);
                 $this->term['normal'] = sprintf("%c%c%c%c%c", 27, 91, 109, 0, 0);
             }
-        } elseif (OS_WINDOWS) {
+        } else if (OS_WINDOWS) {
             // XXX add ANSI codes here
         }
     }
@@ -339,7 +339,7 @@ class PEAR_Frontend_CLI extends PEAR_Frontend
                 if ($tmp !== '') {
                     $result[$var] = $tmp;
                 }
-            } elseif ($tmp == 'all') {
+            } else if ($tmp == 'all') {
                 foreach ($prompts as $var => $desc) {
                     $current = $result[$var];
                     print "$desc [$current] : ";
@@ -513,7 +513,7 @@ class PEAR_Frontend_CLI extends PEAR_Frontend
                         $opts = array(0 => array('wrap' => 25),
                                       1 => array('wrap' => 48)
                         );
-                    } elseif ($count == 3) {
+                    } else if ($count == 3) {
                         $opts = array(0 => array('wrap' => 30),
                                       1 => array('wrap' => 20),
                                       2 => array('wrap' => 35)

@@ -364,7 +364,7 @@ class Net_SMTP
         /* Compare the server's response code with the valid code/codes. */
         if (is_int($valid) && ($this->_code === $valid)) {
             return true;
-        } elseif (is_array($valid) && in_array($this->_code, $valid, true)) {
+        } else if (is_array($valid) && in_array($this->_code, $valid, true)) {
             return true;
         }
 
@@ -602,7 +602,7 @@ class Net_SMTP
             }
             if (PEAR::isError($result = $this->_socket->enableCrypto(true, STREAM_CRYPTO_METHOD_TLS_CLIENT))) {
                 return $result;
-            } elseif ($result !== true) {
+            } else if ($result !== true) {
                 return PEAR::raiseError('STARTTLS failed');
             }
 
@@ -935,10 +935,10 @@ class Net_SMTP
                 $args .= ' XVERP';
 
             /* XVERP=something */
-            } elseif (trim($params['verp'])) {
+            } else if (trim($params['verp'])) {
                 $args .= ' XVERP=' . $params['verp'];
             }
-        } elseif (is_string($params) && !empty($params)) {
+        } else if (is_string($params) && !empty($params)) {
             $args .= ' ' . $params;
         }
 

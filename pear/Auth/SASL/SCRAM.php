@@ -82,12 +82,12 @@ class Auth_SASL_SCRAM extends Auth_SASL_Common
             $this->hash = create_function('$data', 'return hash("' . $hashes[$hash] . '", $data, TRUE);');
             $this->hmac = create_function('$key,$str,$raw', 'return hash_hmac("' . $hashes[$hash] . '", $str, $key, $raw);');
         }
-        elseif ($hash == 'md5')
+        else if ($hash == 'md5')
         {
             $this->hash = create_function('$data', 'return md5($data, true);');
             $this->hmac = array($this, '_HMAC_MD5');
         }
-        elseif (in_array($hash, array('sha1', 'sha-1')))
+        else if (in_array($hash, array('sha1', 'sha-1')))
         {
             $this->hash = create_function('$data', 'return sha1($data, true);');
             $this->hmac = array($this, '_HMAC_SHA1');
@@ -288,7 +288,7 @@ class Auth_SASL_SCRAM extends Auth_SASL_Common
         if (@file_exists('/dev/urandom') && $fd = @fopen('/dev/urandom', 'r')) {
             return base64_encode(fread($fd, 32));
 
-        } elseif (@file_exists('/dev/random') && $fd = @fopen('/dev/random', 'r')) {
+        } else if (@file_exists('/dev/random') && $fd = @fopen('/dev/random', 'r')) {
             return base64_encode(fread($fd, 32));
 
         } else {

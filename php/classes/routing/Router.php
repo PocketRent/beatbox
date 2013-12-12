@@ -239,7 +239,7 @@ class Router {
 		}
 		if(isset(self::$routes[$path])) {
 			return self::$routes[$path];
-		} elseif($path) {
+		} else if($path) {
 			foreach(self::$regex_routes as $p => $v) {
 				if(preg_match('#^' . $p . '$#', $path)) {
 					return $v;
@@ -283,7 +283,7 @@ class Router {
 				if(!in_array($frag, $val)) {
 					continue;
 				}
-			} elseif($val instanceof Vector) {
+			} else if($val instanceof Vector) {
 				if($val->linearSearch($frag) == -1) {
 					continue;
 				}

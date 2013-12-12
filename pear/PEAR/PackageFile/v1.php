@@ -1071,7 +1071,7 @@ class PEAR_PackageFile_v1
 
         if (empty($info['summary'])) {
             $this->_validateError(PEAR_PACKAGEFILE_ERROR_NO_SUMMARY);
-        } elseif (strpos(trim($info['summary']), "\n") !== false) {
+        } else if (strpos(trim($info['summary']), "\n") !== false) {
             $this->_validateWarning(PEAR_PACKAGEFILE_ERROR_MULTILINE_SUMMARY,
                 array('summary' => $info['summary']));
         }
@@ -1106,7 +1106,7 @@ class PEAR_PackageFile_v1
                 if (empty($m['role'])) {
                     $this->_validateError(PEAR_PACKAGEFILE_ERROR_NO_MAINTROLE,
                         array('index' => $i, 'roles' => PEAR_Common::getUserRoles()));
-                } elseif ($m['role'] == 'lead') {
+                } else if ($m['role'] == 'lead') {
                     $haslead = true;
                 }
                 if (empty($m['name'])) {
@@ -1145,14 +1145,14 @@ class PEAR_PackageFile_v1
                 if ($d['rel'] != 'has' && $d['rel'] != 'not' && empty($d['version'])) {
                     $this->_validateError(PEAR_PACKAGEFILE_ERROR_NO_DEPVERSION,
                         array('index' => $i));
-                } elseif (($d['rel'] == 'has' || $d['rel'] == 'not') && !empty($d['version'])) {
+                } else if (($d['rel'] == 'has' || $d['rel'] == 'not') && !empty($d['version'])) {
                     $this->_validateWarning(PEAR_PACKAGEFILE_ERROR_DEPVERSION_IGNORED,
                         array('index' => $i, 'rel' => $d['rel']));
                 }
                 if ($d['type'] == 'php' && !empty($d['name'])) {
                     $this->_validateWarning(PEAR_PACKAGEFILE_ERROR_DEPNAME_IGNORED,
                         array('index' => $i, 'name' => $d['name']));
-                } elseif ($d['type'] != 'php' && empty($d['name'])) {
+                } else if ($d['type'] != 'php' && empty($d['name'])) {
                     $this->_validateError(PEAR_PACKAGEFILE_ERROR_NO_DEPNAME,
                         array('index' => $i));
                 }
@@ -1190,7 +1190,7 @@ class PEAR_PackageFile_v1
                     $this->_validateError(PEAR_PACKAGEFILE_ERROR_NO_FILEROLE,
                         array('file' => $file, 'roles' => PEAR_Common::getFileRoles()));
                     continue;
-                } elseif (!in_array($fa['role'], PEAR_Common::getFileRoles())) {
+                } else if (!in_array($fa['role'], PEAR_Common::getFileRoles())) {
                     $this->_validateError(PEAR_PACKAGEFILE_ERROR_INVALID_FILEROLE,
                         array('file' => $file, 'role' => $fa['role'], 'roles' => PEAR_Common::getFileRoles()));
                 }
@@ -1286,7 +1286,7 @@ class PEAR_PackageFile_v1
                     }
                     $this->_validateWarning(PEAR_PACKAGEFILE_ERROR_NO_PNAME_PREFIX,
                         array('file' => $file, 'type' => $type, 'name' => $name, 'package' => $pn));
-                } elseif ($type == 'function') {
+                } else if ($type == 'function') {
                     if (strstr($name, '::') || !strncasecmp($name, $pn, $pnl)) {
                         continue;
                     }
@@ -1479,19 +1479,19 @@ class PEAR_PackageFile_v1
                         $current_class = $data;
                         $current_class_level = $brace_level;
                         $declared_classes[] = $current_class;
-                    } elseif ($look_for == T_INTERFACE) {
+                    } else if ($look_for == T_INTERFACE) {
                         $current_interface = $data;
                         $current_class_level = $brace_level;
                         $declared_interfaces[] = $current_interface;
-                    } elseif ($look_for == T_IMPLEMENTS) {
+                    } else if ($look_for == T_IMPLEMENTS) {
                         $implements[$current_class] = $data;
-                    } elseif ($look_for == T_EXTENDS) {
+                    } else if ($look_for == T_EXTENDS) {
                         $extends[$current_class] = $data;
-                    } elseif ($look_for == T_FUNCTION) {
+                    } else if ($look_for == T_FUNCTION) {
                         if ($current_class) {
                             $current_function = "$current_class::$data";
                             $declared_methods[$current_class][] = $data;
-                        } elseif ($current_interface) {
+                        } else if ($current_interface) {
                             $current_function = "$current_interface::$data";
                             $declared_methods[$current_interface][] = $data;
                         } else {
@@ -1500,7 +1500,7 @@ class PEAR_PackageFile_v1
                         }
                         $current_function_level = $brace_level;
                         $m = array();
-                    } elseif ($look_for == T_NEW) {
+                    } else if ($look_for == T_NEW) {
                         $used_classes[$data] = true;
                     }
                     $look_for = 0;

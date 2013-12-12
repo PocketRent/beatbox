@@ -82,7 +82,7 @@ class PHPUnit_Framework_MockObject_Generator
       'do' => TRUE,
       'echo' => TRUE,
       'else' => TRUE,
-      'elseif' => TRUE,
+      'else if' => TRUE,
       'empty' => TRUE,
       'enddeclare' => TRUE,
       'endfor' => TRUE,

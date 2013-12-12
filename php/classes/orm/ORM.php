@@ -77,7 +77,7 @@ class ORM implements \IteratorAggregate, \Countable {
 		if(is_null($value)) {
 			if($comp == '=') {
 				$comp = ' IS ';
-			} elseif($comp == '!=') {
+			} else if($comp == '!=') {
 				$comp = ' IS NOT ';
 			}
 		}

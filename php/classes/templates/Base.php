@@ -37,7 +37,7 @@ abstract class :bb:base extends :x:element {
 		$root = $this->compose();
 		if ($root === null) {
 			return <x:frag />;
-		} elseif(is_string($root) || $root instanceof :x:frag) {
+		} else if(is_string($root) || $root instanceof :x:frag) {
 			return $root;
 		}
 		if (:x:base::$ENABLE_VALIDATION) {

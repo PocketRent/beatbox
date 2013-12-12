@@ -78,7 +78,7 @@ function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTT
 	}
 	if(!isset($new_url['path']) || $new_url['path'] === '') {
 		$new_url['path'] = '/';
-	} elseif(isset($new_url['path'][0]) && $new_url['path'][0] != '/') {
+	} else if(isset($new_url['path'][0]) && $new_url['path'][0] != '/') {
 		$new_url['path'] = '/' . $new_url['path'];
 	}
 
@@ -187,9 +187,9 @@ function _http_url_from_env() : array {
 	// Host
 	if(!empty($_SERVER['HTTP_HOST'])) {
 		$url['host'] = $_SERVER['HTTP_HOST'];
-	} elseif(!empty($_SERVER['SERVER_NAME'])) {
+	} else if(!empty($_SERVER['SERVER_NAME'])) {
 		$url['host'] = $_SERVER['SERVER_NAME'];
-	} elseif(!empty($_SERVER['SERVER_ADDR'])) {
+	} else if(!empty($_SERVER['SERVER_ADDR'])) {
 		$url['host'] = $_SERVER['SERVER_ADDR'];
 	} else {
 		$url['host'] = 'localhost';

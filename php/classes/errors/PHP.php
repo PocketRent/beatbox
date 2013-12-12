@@ -111,7 +111,7 @@ class PHP {
 			case 'object':
 				if($arg instanceof Traversable) {
 					return get_class($arg) . ' ' . self::pretty_array($arg);
-				} elseif($arg instanceof :x:base) {
+				} else if($arg instanceof :x:base) {
 					$class = get_class($arg);
 					return '<' . $arg::class2element($class) . '>';
 				}
@@ -197,15 +197,15 @@ class PHP {
 				echo $bt, "\n";
 			}
 			return true;
-		} elseif($exception instanceof HTTP_Exception) {
+		} else if($exception instanceof HTTP_Exception) {
 			$code = $exception->getBaseCode();
 			$path = 'error-' . $code;
 			$routes = \beatbox\Router::get_routes_for_path($path)[0];
 			if(!empty($routes['page'])) {
 				echo \beatbox\Router::route($path);
-			} elseif(file_exists(BASE_DIR . '/src/errors/' . $path . '.html')) {
+			} else if(file_exists(BASE_DIR . '/src/errors/' . $path . '.html')) {
 				echo file_get_contents(BASE_DIR . '/src/errors/' . $path . '.html');
-			} elseif(file_exists(BASE_DIR . '/src/errors/error.html')) {
+			} else if(file_exists(BASE_DIR . '/src/errors/error.html')) {
 				echo file_get_contents(BASE_DIR . '/src/errors/error.html');
 			} else {
 				echo $exception->getMessage(), "\n";

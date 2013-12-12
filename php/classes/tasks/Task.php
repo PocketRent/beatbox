@@ -140,7 +140,7 @@ class Task implements \Serializable {
 		self::redis()->incr($n_c);
 		if($this->policy == self::CON_DIFF) {
 			self::redis()->setnx($n_a, 1);
-		} elseif($this->policy == self::CON_NEVER) {
+		} else if($this->policy == self::CON_NEVER) {
 			self::redis()->setnx($n, 1);
 		}
 		$vals = self::redis()->exec();
@@ -168,7 +168,7 @@ class Task implements \Serializable {
 		self::redis()->decr($n_c);
 		if($this->policy == self::CON_DIFF) {
 			self::redis()->set($n_a, 0);
-		} elseif($this->policy == self::CON_NEVER) {
+		} else if($this->policy == self::CON_NEVER) {
 			self::redis()->set($n, 0);
 		}
 		self::redis()->exec();

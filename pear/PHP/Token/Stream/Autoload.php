@@ -102,7 +102,7 @@ spl_autoload_register(
             'php_token_double_quotes' => '/Token.php',
             'php_token_echo' => '/Token.php',
             'php_token_else' => '/Token.php',
-            'php_token_elseif' => '/Token.php',
+            'php_token_else if' => '/Token.php',
             'php_token_empty' => '/Token.php',
             'php_token_encapsed_and_whitespace' => '/Token.php',
             'php_token_end_heredoc' => '/Token.php',

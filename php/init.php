@@ -69,7 +69,7 @@ function register_autoload_map() : void {
 			$canon_name = strtolower($name);
 			if (isset($map['class'][$canon_name])) {
 				require BASE_DIR.'/'.$map['class'][$canon_name];
-			} elseif (!defined('RUNNING_TEST')) {
+			} else if (!defined('RUNNING_TEST')) {
 				// Regenerate the map to try and load the new class
 				$new_map = makeMap();
 				if ($new_map['class']->differenceByKey($map['class'])->count() > 0) {

@@ -868,7 +868,7 @@ class PEAR_PackageFile_v2_rw extends PEAR_PackageFile_v2
             );
         if ($channel) {
             $dep['channel'] = $channel;
-        } elseif ($uri) {
+        } else if ($uri) {
             $dep['uri'] = $uri;
         }
         if ($min) {

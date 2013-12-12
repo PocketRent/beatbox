@@ -632,7 +632,7 @@ Run post-installation scripts in package <package>, if any exist.
                                     $reg->parsedPackageNameToString($package, true));
                             }
                             unset($abstractpackages[$i]);
-                        } elseif ($count === 1) {
+                        } else if ($count === 1) {
                             // Lets try to upgrade it since it's already installed
                             $options['upgrade'] = true;
                         }
@@ -641,7 +641,7 @@ Run post-installation scripts in package <package>, if any exist.
             }
             $abstractpackages =
                 array_map(array($reg, 'parsedPackageNameToString'), $abstractpackages);
-        } elseif (count($abstractpackages)) {
+        } else if (count($abstractpackages)) {
             $abstractpackages =
                 array_map(array($reg, 'parsedPackageNameToString'), $abstractpackages);
         }

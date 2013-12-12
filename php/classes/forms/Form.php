@@ -105,7 +105,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 	protected static function get_value(mixed $data, string $name, string $base) : mixed {
 		if(!$name) {
 			return $data;
-		} elseif(preg_match('#^(.+?)\[(.*?)\](.*)$#', $name, $matches)) {
+		} else if(preg_match('#^(.+?)\[(.*?)\](.*)$#', $name, $matches)) {
 			if(!$matches[2]) {
 				$index = isset(self::$load_count[$base . $matches[1]]) ? self::$load_count[$base . $matches[1]] + 1 : 0;
 				self::$load_count[$base . $matches[1]] = $index;
@@ -115,13 +115,13 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 				} else {
 					return null;
 				}
-			} elseif(isset($data[$matches[1]])) {
+			} else if(isset($data[$matches[1]])) {
 				$base .= "$matches[1]-";
 				return self::get_value($data[$matches[1]], $matches[2].$matches[3], $base);
 			} else {
 				return null;
 			}
-		} elseif(isset($data[$name])) {
+		} else if(isset($data[$name])) {
 			return $data[$name];
 		} else {
 			return null;
@@ -141,7 +141,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 			$value = self::get_value($data, $name, '');
 			if($value !== null) {
 				$field->setValue($value);
-			} elseif($empty) {
+			} else if($empty) {
 				$field->setValue(null);
 			}
 		}

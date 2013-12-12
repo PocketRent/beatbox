@@ -128,7 +128,7 @@ class PEAR_PackageFile_Parser_v1
         foreach (explode("\n", $str) as $line) {
             if (substr($line, 0, $indent_len) == $indent) {
                 $data .= substr($line, $indent_len) . "\n";
-            } elseif (trim(substr($line, 0, $indent_len))) {
+            } else if (trim(substr($line, 0, $indent_len))) {
                 $data .= ltrim($line);
             }
         }

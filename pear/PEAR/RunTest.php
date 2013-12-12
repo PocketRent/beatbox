@@ -245,7 +245,7 @@ class PEAR_RunTest
     {
         if (!file_exists($file) && file_exists(getcwd() . DIRECTORY_SEPARATOR . $file)) {
             $file = realpath(getcwd() . DIRECTORY_SEPARATOR . $file);
-        } elseif (file_exists($file)) {
+        } else if (file_exists($file)) {
             $file = realpath($file);
         }
 
@@ -456,7 +456,7 @@ class PEAR_RunTest
 
             $this->save_text($tmp_post, $request);
             $cmd = "$this->_php$pass_options$ini_settings \"$temp_file\" 2>&1 < $tmp_post";
-        } elseif (array_key_exists('POST', $section_text) && !empty($section_text['POST'])) {
+        } else if (array_key_exists('POST', $section_text) && !empty($section_text['POST'])) {
             $post = trim($section_text['POST']);
             $this->save_text($tmp_post, $post);
             $content_length = strlen($post);
@@ -840,7 +840,7 @@ $text
                 $section = $r[1];
                 $section_text[$section] = '';
                 continue;
-            } elseif (empty($section)) {
+            } else if (empty($section)) {
                 fclose($fp);
                 return PEAR::raiseError("Invalid sections formats in test file: $file");
             }

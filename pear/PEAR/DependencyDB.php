@@ -317,7 +317,7 @@ class PEAR_DependencyDB
                     if ($info['dep']['uri'] == $child->getURI()) {
                         return true;
                     }
-                } elseif (isset($child['uri'])) {
+                } else if (isset($child['uri'])) {
                     if ($info['dep']['uri'] == $child['uri']) {
                         return true;
                     }
@@ -486,7 +486,7 @@ class PEAR_DependencyDB
         if ($mode === LOCK_SH) {
             if (!file_exists($this->_lockfile)) {
                 touch($this->_lockfile);
-            } elseif (!is_file($this->_lockfile)) {
+            } else if (!is_file($this->_lockfile)) {
                 return PEAR::raiseError('could not create Dependency lock file, ' .
                     'it exists and is not a regular file');
             }

@@ -255,7 +255,7 @@ class PEAR
 
         if (is_null($code)) {
             return true;
-        } elseif (is_string($code)) {
+        } else if (is_string($code)) {
             return $data->getMessage() == $code;
         }
 
@@ -419,7 +419,7 @@ class PEAR
             }
 
             return $deleted ? true : PEAR::raiseError("The expected error you submitted does not exist"); // IMPROVE ME
-        } elseif (!empty($error_code)) {
+        } else if (!empty($error_code)) {
             // $error_code comes alone, trying to unset it
             if ($this->_checkDelExpect($error_code)) {
                 return true;
@@ -507,7 +507,7 @@ class PEAR
                 $mode    = $this->_default_error_mode;
                 $options = $this->_default_error_options;
             // Global error handler
-            } elseif (isset($GLOBALS['_PEAR_default_error_mode'])) {
+            } else if (isset($GLOBALS['_PEAR_default_error_mode'])) {
                 $mode    = $GLOBALS['_PEAR_default_error_mode'];
                 $options = $GLOBALS['_PEAR_default_error_options'];
             }
@@ -515,7 +515,7 @@ class PEAR
 
         if ($error_class !== null) {
             $ec = $error_class;
-        } elseif (isset($this) && isset($this->_error_class)) {
+        } else if (isset($this) && isset($this->_error_class)) {
             $ec = $this->_error_class;
         } else {
             $ec = 'PEAR_Error';
@@ -712,11 +712,11 @@ class PEAR
 
         if (OS_WINDOWS) {
             $suffix = '.dll';
-        } elseif (PHP_OS == 'HP-UX') {
+        } else if (PHP_OS == 'HP-UX') {
             $suffix = '.sl';
-        } elseif (PHP_OS == 'AIX') {
+        } else if (PHP_OS == 'AIX') {
             $suffix = '.a';
-        } elseif (PHP_OS == 'OSX') {
+        } else if (PHP_OS == 'OSX') {
             $suffix = '.bundle';
         } else {
             $suffix = '.so';

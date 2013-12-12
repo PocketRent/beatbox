@@ -421,7 +421,7 @@ class PEAR_Dependency2
 
             return $this->warning('warning: %s requires PHP extension "' . $dep['name'] .
                 '"' . $extra . ', installed version is ' . $version);
-        } elseif ((isset($dep['min']) || isset($dep['max'])) && !$fail && isset($dep['conflicts'])) {
+        } else if ((isset($dep['min']) || isset($dep['max'])) && !$fail && isset($dep['conflicts'])) {
             if (!isset($this->_options['nodeps']) && !isset($this->_options['force'])) {
                 return $this->raiseError('%s conflicts with PHP extension "' .
                     $dep['name'] . '"' . $extra . ', installed version is ' . $version);
@@ -447,7 +447,7 @@ class PEAR_Dependency2
                     return $this->warning('warning: %s is not compatible with PHP extension "' .
                         $dep['name'] . '" version ' .
                         $exclude);
-                } elseif (version_compare($version, $exclude, '!=') && isset($dep['conflicts'])) {
+                } else if (version_compare($version, $exclude, '!=') && isset($dep['conflicts'])) {
                     if (!isset($this->_options['nodeps']) && !isset($this->_options['force'])) {
                         return $this->raiseError('%s conflicts with PHP extension "' .
                             $dep['name'] . '"' . $extra . ', installed version is ' . $version);
@@ -778,7 +778,7 @@ class PEAR_Dependency2
 
             return $this->warning('warning: %s requires package "' . $depname . '"' .
                 $extra . ", $installed version is " . $version);
-        } elseif ((isset($dep['min']) || isset($dep['max'])) && !$fail &&
+        } else if ((isset($dep['min']) || isset($dep['max'])) && !$fail &&
               isset($dep['conflicts']) && !isset($dep['exclude'])) {
             $installed = $installed ? 'installed' : 'downloaded';
             if (!isset($this->_options['nodeps']) && !isset($this->_options['force'])) {
@@ -807,7 +807,7 @@ class PEAR_Dependency2
                         $installed . ' package "' .
                         $depname . '" version ' .
                         $exclude);
-                } elseif (version_compare($version, $exclude, '!=') && isset($dep['conflicts'])) {
+                } else if (version_compare($version, $exclude, '!=') && isset($dep['conflicts'])) {
                     $installed = $installed ? 'installed' : 'downloaded';
                     if (!isset($this->_options['nodeps']) && !isset($this->_options['force'])) {
                         return $this->raiseError('%s conflicts with package "' . $depname . '"' .
@@ -1206,7 +1206,7 @@ class PEAR_Dependency2
                         $ret = $checker->_validatePackageDownload($dep, $required, array(&$dp));
                         if (is_array($ret)) {
                             $dl->log(0, $ret[0]);
-                        } elseif (PEAR::isError($ret)) {
+                        } else if (PEAR::isError($ret)) {
                             $dl->log(0, $ret->getMessage());
                             $fail = true;
                         }

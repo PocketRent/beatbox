@@ -303,7 +303,7 @@ class PEAR_ErrorStack {
     {
         if (is_object($log) && method_exists($log, 'log') ) {
             $GLOBALS['_PEAR_ERRORSTACK_DEFAULT_LOGGER'] = &$log;
-        } elseif (is_callable($log)) {
+        } else if (is_callable($log)) {
             $GLOBALS['_PEAR_ERRORSTACK_DEFAULT_LOGGER'] = &$log;
 	}
     }
@@ -316,7 +316,7 @@ class PEAR_ErrorStack {
     {
         if (is_object($log) && method_exists($log, 'log') ) {
             $this->_logger = &$log;
-        } elseif (is_callable($log)) {
+        } else if (is_callable($log)) {
             $this->_logger = &$log;
         }
     }

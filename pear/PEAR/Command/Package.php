@@ -494,9 +494,9 @@ used for automated conversion or learning the format.
         if (in_array($svntag . DIRECTORY_SEPARATOR, explode("\n", $out))) {
             $this->ui->outputData($this->output, $command);
             return $this->raiseError('SVN tag ' . $svntag . ' for ' . $package . ' already exists.');
-        } elseif (file_exists($path['local']['base'] . 'tags') === false) {
+        } else if (file_exists($path['local']['base'] . 'tags') === false) {
             return $this->raiseError('Can not locate the tags directory at ' . $path['local']['base'] . 'tags');
-        } elseif (is_writeable($path['local']['base'] . 'tags') === false) {
+        } else if (is_writeable($path['local']['base'] . 'tags') === false) {
             return $this->raiseError('Can not write to the tag directory at ' . $path['local']['base'] . 'tags');
         } else {
             $makeCommand = 'svn mkdir ' . $releaseTag;
@@ -917,7 +917,7 @@ used for automated conversion or learning the format.
                                     }
                                     if (isset($inf['name'])) {
                                         $name .= $inf['name'];
-                                    } elseif (isset($inf['pattern'])) {
+                                    } else if (isset($inf['pattern'])) {
                                         $name .= $inf['pattern'];
                                     } else {
                                         $name .= '';

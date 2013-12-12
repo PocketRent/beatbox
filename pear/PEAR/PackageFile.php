@@ -232,7 +232,7 @@ class PEAR_PackageFile
             }
 
             return $pf;
-        } elseif (preg_match('/<package[^>]+version=[\'"]([^"\']+)[\'"]/', $data, $packageversion)) {
+        } else if (preg_match('/<package[^>]+version=[\'"]([^"\']+)[\'"]/', $data, $packageversion)) {
             $a = PEAR::raiseError('package.xml file "' . $file .
                 '" has unsupported package.xml <package> version "' . $packageversion[1] . '"');
             return $a;
@@ -345,7 +345,7 @@ class PEAR_PackageFile
             if ($name == 'package.xml') {
                 $xml = $name;
                 break;
-            } elseif (preg_match('/package.xml$/', $name, $match)) {
+            } else if (preg_match('/package.xml$/', $name, $match)) {
                 $xml = $name;
                 break;
             }
@@ -449,7 +449,7 @@ class PEAR_PackageFile
             $dir_name = realpath($info);
             if (file_exists($dir_name . '/package.xml')) {
                 $info = PEAR_PackageFile::fromPackageFile($dir_name .  '/package.xml', $state);
-            } elseif (file_exists($dir_name .  '/package2.xml')) {
+            } else if (file_exists($dir_name .  '/package2.xml')) {
                 $info = PEAR_PackageFile::fromPackageFile($dir_name .  '/package2.xml', $state);
             } else {
                 $info = PEAR::raiseError("No package definition found in '$info' directory");
@@ -470,7 +470,7 @@ class PEAR_PackageFile
             $tmp = substr($info, -4);
             if ($tmp == '.xml') {
                 $info = &PEAR_PackageFile::fromPackageFile($info, $state);
-            } elseif ($tmp == '.tar' || $tmp == '.tgz') {
+            } else if ($tmp == '.tar' || $tmp == '.tgz') {
                 $info = &PEAR_PackageFile::fromTgzFile($info, $state);
             } else {
                 $fp   = fopen($info, 'r');

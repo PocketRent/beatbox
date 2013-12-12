@@ -303,7 +303,7 @@ class PEAR_REST_11
                 // multiple releases
                 $item['p']['v'] = $item['a']['r'][0]['v'];
                 $item['p']['st'] = $item['a']['r'][0]['s'];
-            } elseif (isset($item['a'])) {
+            } else if (isset($item['a'])) {
                 // first and only release
                 $item['p']['v'] = $item['a']['r']['v'];
                 $item['p']['st'] = $item['a']['r']['s'];

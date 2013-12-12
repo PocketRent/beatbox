@@ -23,10 +23,10 @@ function map_merge_recursive(ConstMapAccess $base/*, ... */) : Map {
 				if($ret[$k] instanceof ConstMapAccess && $v instanceof ConstMapAccess) {
 					$v = map_merge_recursive($ret[$k], $v);
 				// or if both are arrays
-				} elseif(is_array($ret[$k]) && is_array($v)) {
+				} else if(is_array($ret[$k]) && is_array($v)) {
 					$v = array_merge_recursive($ret[$k], $v);
 				// If they're both collections and both the same class, add one to the other
-				} elseif($ret[$k] instanceof Collection && $v instanceof Collection) {
+				} else if($ret[$k] instanceof Collection && $v instanceof Collection) {
 					if(get_class($ret[$k]) == get_class($v)) {
 						// We clone here so as to not screw up the original item
 						$v = (clone $ret[$k])->addAll($v);

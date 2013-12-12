@@ -197,7 +197,7 @@ class Mail
                 }
 
                 $lines[] = $key . ': ' . $value;
-            } elseif (strcasecmp($key, 'Received') === 0) {
+            } else if (strcasecmp($key, 'Received') === 0) {
                 $received = array();
                 if (is_array($value)) {
                     foreach ($value as $line) {

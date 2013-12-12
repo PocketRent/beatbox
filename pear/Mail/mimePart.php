@@ -615,11 +615,11 @@ class Mail_mimePart
                 if (($dec == 32) && (!isset($line[$i]))) {
                     // convert space at eol only
                     $char = '=20';
-                } elseif ($dec == 9 && isset($line[$i])) {
+                } else if ($dec == 9 && isset($line[$i])) {
                     ; // Do nothing if a TAB is not on eol
-                } elseif (($dec == 61) || ($dec < 32) || ($dec > 126)) {
+                } else if (($dec == 61) || ($dec < 32) || ($dec > 126)) {
                     $char = $escape . sprintf('%02X', $dec);
-                } elseif (($dec == 46) && (($newline == '')
+                } else if (($dec == 46) && (($newline == '')
                     || ((strlen($newline) + strlen("=2E")) >= $line_max))
                 ) {
                     // Bug #9722: convert full-stop at bol,

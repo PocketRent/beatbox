@@ -120,7 +120,7 @@ abstract class :bb:form:field extends :bb:base {
 							$this->error = $value . ' does not match allowed format for ' . $this->getAttribute('name');
 						}
 					}
-				} elseif(!preg_match($regex, $value)) {
+				} else if(!preg_match($regex, $value)) {
 					$this->valid = false;
 					$this->error = $displayName . ' does not match allowed format';
 				}
@@ -132,7 +132,7 @@ abstract class :bb:form:field extends :bb:base {
 				if(compare_items($value, $min)) {
 					$this->valid = false;
 					$this->error = $displayName . ' is too low';
-				} elseif(($step = $this->getAttribute('step')) && strcasecmp($step, 'any') != 0) {
+				} else if(($step = $this->getAttribute('step')) && strcasecmp($step, 'any') != 0) {
 					$difference = item_difference($value, $min);
 					$mult = (int)($difference / $step);
 					if($difference - $step * $mult > 0) {

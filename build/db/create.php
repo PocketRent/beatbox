@@ -222,12 +222,12 @@ class DBFile {
 		if (($this->type == DBFile::TYPE_ALTER || $this->type == DBFile::TYPE_MIGRATE)
 			&& ($b->type == DBFile::TYPE_ALTER || $b->type == DBFile::TYPE_MIGRATE)) {
 			if ($this->timestamp < $b->timestamp) return -1;
-			elseif ($this->timestamp > $b->timestamp) return 1;
+			else if ($this->timestamp > $b->timestamp) return 1;
 			else return strcmp($this->name, $b->name);
 		}
 
 		if ($this->type < $b->type) return -1;
-		elseif ($this->type > $b->type) return 1;
+		else if ($this->type > $b->type) return 1;
 
 		if ($this->priority == -1) {
 			if ($b->priority != $this->priority) {
@@ -235,7 +235,7 @@ class DBFile {
 			}
 		} else {
 			if($this->priority < $b->priority) return -1;
-			elseif ($this->priority > $b->priority) return 1;
+			else if ($this->priority > $b->priority) return 1;
 		}
 
 		return strcmp($this->name, $b->name);

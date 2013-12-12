@@ -69,7 +69,7 @@ class PEAR_Task_Postinstallscript extends PEAR_Task_Common
             return array(PEAR_TASK_ERROR_INVALID, 'Post-install script "' .
                 $fileXml['name'] . '" is not valid: ' .
                 $file->getMessage());
-        } elseif ($file === null) {
+        } else if ($file === null) {
             return array(PEAR_TASK_ERROR_INVALID, 'Post-install script "' .
                 $fileXml['name'] . '" could not be retrieved for processing!');
         } else {

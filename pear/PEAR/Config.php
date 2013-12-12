@@ -54,7 +54,7 @@ if (PEAR_RUNTYPE == 'pear') {
 
 if (getenv('PHP_PEAR_SYSCONF_DIR')) {
     define('PEAR_CONFIG_SYSCONFDIR', getenv('PHP_PEAR_SYSCONF_DIR'));
-} elseif (getenv('SystemRoot')) {
+} else if (getenv('SystemRoot')) {
     define('PEAR_CONFIG_SYSCONFDIR', getenv('SystemRoot'));
 } else {
     define('PEAR_CONFIG_SYSCONFDIR', PHP_SYSCONFDIR);
@@ -70,7 +70,7 @@ if (getenv('PHP_PEAR_MASTER_SERVER')) {
 // Default for http_proxy
 if (getenv('PHP_PEAR_HTTP_PROXY')) {
     define('PEAR_CONFIG_DEFAULT_HTTP_PROXY', getenv('PHP_PEAR_HTTP_PROXY'));
-} elseif (getenv('http_proxy')) {
+} else if (getenv('http_proxy')) {
     define('PEAR_CONFIG_DEFAULT_HTTP_PROXY', getenv('http_proxy'));
 } else {
     define('PEAR_CONFIG_DEFAULT_HTTP_PROXY', '');
@@ -93,10 +93,10 @@ if (getenv('PHP_PEAR_EXTENSION_DIR')) {
 } else {
     if (ini_get('extension_dir')) {
         define('PEAR_CONFIG_DEFAULT_EXT_DIR', ini_get('extension_dir'));
-    } elseif (defined('PEAR_EXTENSION_DIR') &&
+    } else if (defined('PEAR_EXTENSION_DIR') &&
               file_exists(PEAR_EXTENSION_DIR) && is_dir(PEAR_EXTENSION_DIR)) {
         define('PEAR_CONFIG_DEFAULT_EXT_DIR', PEAR_EXTENSION_DIR);
-    } elseif (defined('PHP_EXTENSION_DIR')) {
+    } else if (defined('PHP_EXTENSION_DIR')) {
         define('PEAR_CONFIG_DEFAULT_EXT_DIR', PHP_EXTENSION_DIR);
     } else {
         define('PEAR_CONFIG_DEFAULT_EXT_DIR', '.');
@@ -1110,7 +1110,7 @@ class PEAR_Config extends PEAR
 
             if (!isset($var['type'])) {
                 return $this->raiseError('Configuration information must contain a type');
-            } elseif (!in_array($var['type'],
+            } else if (!in_array($var['type'],
                     array('string', 'mask', 'password', 'directory', 'file', 'set'))) {
                   return $this->raiseError(
                       'Configuration type must be one of directory, file, string, ' .
@@ -1126,7 +1126,7 @@ class PEAR_Config extends PEAR
                 foreach ($var['default'] as $config_var => $val) {
                     if (strpos($config_var, 'text') === 0) {
                         $real_default .= $val;
-                    } elseif (strpos($config_var, 'constant') === 0) {
+                    } else if (strpos($config_var, 'constant') === 0) {
                         if (!defined($val)) {
                             return $this->raiseError(
                                 'Unknown constant "' . $val . '" requested in ' .
@@ -1135,7 +1135,7 @@ class PEAR_Config extends PEAR
                         }
 
                         $real_default .= constant($val);
-                    } elseif (isset($this->configuration_info[$config_var])) {
+                    } else if (isset($this->configuration_info[$config_var])) {
                         $real_default .=
                             $this->configuration_info[$config_var]['default'];
                     } else {
@@ -1280,7 +1280,7 @@ class PEAR_Config extends PEAR
                     break;
                 }
             }
-        } elseif (isset($this->configuration[$layer]['default_channel'])) {
+        } else if (isset($this->configuration[$layer]['default_channel'])) {
             $ret = $this->configuration[$layer]['default_channel'];
         }
 
@@ -1323,7 +1323,7 @@ class PEAR_Config extends PEAR
 
         if (!$channel) {
             $channel = $this->getDefaultChannel();
-        } elseif ($channel != 'pear.php.net') {
+        } else if ($channel != 'pear.php.net') {
             $this->_lazyChannelSetup();
         }
         $channel = strtolower($channel);
@@ -1370,7 +1370,7 @@ class PEAR_Config extends PEAR
                     return $test;
                 }
             }
-        } elseif (isset($this->configuration[$layer][$key])) {
+        } else if (isset($this->configuration[$layer][$key])) {
             $test = $this->configuration[$layer][$key];
             if ($this->_installRoot) {
                 if (in_array($this->getGroup($key),
@@ -1422,7 +1422,7 @@ class PEAR_Config extends PEAR
                     break;
                 }
             }
-        } elseif (isset($this->configuration[$layer]['__channels'][$channel][$key])) {
+        } else if (isset($this->configuration[$layer]['__channels'][$channel][$key])) {
             $ret = $this->configuration[$layer]['__channels'][$channel][$key];
         }
 
@@ -1983,11 +1983,11 @@ class PEAR_Config extends PEAR
         $layer = $use === null ? 'user' : $use;
         if (isset($this->_registry[$layer])) {
             return $this->_registry[$layer];
-        } elseif ($use === null && isset($this->_registry['system'])) {
+        } else if ($use === null && isset($this->_registry['system'])) {
             return $this->_registry['system'];
-        } elseif ($use === null && isset($this->_registry['default'])) {
+        } else if ($use === null && isset($this->_registry['default'])) {
             return $this->_registry['default'];
-        } elseif ($use) {
+        } else if ($use) {
             $a = false;
             return $a;
         }
@@ -2060,7 +2060,7 @@ class PEAR_Config extends PEAR
             if (OS_WINDOWS && preg_match('/^[a-z]:/i', $path)) {
                 if (preg_match('/^[a-z]:/i', $prepend)) {
                     $prepend = substr($prepend, 2);
-                } elseif ($prepend{0} != '\\') {
+                } else if ($prepend{0} != '\\') {
                     $prepend = "\\$prepend";
                 }
                 $path = substr($path, 0, 2) . $prepend . substr($path, 2);

@@ -385,7 +385,7 @@ class PEAR_Registry extends PEAR
                 return $this->raiseError("could not create directory '{$this->statedir}'");
             }
             $init = true;
-        } elseif (!is_dir($this->statedir)) {
+        } else if (!is_dir($this->statedir)) {
             return $this->raiseError('Cannot create directory ' . $this->statedir . ', ' .
                 'it already exists and is not a directory');
         }
@@ -398,7 +398,7 @@ class PEAR_Registry extends PEAR
                   !file_exists($this->channelsdir . $ds . '__uri.reg')) {
                 $init = true;
             }
-        } elseif (!is_dir($this->channelsdir)) {
+        } else if (!is_dir($this->channelsdir)) {
             return $this->raiseError('Cannot create directory ' . $this->channelsdir . ', ' .
                 'it already exists and is not a directory');
         }
@@ -453,7 +453,7 @@ class PEAR_Registry extends PEAR
                 return $this->raiseError("could not create directory '" . $channelDir .
                     "'");
             }
-        } elseif (!is_dir($channelDir)) {
+        } else if (!is_dir($channelDir)) {
             return $this->raiseError("could not create directory '" . $channelDir .
                 "', already exists and is not a directory");
         }
@@ -480,7 +480,7 @@ class PEAR_Registry extends PEAR
             if (!System::mkdir(array('-p', $this->channelsdir))) {
                 return $this->raiseError("could not create directory '{$this->channelsdir}'");
             }
-        } elseif (!is_dir($this->channelsdir)) {
+        } else if (!is_dir($this->channelsdir)) {
             return $this->raiseError("could not create directory '{$this->channelsdir}" .
                 "', it already exists and is not a directory");
         }
@@ -494,7 +494,7 @@ class PEAR_Registry extends PEAR
             if (!System::mkdir(array('-p', $this->channelsdir . DIRECTORY_SEPARATOR . '.alias'))) {
                 return $this->raiseError("could not create directory '{$this->channelsdir}/.alias'");
             }
-        } elseif (!is_dir($this->channelsdir . DIRECTORY_SEPARATOR . '.alias')) {
+        } else if (!is_dir($this->channelsdir . DIRECTORY_SEPARATOR . '.alias')) {
             return $this->raiseError("could not create directory '{$this->channelsdir}" .
                 "/.alias', it already exists and is not a directory");
         }
@@ -2195,7 +2195,7 @@ class PEAR_Registry extends PEAR
                 if ($components['scheme'] == 'http') {
                     // uri package
                     $param = array('uri' => $param, 'channel' => '__uri');
-                } elseif($components['scheme'] != 'channel') {
+                } else if($components['scheme'] != 'channel') {
                     return PEAR::raiseError('parsePackageName(): only channel:// uris may ' .
                         'be downloaded, not "' . $param . '"', 'invalid', null, null, $param);
                 }

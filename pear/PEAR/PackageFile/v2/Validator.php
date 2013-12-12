@@ -148,7 +148,7 @@ class PEAR_PackageFile_v2_Validator
               (!isset($this->_packageInfo['license']['_content']) ||
               empty($this->_packageInfo['license']['_content']))) {
             $this->_tagCannotBeEmpty('license');
-        } elseif (empty($this->_packageInfo['license'])) {
+        } else if (empty($this->_packageInfo['license'])) {
             $this->_tagCannotBeEmpty('license');
         }
         if (empty($this->_packageInfo['summary'])) {
@@ -203,7 +203,7 @@ class PEAR_PackageFile_v2_Validator
                             $this->_usesroletaskMustHaveChannelOrUri($role['role'], 'usesrole');
                             $fail = true;
                         }
-                    } elseif (!isset($role['package'])) {
+                    } else if (!isset($role['package'])) {
                         $this->_usesroletaskMustHavePackage($role['role'], 'usesrole');
                         $fail = true;
                     }
@@ -225,7 +225,7 @@ class PEAR_PackageFile_v2_Validator
                             $this->_usesroletaskMustHaveChannelOrUri($role['task'], 'usestask');
                             $fail = true;
                         }
-                    } elseif (!isset($role['package'])) {
+                    } else if (!isset($role['package'])) {
                         $this->_usesroletaskMustHavePackage($role['task'], 'usestask');
                         $fail = true;
                     }
@@ -395,7 +395,7 @@ class PEAR_PackageFile_v2_Validator
         }
         if (count($unfoundtags)) {
             $this->_invalidTagOrder($unfoundtags, $key, $root);
-        } elseif ($key) {
+        } else if ($key) {
             // unknown tags
             $this->_invalidTagOrder('*no tags allowed here*', $key, $root);
             while ($key = next($keys)) {
@@ -1201,7 +1201,7 @@ class PEAR_PackageFile_v2_Validator
                               !isset($this->_packageInfo['contents']['dir']['dir'])) {
                             // always use nothing if the filelist has already been flattened
                             $newdirs = '';
-                        } elseif ($dirs == '') {
+                        } else if ($dirs == '') {
                             $newdirs = $dir['attribs']['name'];
                         } else {
                             $newdirs = $dirs . '/' . $dir['attribs']['name'];
@@ -1819,7 +1819,7 @@ class PEAR_PackageFile_v2_Validator
                 $this->_stack->push(__FUNCTION__, 'warning',
                     array('file' => $file, 'type' => $type, 'name' => $name, 'package' => $pn),
                     'in %file%: %type% "%name%" not prefixed with package name "%package%"');
-            } elseif ($type == 'function') {
+            } else if ($type == 'function') {
                 if (strstr($name, '::') || !strncasecmp($name, $pn, $pnl)) {
                     continue;
                 }
@@ -2003,19 +2003,19 @@ class PEAR_PackageFile_v2_Validator
                         $current_class = $data;
                         $current_class_level = $brace_level;
                         $declared_classes[] = $current_class;
-                    } elseif ($look_for == T_INTERFACE) {
+                    } else if ($look_for == T_INTERFACE) {
                         $current_interface = $data;
                         $current_class_level = $brace_level;
                         $declared_interfaces[] = $current_interface;
-                    } elseif ($look_for == T_IMPLEMENTS) {
+                    } else if ($look_for == T_IMPLEMENTS) {
                         $implements[$current_class] = $data;
-                    } elseif ($look_for == T_EXTENDS) {
+                    } else if ($look_for == T_EXTENDS) {
                         $extends[$current_class] = $data;
-                    } elseif ($look_for == T_FUNCTION) {
+                    } else if ($look_for == T_FUNCTION) {
                         if ($current_class) {
                             $current_function = "$current_class::$data";
                             $declared_methods[$current_class][] = $data;
-                        } elseif ($current_interface) {
+                        } else if ($current_interface) {
                             $current_function = "$current_interface::$data";
                             $declared_methods[$current_interface][] = $data;
                         } else {
@@ -2025,7 +2025,7 @@ class PEAR_PackageFile_v2_Validator
 
                         $current_function_level = $brace_level;
                         $m = array();
-                    } elseif ($look_for == T_NEW) {
+                    } else if ($look_for == T_NEW) {
                         $used_classes[$data] = true;
                     }
 

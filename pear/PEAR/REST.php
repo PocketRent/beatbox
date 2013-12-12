@@ -246,7 +246,7 @@ class PEAR_REST
         $result = $this->saveCacheFile($cacheidfile, $idData);
         if (PEAR::isError($result)) {
             return $result;
-        } elseif ($nochange) {
+        } else if ($nochange) {
             return true;
         }
 
@@ -429,7 +429,7 @@ class PEAR_REST
         while ($line = trim(fgets($fp, 1024))) {
             if (preg_match('/^([^:]+):\s+(.*)\s*\\z/', $line, $matches)) {
                 $headers[strtolower($matches[1])] = trim($matches[2]);
-            } elseif (preg_match('|^HTTP/1.[01] ([0-9]{3}) |', $line, $matches)) {
+            } else if (preg_match('|^HTTP/1.[01] ([0-9]{3}) |', $line, $matches)) {
                 $reply = (int)$matches[1];
                 if ($reply == 304 && ($lastmodified || ($lastmodified === false))) {
                     return false;

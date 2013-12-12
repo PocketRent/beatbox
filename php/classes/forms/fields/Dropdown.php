@@ -68,7 +68,7 @@ class :bb:form:dropdown extends :bb:form:field {
 						return $check;
 					}
 				}
-			} elseif($key == $check) {
+			} else if($key == $check) {
 				return $check;
 			}
 		}

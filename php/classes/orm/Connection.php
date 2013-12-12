@@ -323,7 +323,7 @@ final class Connection {
 			return $s;
 		} else if ($val === null) {
 			return 'NULL';
-		} elseif(is_bool($val)) {
+		} else if(is_bool($val)) {
 			return $val ? 'true' : 'false';
 		} else {
 			return $this->withRawConn(function ($conn) use ($val) {

@@ -63,7 +63,7 @@ class :bb:form:time extends :bb:form:field {
 	public function setValue(mixed $value) : :bb:form:time {
 		if(is_a($value, 'DateTime')) {
 			parent::setValue($value->Format('H:i'));
-		} elseif(is_array($value)) {
+		} else if(is_array($value)) {
 			$value = "$value[Hour]-$value[Minute]";
 			parent::setValue($value);
 		} else {
@@ -79,10 +79,10 @@ class :bb:form:time extends :bb:form:field {
 			if($hours < $this->getAttribute('minHour')) {
 				$this->valid = false;
 				$this->error = 'Hours can not be before ' . $this->getAttribute('minHour');
-			} elseif($hours > $this->getAttribute('maxHour')) {
+			} else if($hours > $this->getAttribute('maxHour')) {
 				$this->valid = false;
 				$this->error = 'Hours can not be after ' . $this->getAttribute('minHour');
-			} elseif($minutes % $this->getAttribute('minuteStep') != 0) {
+			} else if($minutes % $this->getAttribute('minuteStep') != 0) {
 				$this->valid = false;
 				$this->error = 'Minutes must be a multiple of ' . $this->getAttribute('minuteStep');
 			}

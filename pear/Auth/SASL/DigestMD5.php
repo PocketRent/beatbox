@@ -113,7 +113,7 @@ class Auth_SASL_DigestMD5 extends Auth_SASL_Common
                 }
 
             // Any other multiple instance = failure
-            } elseif (!empty($tokens[$matches[1]])) {
+            } else if (!empty($tokens[$matches[1]])) {
                 $tokens = array();
                 break;
 
@@ -181,7 +181,7 @@ class Auth_SASL_DigestMD5 extends Auth_SASL_Common
         if (@file_exists('/dev/urandom') && $fd = @fopen('/dev/urandom', 'r')) {
             return base64_encode(fread($fd, 32));
 
-        } elseif (@file_exists('/dev/random') && $fd = @fopen('/dev/random', 'r')) {
+        } else if (@file_exists('/dev/random') && $fd = @fopen('/dev/random', 'r')) {
             return base64_encode(fread($fd, 32));
 
         } else {

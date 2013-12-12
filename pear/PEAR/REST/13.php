@@ -110,7 +110,7 @@ class PEAR_REST_13 extends PEAR_REST_10
                     $found = true;
                     break;
                 }
-            } elseif (isset($version)) {
+            } else if (isset($version)) {
                 if ($release['v'] == $version) {
                     if (!isset($this->_rest->_options['force']) &&
                           !isset($version) &&
@@ -230,7 +230,7 @@ class PEAR_REST_13 extends PEAR_REST_10
                 foreach ($release['co'] as $entry) {
                     if (isset($entry['x']) && !is_array($entry['x'])) {
                         $entry['x'] = array($entry['x']);
-                    } elseif (!isset($entry['x'])) {
+                    } else if (!isset($entry['x'])) {
                         $entry['x'] = array();
                     }
 

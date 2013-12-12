@@ -170,7 +170,7 @@ and uninstall).
 
             if ($value === false) {
                 $value = 'false';
-            } elseif ($value === true) {
+            } else if ($value === true) {
                 $value = 'true';
             }
 
@@ -377,7 +377,7 @@ and uninstall).
 
             if ($value === false) {
                 $value = 'false';
-            } elseif ($value === true) {
+            } else if ($value === true) {
                 $value = 'true';
             }
             $data['data'][$config->getGroup($key)][] =

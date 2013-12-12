@@ -134,7 +134,7 @@ class Mail_sendmail extends Mail {
 
         if (!isset($from)) {
             return PEAR::raiseError('No from address given.');
-        } elseif (strpos($from, ' ') !== false ||
+        } else if (strpos($from, ' ') !== false ||
                   strpos($from, ';') !== false ||
                   strpos($from, '&') !== false ||
                   strpos($from, '`') !== false) {

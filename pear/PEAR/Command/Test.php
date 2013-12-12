@@ -147,7 +147,7 @@ Run regression tests with PHP\'s regression testing script (run-tests.php).',
                     if (isset($options['phpunit']) && preg_match('/AllTests\.php\\z/i', $name)) {
                         $params[] = $atts['installed_as'];
                         continue;
-                    } elseif (!preg_match('/\.phpt\\z/', $name)) {
+                    } else if (!preg_match('/\.phpt\\z/', $name)) {
                         continue;
                     }
                     $params[] = $atts['installed_as'];
@@ -318,7 +318,7 @@ Run regression tests with PHP\'s regression testing script (run-tests.php).',
                     fclose($fp);
                     $this->ui->outputData('wrote log to "' . realpath('run-tests.log') . '"', $command);
                 }
-            } elseif (file_exists('run-tests.log') && !is_dir('run-tests.log')) {
+            } else if (file_exists('run-tests.log') && !is_dir('run-tests.log')) {
                 @unlink('run-tests.log');
             }
         }

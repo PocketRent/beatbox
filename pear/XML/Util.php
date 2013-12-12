@@ -329,7 +329,7 @@ class XML_Util
     {
         if (is_array($uri)) {
             $ref = sprintf(' PUBLIC "%s" "%s"', $uri['id'], $uri['uri']);
-        } elseif (!empty($uri)) {
+        } else if (!empty($uri)) {
             $ref = sprintf(' SYSTEM "%s"', $uri);
         } else {
             $ref = '';
@@ -619,7 +619,7 @@ class XML_Util
             } else {
                 $tag['qname'] = $tag['localPart'];
             }
-        } elseif (isset($tag['namespaceUri']) && !isset($tag['namespace'])) {
+        } else if (isset($tag['namespaceUri']) && !isset($tag['namespace'])) {
             // namespace URI is set, but no namespace
 
             $parts = XML_Util::splitQualifiedName($tag['qname']);

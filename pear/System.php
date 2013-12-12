@@ -253,7 +253,7 @@ class System
         foreach ($opts[0] as $opt) {
             if ($opt[0] == 'p') {
                 $create_parents = true;
-            } elseif ($opt[0] == 'm') {
+            } else if ($opt[0] == 'm') {
                 // if the mode is clearly an octal number (starts with 0)
                 // convert it to decimal
                 if (strlen($opt[1]) && $opt[1]{0} == '0') {
@@ -327,7 +327,7 @@ class System
                 $mode = 'wb';
                 $outputfile = $args[$i+1];
                 break;
-            } elseif ($args[$i] == '>>') {
+            } else if ($args[$i] == '>>') {
                 $mode = 'ab+';
                 $outputfile = $args[$i+1];
                 break;
@@ -398,7 +398,7 @@ class System
         foreach ($opts[0] as $opt) {
             if ($opt[0] == 'd') {
                 $tmp_is_dir = true;
-            } elseif ($opt[0] == 't') {
+            } else if ($opt[0] == 't') {
                 $tmpdir = $opt[1];
             }
         }
@@ -605,7 +605,7 @@ class System
         $path = System::_dirToStruct($dir, $depth, 0, true);
         if ($do_files && $do_dirs) {
             $files = array_merge($path['files'], $path['dirs']);
-        } elseif ($do_dirs) {
+        } else if ($do_dirs) {
             $files = $path['dirs'];
         } else {
             $files = $path['files'];

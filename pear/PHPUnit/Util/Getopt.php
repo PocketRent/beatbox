@@ -93,7 +93,7 @@ class PHPUnit_Util_Getopt
                 break;
             }
 
-            elseif (strlen($arg) > 1 && $arg[1] == '-') {
+            else if (strlen($arg) > 1 && $arg[1] == '-') {
                 self::parseLongOption(
                   substr($arg, 2), $long_options, $opts, $args
                 );

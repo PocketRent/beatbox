@@ -360,7 +360,7 @@ class PEAR_Installer extends PEAR_Downloader
                             }
                             continue;
                         }
-                    } elseif ($a['type'] == 'pear-config') {
+                    } else if ($a['type'] == 'pear-config') {
                         if ($a['to'] == 'master_server') {
                             $chan = $this->_registry->getChannel($channel);
                             if (!PEAR::isError($chan)) {
@@ -377,7 +377,7 @@ class PEAR_Installer extends PEAR_Downloader
                             }
                             continue;
                         }
-                    } elseif ($a['type'] == 'package-info') {
+                    } else if ($a['type'] == 'package-info') {
                         if ($t = $this->pkginfo->packageInfo($a['to'])) {
                             $to = $t;
                         } else {
@@ -789,7 +789,7 @@ class PEAR_Installer extends PEAR_Downloader
                             if (!is_dir($data[0]) &&
                                   (!is_writable($data[0]) || !($fp = @fopen($data[0], 'a')))) {
                                 $errors[] = "permission denied ($type): $data[0]";
-                            } elseif ($fp) {
+                            } else if ($fp) {
                                 fclose($fp);
                             }
                         }
@@ -1692,7 +1692,7 @@ class PEAR_Installer extends PEAR_Downloader
             if (!isset($options['soft'])) {
                 $this->log(0, 'WARNING: ' . $e->getMessage());
             }
-        } elseif (is_array($e)) {
+        } else if (is_array($e)) {
             if (!isset($options['soft'])) {
                 $this->log(0, $e[0]);
             }

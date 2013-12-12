@@ -62,7 +62,7 @@ class PEAR_PackageFile_Generator_v1
             if (!($where = System::mktemp(array('-d')))) {
                 return PEAR::raiseError('PEAR_Packagefile_v1::toTgz: mktemp failed');
             }
-        } elseif (!@System::mkDir(array('-p', $where))) {
+        } else if (!@System::mkDir(array('-p', $where))) {
             return PEAR::raiseError('PEAR_Packagefile_v1::toTgz: "' . $where . '" could' .
                 ' not be created');
         }
@@ -115,7 +115,7 @@ class PEAR_PackageFile_Generator_v1
             $ok = $tar->createModify(array($packagexml), '', $where);
             if (PEAR::isError($ok)) {
                 return $ok;
-            } elseif (!$ok) {
+            } else if (!$ok) {
                 return PEAR::raiseError('PEAR_Packagefile_v1::toTgz: tarball creation failed');
             }
             // ----- Add the content of the package
@@ -144,7 +144,7 @@ class PEAR_PackageFile_Generator_v1
             if (!($where = System::mktemp(array('-d')))) {
                 return PEAR::raiseError('PEAR_Packagefile_v1::toPackageFile: mktemp failed');
             }
-        } elseif (!@System::mkDir(array('-p', $where))) {
+        } else if (!@System::mkDir(array('-p', $where))) {
             return PEAR::raiseError('PEAR_Packagefile_v1::toPackageFile: "' . $where . '" could' .
                 ' not be created');
         }

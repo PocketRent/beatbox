@@ -136,7 +136,7 @@ class Unescaper
     {
         if (function_exists('mb_convert_encoding')) {
             return mb_convert_encoding($value, $to, $from);
-        } elseif (function_exists('iconv')) {
+        } else if (function_exists('iconv')) {
             return iconv($from, $to, $value);
         }
 

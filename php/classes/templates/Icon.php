@@ -62,7 +62,7 @@ class :bb:icon extends :bb:base {
 				$textNodes[] = $child;
 				$fullText .= $child->wholeText;
 
-			} elseif ($child instanceof DOMElement) {
+			} else if ($child instanceof DOMElement) {
 				$childNodes[] = $child;
 
 			} else {

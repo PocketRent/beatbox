@@ -148,7 +148,7 @@ http://pear.php.net/dtd/package-2.0.xsd',
             if (!($where = System::mktemp(array('-d')))) {
                 return PEAR::raiseError('PEAR_Packagefile_v2::toTgz: mktemp failed');
             }
-        } elseif (!@System::mkDir(array('-p', $where))) {
+        } else if (!@System::mkDir(array('-p', $where))) {
             return PEAR::raiseError('PEAR_Packagefile_v2::toTgz: "' . $where . '" could' .
                 ' not be created');
         }
@@ -275,7 +275,7 @@ http://pear.php.net/dtd/package-2.0.xsd',
             $ok = $tar->createModify(array($packagexml), '', $where);
             if (PEAR::isError($ok)) {
                 return $packager->raiseError($ok);
-            } elseif (!$ok) {
+            } else if (!$ok) {
                 return $packager->raiseError('PEAR_Packagefile_v2::toTgz(): adding ' . $name .
                     ' failed');
             }
@@ -311,7 +311,7 @@ http://pear.php.net/dtd/package-2.0.xsd',
             if (!($where = System::mktemp(array('-d')))) {
                 return PEAR::raiseError('PEAR_Packagefile_v2::toPackageFile: mktemp failed');
             }
-        } elseif (!@System::mkDir(array('-p', $where))) {
+        } else if (!@System::mkDir(array('-p', $where))) {
             return PEAR::raiseError('PEAR_Packagefile_v2::toPackageFile: "' . $where . '" could' .
                 ' not be created');
         }
@@ -622,7 +622,7 @@ http://pear.php.net/dtd/package-2.0.xsd',
     {
         if (is_array($value)) {
             $xml = $this->_serializeArray($value, $tagName, $attributes);
-        } elseif (is_object($value)) {
+        } else if (is_object($value)) {
             $xml = $this->_serializeObject($value, $tagName);
         } else {
             $tag = array(
@@ -864,7 +864,7 @@ http://pear.php.net/dtd/package-2.0.xsd',
             if (empty($tag['content'])) {
                 $tag['content'] = '';
             }
-        } elseif(is_scalar($tag['content']) && (string)$tag['content'] == '') {
+        } else if(is_scalar($tag['content']) && (string)$tag['content'] == '') {
             $tag['content'] = '';
         }
 
@@ -880,11 +880,11 @@ http://pear.php.net/dtd/package-2.0.xsd',
             }
 
             $tag = XML_Util::createTagFromArray($tag, $replaceEntities, $multiline, $indent, $this->options['linebreak']);
-        } elseif (is_array($tag['content'])) {
+        } else if (is_array($tag['content'])) {
             $tag = $this->_serializeArray($tag['content'], $tag['qname'], $tag['attributes']);
-        } elseif (is_object($tag['content'])) {
+        } else if (is_object($tag['content'])) {
             $tag = $this->_serializeObject($tag['content'], $tag['qname'], $tag['attributes']);
-        } elseif (is_resource($tag['content'])) {
+        } else if (is_resource($tag['content'])) {
             settype($tag['content'], 'string');
             $tag = XML_Util::createTagFromArray($tag, $replaceEntities);
         }

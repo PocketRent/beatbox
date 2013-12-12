@@ -598,7 +598,7 @@ class PEAR_ChannelFile
         $info = $this->_channelInfo;
         if (empty($info['name'])) {
             $this->_validateError(PEAR_CHANNELFILE_ERROR_NO_NAME);
-        } elseif (!$this->validChannelServer($info['name'])) {
+        } else if (!$this->validChannelServer($info['name'])) {
             if ($info['name'] != '__uri') {
                 $this->_validateError(PEAR_CHANNELFILE_ERROR_INVALID_NAME, array('tag' => 'name',
                     'name' => $info['name']));
@@ -606,7 +606,7 @@ class PEAR_ChannelFile
         }
         if (empty($info['summary'])) {
             $this->_validateError(PEAR_CHANNELFILE_ERROR_NO_SUMMARY);
-        } elseif (strpos(trim($info['summary']), "\n") !== false) {
+        } else if (strpos(trim($info['summary']), "\n") !== false) {
             $this->_validateWarning(PEAR_CHANNELFILE_ERROR_MULTILINE_SUMMARY,
                 array('summary' => $info['summary']));
         }
@@ -663,7 +663,7 @@ class PEAR_ChannelFile
                 if (!isset($mirror['attribs']['host'])) {
                     $this->_validateError(PEAR_CHANNELFILE_ERROR_NO_HOST,
                       array('type' => 'mirror'));
-                } elseif (!$this->validChannelServer($mirror['attribs']['host'])) {
+                } else if (!$this->validChannelServer($mirror['attribs']['host'])) {
                     $this->_validateError(PEAR_CHANNELFILE_ERROR_INVALID_HOST,
                         array('server' => $mirror['attribs']['host'], 'type' => 'mirror'));
                 }
@@ -1028,7 +1028,7 @@ class PEAR_ChannelFile
                 if (!isset($this->_channelInfo['servers'])) {
                     $this->_channelInfo['servers'] = array('primary' =>
                         array('rest' => array()));
-                } elseif (!isset($this->_channelInfo['servers']['primary'])) {
+                } else if (!isset($this->_channelInfo['servers']['primary'])) {
                     $this->_channelInfo['servers']['primary'] = array('rest' => array());
                 }
 
@@ -1106,7 +1106,7 @@ class PEAR_ChannelFile
                 }
 
                 return false;
-            } elseif ($this->_channelInfo['servers']['mirror']['attribs']['host'] == $mirror) {
+            } else if ($this->_channelInfo['servers']['mirror']['attribs']['host'] == $mirror) {
                 $this->_channelInfo['servers']['mirror']['attribs']['port'] = $port;
                 $this->_isValid = false;
                 return true;
@@ -1149,7 +1149,7 @@ class PEAR_ChannelFile
                 }
 
                 return false;
-            } elseif ($this->_channelInfo['servers']['mirror']['attribs']['host'] == $mirror) {
+            } else if ($this->_channelInfo['servers']['mirror']['attribs']['host'] == $mirror) {
                 if (!$ssl) {
                     if (isset($this->_channelInfo['servers']['mirror']['attribs']['ssl'])) {
                         unset($this->_channelInfo['servers']['mirror']['attribs']['ssl']);
@@ -1186,7 +1186,7 @@ class PEAR_ChannelFile
         if (empty($server)) {
             $this->_validateError(PEAR_CHANNELFILE_ERROR_NO_SERVER);
             return false;
-        } elseif (!$this->validChannelServer($server)) {
+        } else if (!$this->validChannelServer($server)) {
             $this->_validateError(PEAR_CHANNELFILE_ERROR_INVALID_NAME,
                 array('tag' => 'name', 'name' => $server));
             return false;
@@ -1226,7 +1226,7 @@ class PEAR_ChannelFile
         if (empty($summary)) {
             $this->_validateError(PEAR_CHANNELFILE_ERROR_NO_SUMMARY);
             return false;
-        } elseif (strpos(trim($summary), "\n") !== false) {
+        } else if (strpos(trim($summary), "\n") !== false) {
             $this->_validateWarning(PEAR_CHANNELFILE_ERROR_MULTILINE_SUMMARY,
                 array('summary' => $summary));
         }
@@ -1309,14 +1309,14 @@ class PEAR_ChannelFile
             if (!isset($this->_channelInfo['servers'])) {
                 $this->_channelInfo['servers'] = array('primary' =>
                     array($type => array()));
-            } elseif (!isset($this->_channelInfo['servers']['primary'])) {
+            } else if (!isset($this->_channelInfo['servers']['primary'])) {
                 $this->_channelInfo['servers']['primary'] = array($type => array());
             }
 
             $this->_channelInfo['servers']['primary'][$type]['function'] = $set;
             $this->_isValid = false;
             return true;
-        } elseif (!isset($this->_channelInfo['servers']['primary'][$type]['function'][0])) {
+        } else if (!isset($this->_channelInfo['servers']['primary'][$type]['function'][0])) {
             $this->_channelInfo['servers']['primary'][$type]['function'] = array(
                 $this->_channelInfo['servers']['primary'][$type]['function']);
         }
@@ -1364,7 +1364,7 @@ class PEAR_ChannelFile
             $setmirror[$type]['function'] = $set;
             $this->_isValid = false;
             return true;
-        } elseif (!isset($setmirror[$type]['function'][0])) {
+        } else if (!isset($setmirror[$type]['function'][0])) {
             $setmirror[$type]['function'] = array($setmirror[$type]['function']);
         }
 
@@ -1413,7 +1413,7 @@ class PEAR_ChannelFile
             $setmirror['rest']['baseurl'] = $set;
             $this->_isValid = false;
             return true;
-        } elseif (!isset($setmirror['rest']['baseurl'][0])) {
+        } else if (!isset($setmirror['rest']['baseurl'][0])) {
             $setmirror['rest']['baseurl'] = array($setmirror['rest']['baseurl']);
         }
 

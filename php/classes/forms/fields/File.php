@@ -32,13 +32,13 @@ class :bb:form:file extends :bb:form:field {
 			if(in_array($file['error'], [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE])) {
 				$this->valid = false;
 				$this->error = 'File is too big';
-			} elseif(in_array($file['error'], [UPLOAD_ERR_NO_FILE, UPLOAD_ERR_PARTIAL])) {
+			} else if(in_array($file['error'], [UPLOAD_ERR_NO_FILE, UPLOAD_ERR_PARTIAL])) {
 				$this->valid = false;
 				$this->error = 'File did not upload successfully';
 			} else {
 				http_error(500);
 			}
-		} elseif($accept = $this->getAttribute('accept')) {
+		} else if($accept = $this->getAttribute('accept')) {
 			$allowed = array_filter(array_map('strtolower', array_map('trim', explode(',', $accept))));
 			if(($pos = strrpos($file['name'], '.')) !== false) {
 				$ext = substr($file['name'], $pos);
@@ -72,7 +72,7 @@ class :bb:form:file extends :bb:form:field {
 				if($values) {
 					return null;
 				}
-			} elseif($value['error'] != UPLOAD_ERR_OK) {
+			} else if($value['error'] != UPLOAD_ERR_OK) {
 				return null;
 			}
 		}

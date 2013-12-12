@@ -51,7 +51,7 @@ class Outbound {
 	public static function real_send(\string $to, \string $subject, \string $content, \string $from, \Map $attachments) : void {
 		if(strpos($content, '<body') === false) {
 			$content = "<!doctype html><html><body>$content</body></html>";
-		} elseif(strpos($content, '<html') === false) {
+		} else if(strpos($content, '<html') === false) {
 			$content = "<!doctype html><html>$content</html>";
 		}
 		$sender = defined('MAIL_SENDER') ? MAIL_SENDER : __NAMESPACE__ . '\Sendmail';

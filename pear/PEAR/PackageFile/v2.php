@@ -1687,7 +1687,7 @@ class PEAR_PackageFile_v2
                                   !isset($dep['max'])) {
                                 $s['rel'] = 'has';
                                 $s['optional'] = $optional;
-                            } elseif (isset($dep['min']) &&
+                            } else if (isset($dep['min']) &&
                                   isset($dep['max'])) {
                                 $s['rel'] = 'ge';
                                 $s1 = $s;
@@ -1704,7 +1704,7 @@ class PEAR_PackageFile_v2
                                 $s['optional'] = $optional;
                                 $s1['optional'] = $optional;
                                 $ret[] = $s1;
-                            } elseif (isset($dep['min'])) {
+                            } else if (isset($dep['min'])) {
                                 if (isset($dep['exclude']) &&
                                       $dep['exclude'] == $dep['min']) {
                                     $s['rel'] = 'gt';
@@ -1716,7 +1716,7 @@ class PEAR_PackageFile_v2
                                 if ($dtype != 'php') {
                                     $s['name'] = $dep['name'];
                                 }
-                            } elseif (isset($dep['max'])) {
+                            } else if (isset($dep['max'])) {
                                 if (isset($dep['exclude']) &&
                                       $dep['exclude'] == $dep['max']) {
                                     $s['rel'] = 'lt';

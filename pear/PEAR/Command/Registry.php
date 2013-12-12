@@ -398,13 +398,13 @@ installed package.'
                 exit(1);
             }
             // "pear shell-test Foo 1.0"
-        } elseif (count($params) === 2) {
+        } else if (count($params) === 2) {
             $v = $reg->packageInfo($package, 'version', $channel);
             if (!$v || !version_compare("$v", "{$params[1]}", "ge")) {
                 exit(1);
             }
             // "pear shell-test Foo ge 1.0"
-        } elseif (count($params) === 3) {
+        } else if (count($params) === 3) {
             $v = $reg->packageInfo($package, 'version', $channel);
             if (!$v || !version_compare("$v", "{$params[2]}", $params[1])) {
                 exit(1);
@@ -604,7 +604,7 @@ installed package.'
                 $hdate = date('Y-m-d', $info[$key]);
                 unset($info[$key]);
                 $info['Last Modified'] = $hdate;
-            } elseif ($key == '_lastversion') {
+            } else if ($key == '_lastversion') {
                 $info['Previous Installed Version'] = $info[$key] ? $info[$key] : '- None -';
                 unset($info[$key]);
             } else {
@@ -872,10 +872,10 @@ installed package.'
                     if (isset($package['max']) && isset($package['min'])) {
                         $info[$infoindex] .= " \n  Versions " .
                             $package['min'] . '-' . $package['max'];
-                    } elseif (isset($package['min'])) {
+                    } else if (isset($package['min'])) {
                         $info[$infoindex] .= " \n  Version " .
                             $package['min'] . ' or newer';
-                    } elseif (isset($package['max'])) {
+                    } else if (isset($package['max'])) {
                         $info[$infoindex] .= " \n  Version " .
                             $package['max'] . ' or older';
                     }
@@ -996,10 +996,10 @@ installed package.'
                         if (isset($package['max']) && isset($package['min'])) {
                             $info[$infoindex] .= " \n  Versions " .
                                 $package['min'] . '-' . $package['max'];
-                        } elseif (isset($package['min'])) {
+                        } else if (isset($package['min'])) {
                             $info[$infoindex] .= " \n  Version " .
                                 $package['min'] . ' or newer';
-                        } elseif (isset($package['max'])) {
+                        } else if (isset($package['max'])) {
                             $info[$infoindex] .= " \n  Version " .
                                 $package['min'] . ' or older';
                         }
@@ -1078,10 +1078,10 @@ installed package.'
                             if (isset($package['max']) && isset($package['min'])) {
                                 $info[$groupindex] .= " \n  Versions " .
                                     $package['min'] . '-' . $package['max'];
-                            } elseif (isset($package['min'])) {
+                            } else if (isset($package['min'])) {
                                 $info[$groupindex] .= " \n  Version " .
                                     $package['min'] . ' or newer';
-                            } elseif (isset($package['max'])) {
+                            } else if (isset($package['max'])) {
                                 $info[$groupindex] .= " \n  Version " .
                                     $package['min'] . ' or older';
                             }

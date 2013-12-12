@@ -163,7 +163,7 @@ class PEAR_Packager extends PEAR_Common
                 $this->log(1, 'Tag the released code with "pear cvstag ' .
                     $main->getPackageFile() . '"');
                 $this->log(1, "(or set the CVS tag $cvstag by hand)");
-            } elseif (file_exists("$pkgdir/.svn")) {
+            } else if (file_exists("$pkgdir/.svn")) {
                 $svnversion = preg_replace('/[^a-z0-9]/i', '.', $pf->getVersion());
                 $svntag = $pf->getName() . "-$svnversion";
                 $this->log(1, 'Tag the released code with "pear svntag ' .
@@ -188,7 +188,7 @@ class PEAR_Packager extends PEAR_Common
                 $cvstag = "RELEASE_$cvsversion";
                 $this->log(1, "Tag the released code with `pear cvstag $pkgfile'");
                 $this->log(1, "(or set the CVS tag $cvstag by hand)");
-            } elseif (file_exists("$pkgdir/.svn")) {
+            } else if (file_exists("$pkgdir/.svn")) {
                 $svnversion = preg_replace('/[^a-z0-9]/i', '.', $pf->getVersion());
                 $svntag = $pf->getName() . "-$svnversion";
                 $this->log(1, "Tag the released code with `pear svntag $pkgfile'");

@@ -564,7 +564,7 @@ class PEAR_Downloader extends PEAR_Common
                                     if (!isset($this->_options['soft'])) {
                                         $this->log(0, $e->getMessage());
                                     }
-                                } elseif (is_array($e) && !$param->alreadyValidated()) {
+                                } else if (is_array($e) && !$param->alreadyValidated()) {
                                     if (!isset($this->_options['soft'])) {
                                         $this->log(0, $e[0]);
                                     }
@@ -578,7 +578,7 @@ class PEAR_Downloader extends PEAR_Common
                                         if (!isset($this->_options['soft'])) {
                                             $this->log(0, $e->getMessage());
                                         }
-                                    } elseif (is_array($e) && !$param->alreadyValidated()) {
+                                    } else if (is_array($e) && !$param->alreadyValidated()) {
                                         if (!isset($this->_options['soft'])) {
                                             $this->log(0, $e[0]);
                                         }
@@ -597,7 +597,7 @@ class PEAR_Downloader extends PEAR_Common
                                         if (!isset($this->_options['soft'])) {
                                             $this->log(0, $e->getMessage());
                                         }
-                                    } elseif (is_array($e) && !$param->alreadyValidated()) {
+                                    } else if (is_array($e) && !$param->alreadyValidated()) {
                                         if (!isset($this->_options['soft'])) {
                                             $this->log(0, $e[0]);
                                         }
@@ -611,7 +611,7 @@ class PEAR_Downloader extends PEAR_Common
                                             if (!isset($this->_options['soft'])) {
                                                 $this->log(0, $e->getMessage());
                                             }
-                                        } elseif (is_array($e) && !$param->alreadyValidated()) {
+                                        } else if (is_array($e) && !$param->alreadyValidated()) {
                                             if (!isset($this->_options['soft'])) {
                                                 $this->log(0, $e[0]);
                                             }
@@ -646,7 +646,7 @@ class PEAR_Downloader extends PEAR_Common
                                             if (!isset($this->_options['soft'])) {
                                                 $this->log(0, $e->getMessage());
                                             }
-                                        } elseif (is_array($e) && !$param->alreadyValidated()) {
+                                        } else if (is_array($e) && !$param->alreadyValidated()) {
                                             if (!isset($this->_options['soft'])) {
                                                 $this->log(0, $e[0]);
                                             }
@@ -660,7 +660,7 @@ class PEAR_Downloader extends PEAR_Common
                                                 if (!isset($this->_options['soft'])) {
                                                     $this->log(0, $e->getMessage());
                                                 }
-                                            } elseif (is_array($e) && !$param->alreadyValidated()) {
+                                            } else if (is_array($e) && !$param->alreadyValidated()) {
                                                 if (!isset($this->_options['soft'])) {
                                                     $this->log(0, $e[0]);
                                                 }
@@ -677,7 +677,7 @@ class PEAR_Downloader extends PEAR_Common
                                 if (!isset($this->_options['soft'])) {
                                     $this->log(0, $e->getMessage());
                                 }
-                            } elseif (is_array($e) && !$param->alreadyValidated()) {
+                            } else if (is_array($e) && !$param->alreadyValidated()) {
                                 if (!isset($this->_options['soft'])) {
                                     $this->log(0, $e[0]);
                                 }
@@ -989,7 +989,7 @@ class PEAR_Downloader extends PEAR_Common
                 return PEAR::raiseError('Package "' . $param . '" is not valid');
             }
             return $info;
-        } elseif ($chan->supportsREST($this->config->get('preferred_mirror'))
+        } else if ($chan->supportsREST($this->config->get('preferred_mirror'))
               &&
                 (
                   ($base2 = $chan->getBaseURL('REST1.3', $this->config->get('preferred_mirror')))
@@ -1136,7 +1136,7 @@ class PEAR_Downloader extends PEAR_Common
             if (OS_WINDOWS && preg_match('/^[a-z]:/i', $path)) {
                 if (preg_match('/^[a-z]:/i', $prepend)) {
                     $prepend = substr($prepend, 2);
-                } elseif ($prepend{0} != '\\') {
+                } else if ($prepend{0} != '\\') {
                     $prepend = "\\$prepend";
                 }
                 $path = substr($path, 0, 2) . $prepend . substr($path, 2);
@@ -1667,7 +1667,7 @@ class PEAR_Downloader extends PEAR_Common
         while (trim($line = fgets($fp, 1024))) {
             if (preg_match('/^([^:]+):\s+(.*)\s*\\z/', $line, $matches)) {
                 $headers[strtolower($matches[1])] = trim($matches[2]);
-            } elseif (preg_match('|^HTTP/1.[01] ([0-9]{3}) |', $line, $matches)) {
+            } else if (preg_match('|^HTTP/1.[01] ([0-9]{3}) |', $line, $matches)) {
                 $reply = (int)$matches[1];
                 if ($reply == 304 && ($lastmodified || ($lastmodified === false))) {
                     return false;

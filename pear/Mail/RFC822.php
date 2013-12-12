@@ -235,10 +235,10 @@ class Mail_RFC822 {
         if ($this->_isGroup($address) && !isset($this->error)) {
             $split_char = ';';
             $is_group   = true;
-        } elseif (!isset($this->error)) {
+        } else if (!isset($this->error)) {
             $split_char = ',';
             $is_group   = false;
-        } elseif (isset($this->error)) {
+        } else if (isset($this->error)) {
             return false;
         }
 
@@ -284,7 +284,7 @@ class Mail_RFC822 {
             $address = trim(substr($address, 1));
             return $address;
 
-        } elseif (strlen($address) > 0) {
+        } else if (strlen($address) > 0) {
             return $address;
 
         } else {

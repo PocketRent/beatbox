@@ -111,7 +111,7 @@ class Parser
                         $data[] = $this->parseValue($values['value'], $exceptionOnInvalidType, $objectSupport);
                     }
                 }
-            } elseif (preg_match('#^(?P<key>'.Inline::REGEX_QUOTED_STRING.'|[^ \'"\[\{].*?) *\:(\s+(?P<value>.+?))?\s*$#u', $this->currentLine, $values)) {
+            } else if (preg_match('#^(?P<key>'.Inline::REGEX_QUOTED_STRING.'|[^ \'"\[\{].*?) *\:(\s+(?P<value>.+?))?\s*$#u', $this->currentLine, $values)) {
                 if ($context && 'sequence' == $context) {
                     throw new ParseException('You cannot define a mapping item when in a sequence');
                 }
@@ -148,7 +148,7 @@ class Parser
                         $merged = array();
                         if (!is_array($parsed)) {
                             throw new ParseException('YAML merge keys used with a scalar value instead of an array.', $this->getRealCurrentLineNb() + 1, $this->currentLine);
-                        } elseif (isset($parsed[0])) {
+                        } else if (isset($parsed[0])) {
                             // Numeric array, merge individual elements
                             foreach (array_reverse($parsed) as $parsedItem) {
                                 if (!is_array($parsedItem)) {
@@ -163,7 +163,7 @@ class Parser
 
                         $isProcessed = $merged;
                     }
-                } elseif (isset($values['value']) && preg_match('#^&(?P<ref>[^ ]+) *(?P<value>.*)#u', $values['value'], $matches)) {
+                } else if (isset($values['value']) && preg_match('#^&(?P<ref>[^ ]+) *(?P<value>.*)#u', $values['value'], $matches)) {
                     $isRef = $matches['ref'];
                     $values['value'] = $matches['value'];
                 }
@@ -172,7 +172,7 @@ class Parser
                     // Merge keys
                     $data = $isProcessed;
                 // hash
-                } elseif (!isset($values['value']) || '' == trim($values['value'], ' ') || 0 === strpos(ltrim($values['value'], ' '), '#')) {
+                } else if (!isset($values['value']) || '' == trim($values['value'], ' ') || 0 === strpos(ltrim($values['value'], ' '), '#')) {
                     // if next line is less indented or equal, then it means that the current value is null
                     if (!$this->isNextLineIndented() && !$this->isNextLineUnIndentedCollection()) {
                         $data[$key] = null;
@@ -326,9 +326,9 @@ class Parser
             if (preg_match('#^(?P<text> *)$#', $this->currentLine, $match)) {
                 // empty line
                 $data[] = $match['text'];
-            } elseif ($indent >= $newIndent) {
+            } else if ($indent >= $newIndent) {
                 $data[] = substr($this->currentLine, $newIndent);
-            } elseif (0 == $indent) {
+            } else if (0 == $indent) {
                 $this->moveToPreviousLine();
 
                 break;
@@ -463,7 +463,7 @@ class Parser
                     $isCurrentLineBlank = $this->isCurrentLineBlank();
                 }
             }
-        } elseif ($notEOF) {
+        } else if ($notEOF) {
             $text .= "\n";
         }
 
@@ -481,7 +481,7 @@ class Parser
         // deal with trailing newlines as indicated
         if ('' === $indicator) {
             $text = preg_replace('/\n+$/s', "\n", $text);
-        } elseif ('-' === $indicator) {
+        } else if ('-' === $indicator) {
             $text = preg_replace('/\n+$/s', '', $text);
         }
 

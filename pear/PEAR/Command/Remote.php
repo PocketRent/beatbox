@@ -264,7 +264,7 @@ parameter.
             // use faster list-all if available
             $rest = &$this->config->getREST('1.1', array());
             $available = $rest->listAll($base, $list_options, true, false, false, $chan->getName());
-        } elseif ($chan->supportsREST($this->config->get('preferred_mirror')) &&
+        } else if ($chan->supportsREST($this->config->get('preferred_mirror')) &&
               $base = $chan->getBaseURL('REST1.0', $this->config->get('preferred_mirror'))) {
             $rest = &$this->config->getREST('1.0', array());
             $available = $rest->listAll($base, $list_options, true, false, false, $chan->getName());
@@ -324,7 +324,7 @@ parameter.
             // use faster list-all if available
             $rest = &$this->config->getREST('1.1', array());
             $available = $rest->listAll($base, $list_options, false, false, false, $chan->getName());
-        } elseif ($chan->supportsREST($this->config->get('preferred_mirror')) &&
+        } else if ($chan->supportsREST($this->config->get('preferred_mirror')) &&
               $base = $chan->getBaseURL('REST1.0', $this->config->get('preferred_mirror'))) {
             $rest = &$this->config->getREST('1.0', array());
             $available = $rest->listAll($base, $list_options, false, false, false, $chan->getName());
@@ -727,7 +727,7 @@ parameter.
                 if ($filesize >= 20480) {
                     $filesize += 1024 - ($filesize % 1024);
                     $fs = sprintf("%dkB", $filesize / 1024);
-                } elseif ($filesize > 0) {
+                } else if ($filesize > 0) {
                     $filesize += 103 - ($filesize % 103);
                     $fs = sprintf("%.1fkB", $filesize / 1024.0);
                 } else {
@@ -793,7 +793,7 @@ parameter.
                         $output .= "deleted $path\n";
                     }
                     $num++;
-                } elseif ($verbose >= 1) {
+                } else if ($verbose >= 1) {
                     $output .= "failed to delete $path $php_errormsg\n";
                 }
             }

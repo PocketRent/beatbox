@@ -125,7 +125,7 @@ class Archive_Tar extends PEAR
                         $this->_compress = true;
                         $this->_compress_type = 'gz';
                         // No sure it's enought for a magic code ....
-                    } elseif ($data == "BZ") {
+                    } else if ($data == "BZ") {
                         $this->_compress = true;
                         $this->_compress_type = 'bz2';
                     }
@@ -136,7 +136,7 @@ class Archive_Tar extends PEAR
                 if (substr($p_tarname, -2) == 'gz') {
                     $this->_compress = true;
                     $this->_compress_type = 'gz';
-                } elseif ((substr($p_tarname, -3) == 'bz2') ||
+                } else if ((substr($p_tarname, -3) == 'bz2') ||
                           (substr($p_tarname, -2) == 'bz')) {
                     $this->_compress = true;
                     $this->_compress_type = 'bz2';
@@ -309,7 +309,7 @@ class Archive_Tar extends PEAR
         if ($p_filelist != '') {
             if (is_array($p_filelist))
                 $v_list = $p_filelist;
-            elseif (is_string($p_filelist))
+            else if (is_string($p_filelist))
                 $v_list = explode($this->_separator, $p_filelist);
             else {
                 $this->_cleanFile();
@@ -382,7 +382,7 @@ class Archive_Tar extends PEAR
         else {
             if (is_array($p_filelist))
                 $v_list = $p_filelist;
-            elseif (is_string($p_filelist))
+            else if (is_string($p_filelist))
                 $v_list = explode($this->_separator, $p_filelist);
             else {
                 $this->_error('Invalid file list');
@@ -541,7 +541,7 @@ class Archive_Tar extends PEAR
 
         if (is_array($p_filelist))
             $v_list = $p_filelist;
-        elseif (is_string($p_filelist))
+        else if (is_string($p_filelist))
             $v_list = explode($this->_separator, $p_filelist);
         else {
             $this->_error('Invalid string list');
@@ -1111,7 +1111,7 @@ class Archive_Tar extends PEAR
           $v_typeflag = '2';
           $v_linkname = readlink($p_filename);
           $v_size = sprintf("%011s", DecOct(0));
-        } elseif (@is_dir($p_filename)) {
+        } else if (@is_dir($p_filename)) {
           $v_typeflag = "5";
           $v_size = sprintf("%011s", DecOct(0));
         } else {
@@ -1599,7 +1599,7 @@ class Archive_Tar extends PEAR
           }
 
           // ----- It is a file, so compare the file names
-          elseif ($p_file_list[$i] == $v_header['filename']) {
+          else if ($p_file_list[$i] == $v_header['filename']) {
             $v_extract_file = true;
             break;
           }
@@ -1653,7 +1653,7 @@ class Archive_Tar extends PEAR
         }
 
         // ----- Check the directory availability and create it if necessary
-        elseif (($v_result
+        else if (($v_result
 		         = $this->_dirCheck(($v_header['typeflag'] == "5"
 				                    ?$v_header['filename']
 									:dirname($v_header['filename'])))) != 1) {
@@ -1670,7 +1670,7 @@ class Archive_Tar extends PEAR
                     return false;
                 }
             }
-          } elseif ($v_header['typeflag'] == "2") {
+          } else if ($v_header['typeflag'] == "2") {
               if (@file_exists($v_header['filename'])) {
                   @unlink($v_header['filename']);
               }
@@ -1780,7 +1780,7 @@ class Archive_Tar extends PEAR
 
             if ($this->_compress_type == 'gz')
                 $v_temp_tar = @gzopen($this->_tarname.".tmp", "rb");
-            elseif ($this->_compress_type == 'bz2')
+            else if ($this->_compress_type == 'bz2')
                 $v_temp_tar = @bzopen($this->_tarname.".tmp", "r");
 
             if ($v_temp_tar == 0) {
@@ -1805,7 +1805,7 @@ class Archive_Tar extends PEAR
                         // do not copy end blocks, we will re-make them
                         // after appending
                         continue;
-                    } elseif ($end_blocks > 0) {
+                    } else if ($end_blocks > 0) {
                         for ($i = 0; $i < $end_blocks; $i++) {
                             $this->_writeBlock(ARCHIVE_TAR_END_BLOCK);
                         }
@@ -1817,7 +1817,7 @@ class Archive_Tar extends PEAR
 
                 @gzclose($v_temp_tar);
             }
-            elseif ($this->_compress_type == 'bz2') {
+            else if ($this->_compress_type == 'bz2') {
                 $end_blocks = 0;
                 
                 while (strlen($v_buffer = @bzread($v_temp_tar, 512)) > 0) {
@@ -1826,7 +1826,7 @@ class Archive_Tar extends PEAR
                         // do not copy end blocks, we will re-make them
                         // after appending
                         continue;
-                    } elseif ($end_blocks > 0) {
+                    } else if ($end_blocks > 0) {
                         for ($i = 0; $i < $end_blocks; $i++) {
                             $this->_writeBlock(ARCHIVE_TAR_END_BLOCK);
                         }
@@ -1860,7 +1860,7 @@ class Archive_Tar extends PEAR
             if (fread($this->_file, 512) == ARCHIVE_TAR_END_BLOCK) {
                 fseek($this->_file, $v_size - 1024);
             }
-            elseif (fread($this->_file, 512) == ARCHIVE_TAR_END_BLOCK) {
+            else if (fread($this->_file, 512) == ARCHIVE_TAR_END_BLOCK) {
                 fseek($this->_file, $v_size - 512);
             }
         }

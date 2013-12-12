@@ -189,7 +189,7 @@ class PEAR_Common extends PEAR
                 }
 
                 System::rm(array('-rf', $file));
-            } elseif (file_exists($file)) {
+            } else if (file_exists($file)) {
                 unlink($file);
             }
         }

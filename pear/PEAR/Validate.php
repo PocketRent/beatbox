@@ -182,7 +182,7 @@ class PEAR_Validate
         if ($this->_packagexml->getPackagexmlVersion() == '1.0') {
             $this->validateState();
             $this->validateFilelist();
-        } elseif ($this->_packagexml->getPackagexmlVersion() == '2.0' ||
+        } else if ($this->_packagexml->getPackagexmlVersion() == '2.0' ||
                   $this->_packagexml->getPackagexmlVersion() == '2.1') {
             $this->validateTime();
             $this->validateStability();
@@ -222,7 +222,7 @@ class PEAR_Validate
                         'have a postfix equal to the major version like "' .
                         $this->_packagexml->getExtends() . $test . '"');
                     return true;
-                } elseif (substr($name, 0, strlen($name) - $vlen) !=
+                } else if (substr($name, 0, strlen($name) - $vlen) !=
                             $this->_packagexml->getExtends()) {
                     $this->_addWarning('package', "package $name extends package " .
                         $this->_packagexml->getExtends() . ' and so the name must ' .
@@ -298,7 +298,7 @@ class PEAR_Validate
                                     'version 1.' . $versioncomponents[1] .
                                         '.0 probably should not be alpha or beta');
                                 return true;
-                            } elseif (strlen($versioncomponents[2]) > 1) {
+                            } else if (strlen($versioncomponents[2]) > 1) {
                                 // version 1.*.0RC1 or 1.*.0beta24 etc.
                                 return true;
                             } else {
@@ -314,7 +314,7 @@ class PEAR_Validate
                                 'not be alpha or beta');
                             return true;
                         }
-                    } elseif ($versioncomponents[0] != '0') {
+                    } else if ($versioncomponents[0] != '0') {
                         $this->_addWarning('version',
                             'major versions greater than 1 are not allowed for packages ' .
                             'without an <extends> tag or an identical postfix (foo2 v2.0.0)');
@@ -350,7 +350,7 @@ class PEAR_Validate
                                     "version $majver." . $versioncomponents[1] .
                                         '.0 probably should not be alpha or beta');
                                 return false;
-                            } elseif (strlen($versioncomponents[2]) > 1) {
+                            } else if (strlen($versioncomponents[2]) > 1) {
                                 // version 2.*.0RC1 or 2.*.0beta24 etc.
                                 return true;
                             } else {
@@ -366,7 +366,7 @@ class PEAR_Validate
                                 'not be alpha or beta');
                             return true;
                         }
-                    } elseif ($versioncomponents[0] != '0') {
+                    } else if ($versioncomponents[0] != '0') {
                         $this->_addWarning('version',
                             "only versions 0.x.y and $majver.x.y are allowed for alpha/beta releases");
                         return true;
@@ -412,7 +412,7 @@ class PEAR_Validate
                             $majver . ')');
                         return true;
                     }
-                } elseif ($versioncomponents[0] > 1) {
+                } else if ($versioncomponents[0] > 1) {
                     $this->_addWarning('version', 'major version x in x.y.z may not be greater than ' .
                         '1 for any package that does not have an <extends> tag');
                 }

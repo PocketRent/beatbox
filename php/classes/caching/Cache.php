@@ -45,11 +45,11 @@ class Cache {
 	 *	});
 	 *
 	 */
-	public static function get_or_set(\string $key, \callable $fn, \int $expire = Cache::DEFAULT_EXPIRE, array $tags = []) : \mixed {
+	public static function get_or_set(\string $key, (function(): \mixed) $fn, \int $expire = Cache::DEFAULT_EXPIRE, array $tags = []) : \mixed {
 		if (self::test($key)) {
 			return self::get($key);
 		} else {
-			$val = call_user_func($fn);
+			$val = $fn();
 			self::set($key, $val, $expire, $tags);
 			return $val;
 		}

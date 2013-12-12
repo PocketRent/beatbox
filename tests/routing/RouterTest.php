@@ -671,7 +671,7 @@ class RouterTest extends beatbox\Test {
 	public function testFragmentCallback() {
 		beatbox\Router::add_routes(Map {
 			'/' => Map {'page' => function() {
-				return new RouterTest_Callback;
+				return new RouterTest_Callback();
 			}}
 		});
 

@@ -6,7 +6,7 @@
  * Behaves in a similar manner to array_merge_recusrive
  */
 function map_merge_recursive(ConstMapAccess $base/*, ... */) : Map {
-	$ret = new Map;
+	$ret = new Map();
 
 	$ret->setAll($base);
 

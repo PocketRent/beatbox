@@ -210,9 +210,9 @@ class Router {
 				$md = null;
 			}
 			if($regex) {
-				$base = isset(self::$regex_routes[$path]) ? self::$regex_routes[$path] : Pair { new Map, new Map };
+				$base = isset(self::$regex_routes[$path]) ? self::$regex_routes[$path] : Pair { new Map(), new Map() };
 			} else {
-				$base = isset(self::$routes[$path]) ? self::$routes[$path] : Pair { new Map, new Map };
+				$base = isset(self::$routes[$path]) ? self::$routes[$path] : Pair { new Map(), new Map() };
 			}
 			if($fragments) {
 				$base[0]->setAll($fragments);
@@ -246,7 +246,7 @@ class Router {
 				}
 			}
 		}
-		return Pair { new Map, new Map };
+		return Pair { new Map(), new Map() };
 	}
 
 	/**

@@ -31,7 +31,7 @@ final class Connection {
 	public static function get() : Connection {
 		if (self::$connection === null) {
 			// The constructor will set self::$connection
-			return new static;
+			return new static();
 		}
 		return self::$connection;
 	}

@@ -13,7 +13,7 @@ trait Redis {
 	protected static function redis() : R {
 		static $inst = null;
 		if(!$inst) {
-			$inst = new R;
+			$inst = new R();
 			$inst->connect(REDIS_SERVER);
 			if(defined('REDIS_PASSWORD')) {
 				$inst->auth(REDIS_PASSWORD);

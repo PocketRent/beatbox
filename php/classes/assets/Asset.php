@@ -52,7 +52,7 @@ class Asset {
 		// Get the mime type of the file (NEVER TRUST THE CLIENT)
 		$mime = get_mime_type($source);
 
-		$asset = new self;
+		$asset = new self();
 		$asset->setName($name);
 		$asset->setMIME($mime);
 		$asset->loadSourceFile($source);
@@ -79,7 +79,7 @@ class Asset {
 			return null;
 		} else {
 			$row = $res->nthRow(0);
-			$asset = new self;
+			$asset = new self();
 			$asset->id = $row['ID'];
 			$asset->name = $row['Name'];
 			$asset->source_path = $row['SourcePath'];

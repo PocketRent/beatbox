@@ -29,7 +29,7 @@ class Session {
 	protected static function start(\bool $force = false) : Session {
 		if(!self::$inst) {
 			if($force || !empty($_COOKIE[self::NAME])) {
-				self::$inst = new self;
+				self::$inst = new self();
 				self::$id = !empty($_COOKIE[self::NAME]) ? $_COOKIE[self::NAME] : generate_random_token();
 				$_COOKIE[self::NAME] = self::$id;
 				if(!is_cli()) {

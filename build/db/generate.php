@@ -748,7 +748,7 @@ function load_tables(resource $conn, string $ns, Map<string,ExcludePattern> $exc
 		return $pat->columns->count() == 0;
 	})->keys();
 
-	$ex_cols_it = new AppendIterator;
+	$ex_cols_it = new AppendIterator();
 	foreach ($excludes->filter(function(ExcludePattern $pat): bool {
 		return $pat->columns->count() > 0;
 	})->map(function (ExcludePattern $pat): VectorIterator<string> {

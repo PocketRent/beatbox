@@ -24,7 +24,7 @@ class :bb:icon extends :bb:base {
 			}
 		}
 		if(have_inline_svg() && ($usedExt == 'svg' || $usedExt == 'svgz')) {
-			$dom = new \DOMDocument;
+			$dom = new \DOMDocument();
 			$dom->load($base.$src);
 			$svg = $dom->getElementsByTagName('svg')->item(0);
 			foreach($this->getAttributes() as $name => $value) {

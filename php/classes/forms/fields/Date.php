@@ -28,7 +28,21 @@ class :bb:form:date extends :bb:form:field {
 			$mV = $yV = $dV = '';
 		}
 
-		$months = [0 => 'Month', 'January - 01', 'February - 02', 'March - 03', 'April - 04', 'May - 05', 'June - 06', 'July - 07', 'August - 08', 'September - 09', 'October - 10', 'November - 11', 'December - 12'];
+		$months = array(
+			0 => 'Month',
+			1 => 'January - 01',
+			2 => 'February - 02',
+			3 => 'March - 03',
+			4 => 'April - 04',
+			5 => 'May - 05',
+			6 => 'June - 06',
+			7 => 'July - 07',
+			8 => 'August - 08',
+			9 => 'September - 09',
+			10 => 'October - 10',
+			11 => 'November - 11',
+			12 => 'December - 12'
+		);
 
 		if($withDay) {
 			$days = range(1, 31);

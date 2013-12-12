@@ -282,7 +282,7 @@ class RouterTest extends beatbox\Test {
 			'/' => Map { 'page' => function() {} }
 		});
 		try {
-			beatbox\Router::route('/', vector {'form'});
+			beatbox\Router::route('/', Vector {'form'});
 			$this->fail('Should have thrown an error');
 		} catch(beatbox\errors\HTTP_Exception $e) {
 			$this->assertEquals($e->getBaseCode(), 404, 'Should have a 404 error');
@@ -292,7 +292,7 @@ class RouterTest extends beatbox\Test {
 		$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHTTPRequest';
 		// Check no fragment
 		try {
-			beatbox\Router::route('/', vector {'form'});
+			beatbox\Router::route('/', Vector {'form'});
 			$this->fail('Should have thrown an error');
 		} catch(beatbox\errors\HTTP_Exception $e) {
 			$this->assertEquals($e->getBaseCode(), 404, 'Should have a 404 error');
@@ -300,7 +300,7 @@ class RouterTest extends beatbox\Test {
 
 		// Check a single, missing fragment
 		try {
-			beatbox\Router::route('/', vector {'page', 'form'});
+			beatbox\Router::route('/', Vector {'page', 'form'});
 			$this->fail('Should have thrown an error');
 		} catch(beatbox\errors\HTTP_Exception $e) {
 			$this->assertEquals($e->getBaseCode(), 404, 'Should have a 404 error');

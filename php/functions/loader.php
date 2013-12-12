@@ -9,6 +9,7 @@ require __DIR__ . '/events/Event.php';
 require __DIR__ . '/http.php';
 require __DIR__ . '/mailer/mailer.php';
 require __DIR__ . '/misc.php';
+require __DIR__ . '/null.php';
 require __DIR__ . '/orm/Parse.php';
 require __DIR__ . '/password.php';
 require __DIR__ . '/session/CSRF.php';

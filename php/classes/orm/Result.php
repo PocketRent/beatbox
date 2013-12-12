@@ -47,7 +47,7 @@ abstract class Result {
 
 	public function getTag() : \string {
 		$this->parseTag();
-		return $this->tag;
+		return nullthrows($this->tag);
 	}
 
 	private function parseTag() : \void {

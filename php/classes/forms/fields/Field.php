@@ -5,7 +5,7 @@ abstract class :bb:form:field extends :bb:base {
 		string label,
 		integer minlength;
 
-	protected string $type;
+	protected ?string $type;
 
 	private static Set<string> $rangeVal = Set {'date', 'number'};
 

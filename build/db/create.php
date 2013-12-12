@@ -243,7 +243,7 @@ class DBFile {
 }
 
 function get_db_files(string $src_dir, string $buildfile_dir, bool $ignore_buildfiles) : Vector<string> {
-	$files = Vector<string> {};
+	$files = Vector {};
 
 	vprint("Searching for files...");
 
@@ -293,7 +293,7 @@ function get_db_files_r(string $dirname, Vector<DBFile> &$files, bool $buildfile
 		}
 	}
 
-	return Pair<int, int> {$sqls, $exes};
+	return Pair {$sqls, $exes};
 }
 
 function run_sql(int $type, resource $conn, Vector<DBFile> $files) : void {

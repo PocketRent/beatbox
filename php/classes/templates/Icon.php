@@ -3,7 +3,7 @@
 class :bb:icon extends :bb:base {
 	attribute :img;
 
-	protected Set<string> $skipTransfer = Set<string> {'src'};
+	protected Set<string> $skipTransfer = Set {'src'};
 
 	protected function compose() : :x:element {
 		$src = $this->getAttribute('src');
@@ -53,8 +53,8 @@ class :bb:icon extends :bb:base {
 	protected static function formatDOMElement(DOMElement $root) : void {
 		/* Check what this element contains. */
 		$fullText = ''; /* All text in this element. */
-		$textNodes = Vector<DOMText>{}; /* Text nodes which should be deleted. */
-		$childNodes = Vector<DOMElement>{}; /* Other child nodes. */
+		$textNodes = Vector {}; /* Text nodes which should be deleted. */
+		$childNodes = Vector {}; /* Other child nodes. */
 		for ($i = 0; $i < $root->childNodes->length; $i++) {
 			$child = $root->childNodes->item($i);
 

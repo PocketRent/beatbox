@@ -64,7 +64,7 @@ class HTTP {
 }
 
 class HTTP_Exception extends Exception {
-	protected static \Map<\int, \string> $status_map = \Map<\int, \string> {
+	protected static \Map<\int, \string> $status_map = \Map {
 		100 => 'Continue',
 		101 => 'Switching Protocols',
 		102 => 'Processing',
@@ -149,7 +149,7 @@ class HTTP_Exception extends Exception {
 		parent::__construct($message, $code, $previous);
 	}
 
-	protected $headers = \Vector<\Pair<\string, \boolean>> {};
+	protected $headers = \Vector {};
 
 	public function setHeader(\string $header, \string $value, \bool $replace = true) : \void {
 		$this->headers[] = \Pair {"$header: $value", $replace };

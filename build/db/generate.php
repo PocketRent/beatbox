@@ -36,8 +36,8 @@ function doGenerate(Vector<string> $args) : void {
 
 	$db_info = parse_common_args($args);
 
-	$excludes = Map<string,ExcludePattern> {};
-	$positionals = Vector<string> {};
+	$excludes = Map {};
+	$positionals = Vector {};
 	$ns = "public";
 	$php_ns = null;
 
@@ -118,7 +118,7 @@ function doGenerate(Vector<string> $args) : void {
 class ExcludePattern {
 
 	public ?string $table = null;
-	public Vector<string> $columns = Vector<string> {};
+	public Vector<string> $columns = Vector {};
 
 	public string $src;
 

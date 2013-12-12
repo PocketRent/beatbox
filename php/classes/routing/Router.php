@@ -5,15 +5,15 @@ namespace beatbox;
 use Map, Pair, Vector;
 
 class Router {
-	protected static Map<\string, Pair<Map<\string, (function(array, ?\string, \Map):\mixed)>, Map<\string>>> $routes = Map<\string, Pair<Map<\string, (function(array, ?\string, \Map):\mixed)>, Map<\string>>> {};
+	protected static Map<\string, Pair<Map<\string, (function(array, ?\string, \Map):\mixed)>, Map<\string>>> $routes = Map {};
 
-	protected static Map<\string, Pair<Map<\string, (function(array, ?\string, \Map):\mixed)>, Map<\string>>> $regex_routes = Map<\string, Pair<Map<\string, (function(array, ?\string, \Map):\mixed)>, Map<\string>>> {};
+	protected static Map<\string, Pair<Map<\string, (function(array, ?\string, \Map):\mixed)>, Map<\string>>> $regex_routes = Map {};
 
-	protected static Map<\string, (function(\string, \Map):\bool)> $checkers = Map<\string, (function(\string, \Map):\bool)> {};
+	protected static Map<\string, (function(\string, \Map):\bool)> $checkers = Map {};
 
-	protected static Map<\string> $last_md = Map<\string> {};
+	protected static Map<\string> $last_md = Map {};
 
-	protected static Map<\string, (function(array, ?\string, \Map):\mixed)> $last_frags = Map<\string, (function(array, ?\string, \Map):\mixed)> {};
+	protected static Map<\string, (function(array, ?\string, \Map):\mixed)> $last_frags = Map {};
 
 	protected static array $last_url = [];
 

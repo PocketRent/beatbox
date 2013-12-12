@@ -5,7 +5,7 @@ namespace beatbox\errors;
 use HH\Traversable;
 
 class PHP {
-	private static \Set<\int> $fatal_errors = \Set<\int>{
+	private static \Set<\int> $fatal_errors = \Set {
 		E_ERROR,
 		E_PARSE,
 		E_CORE_ERROR,

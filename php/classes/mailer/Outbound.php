@@ -9,7 +9,7 @@ class Outbound {
 	protected \string $subject;
 	protected \string $content;
 	protected \string $from;
-	protected \Map<\string, \string> $attachments = \Map<\string, \string> {};
+	protected \Map<\string, \string> $attachments = \Map {};
 
 	/**
 	 * Construct an outbound email

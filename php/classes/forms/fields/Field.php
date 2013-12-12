@@ -7,11 +7,11 @@ abstract class :bb:form:field extends :bb:base {
 
 	protected string $type;
 
-	private static Set<string> $rangeVal = Set<string> {'date', 'number'};
+	private static Set<string> $rangeVal = Set {'date', 'number'};
 
-	private static Set<string> $lenVal = Set<string> {'text', 'email', 'password', 'textarea'};
+	private static Set<string> $lenVal = Set {'text', 'email', 'password', 'textarea'};
 
-	private static Set<string> $patternVal = Set<string> {'text', 'email', 'password'};
+	private static Set<string> $patternVal = Set {'text', 'email', 'password'};
 
 	protected $valid = true;
 	protected $error;

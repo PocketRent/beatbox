@@ -34,7 +34,7 @@ function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTT
 		$new_url['port'] = array_key_exists('port', $parts) ? $parts['port'] : (array_key_exists('port', $url) ? $url['port'] : 0);
 	}
 
-	$copies = Map<string, int> {
+	$copies = Map {
 		'user' => HTTP_URL_STRIP_USER,
 		'pass' => HTTP_URL_STRIP_PASS,
 		'scheme' => 0,

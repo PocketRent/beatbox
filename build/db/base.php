@@ -8,7 +8,7 @@ require_once 'generate.php';
 function parse_common_args(Vector<string> &$args): Map<string,string> {
 	$GLOBALS['verbose'] = false;
 
-	$rest_of = Vector<string> {};
+	$rest_of = Vector {};
 
 	$iter = $args->getIterator();
 	$iter->rewind();

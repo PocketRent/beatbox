@@ -14,7 +14,7 @@ class :bb:form:date extends :bb:form:field {
 
 	protected string $type = 'date';
 
-	protected Set<string> $skipTransfer = Set<string> { 'label', 'value', 'name' };
+	protected Set<string> $skipTransfer = Set { 'label', 'value', 'name' };
 
 	protected function buildField() : :div {
 		$withDay = $this->getAttribute('withDay');

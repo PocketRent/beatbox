@@ -18,8 +18,8 @@ trait Settings {
 	abstract protected function getID() : \mixed;
 
 	private \bool $settings_loaded = false;
-	private \Map<\string, \mixed> $settings_data = \Map<\string, \mixed> {};
-	private \Map<\string, \mixed> $settings_original = \Map<\string, \mixed> {};
+	private \Map<\string, \mixed> $settings_data = \Map {};
+	private \Map<\string, \mixed> $settings_original = \Map {};
 
 	private \string $settings_key;
 
@@ -85,8 +85,8 @@ trait Settings {
 				}
 			});
 
-			$this->settings_original = Map<\string> {};
-			$this->settings_data = Map<\string> {};
+			$this->settings_original = Map {};
+			$this->settings_data = Map {};
 			$this->settings_loaded = false;
 		}
 	}

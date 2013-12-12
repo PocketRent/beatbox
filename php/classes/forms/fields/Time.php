@@ -10,7 +10,7 @@ class :bb:form:time extends :bb:form:field {
 
 	protected string $type = 'time';
 
-	protected Set<string> $skipTransfer = Set<string> { 'label', 'name' };
+	protected Set<string> $skipTransfer = Set { 'label', 'name' };
 
 	protected function buildField() : :div {
 		$step = $this->getAttribute('minuteStep');

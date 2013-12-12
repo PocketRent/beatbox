@@ -79,7 +79,7 @@ abstract class DataTable {
 	 *
 	 * Returns null if there is no matching object in the database
 	 */
-	public async static function get_by_pk(\mixed $id) : DataTable {
+	public static async function get_by_pk(\mixed $id) : DataTable {
 		if(!$id) {
 			return null;
 		}

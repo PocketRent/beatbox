@@ -3,6 +3,6 @@
 namespace beatbox\orm;
 
 interface Type {
-	function toDBString(Connection $conn): \string;
+	public function toDBString(Connection $conn): \string;
 }
 

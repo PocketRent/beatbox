@@ -72,7 +72,7 @@ abstract class Result {
 	 * Returns the number of rows associated with this query,
 	 * either the number returned, or the number affected
 	 */
-	abstract function numRows() : \int;
+	abstract public function numRows() : \int;
 }
 
 class ModifyResult extends Result {

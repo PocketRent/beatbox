@@ -6,7 +6,7 @@ trait Compare {
 	// Returns a value that is less than, equal to or greater than
 	// zero if $this is less than, equal to or greater than $other,
 	// respectively
-	abstract function cmp(\mixed $other) : \int;
+	abstract public function cmp(\mixed $other) : \int;
 
 	public function eq(\mixed $other) : \bool { return $this->cmp($other) == 0; }
 	public function ne(\mixed $other) : \bool { return $this->cmp($other) != 0; }

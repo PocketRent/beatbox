@@ -104,13 +104,13 @@ function do_connect(Map<string,string> $info) : resource {
 	if ($info['pass']) $conn_string .= ' password=\''.$info['pass'].'\'';
 
 	if (isset($info['create_db']) && $info['create_db']) {
-		$conn = pg_connect($conn_string . "dbname=postgres") or
+		($conn = pg_connect($conn_string . "dbname=postgres")) ||
 					command_fail("Unable to connect to postgres");
 		@pg_query($conn, "CREATE DATABASE ".pg_escape_identifier($conn, $info['database']));
 		pg_close($conn);
 	}
 
-	$conn = pg_connect($conn_string . "dbname='".$info['database']."'") or
+	($conn = pg_connect($conn_string . "dbname='".$info['database']."'")) ||
 				command_fail("Unable to connect to postgres");
 
 	vprint("Connected to database ".$info['database']." at ".$info['host']);

@@ -20,12 +20,12 @@ if (DATABASE_HOST) $connectString .= ' host=\''.DATABASE_HOST.'\'';
 if (DATABASE_USER) $connectString .= ' user=\''.DATABASE_USER.'\'';
 if (DATABASE_PASS) $connectString .= ' password=\''.DATABASE_PASS.'\'';
 
-$con = @pg_connect($connectString) or die('Unable to connect to postgres');
+($con = @pg_connect($connectString)) || die('Unable to connect to postgres');
 
 $dbname = 'PR_test_' . str_replace('.', '_', microtime(true));
 
 // Create the database
-pg_query($con, 'CREATE DATABASE "' . $dbname . '"') or die('Unable to create database');
+pg_query($con, 'CREATE DATABASE "' . $dbname . '"') || die('Unable to create database');
 pg_close($con);
 
 // Build the schema by running the command

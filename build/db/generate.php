@@ -1,7 +1,7 @@
 <?hh
 
 function generateHelp() : void {
-	global $exe;
+	$exe = $GLOBALS['exe'];
 	echo <<<HELP
 Usage: $exe generate [options] <dest-directory>
 
@@ -32,8 +32,7 @@ HELP;
 }
 
 function doGenerate(Vector<string> $args) : void {
-	global $verbose;
-	$verbose = false;
+	$GLOBALS['verbose'] = false;
 
 	$db_info = parse_common_args($args);
 

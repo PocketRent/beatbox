@@ -1,7 +1,7 @@
 <?hh
 
 function createHelp() : void {
-	global $exe;
+	$exe = $GLOBALS['exe'];
 	echo <<<HELP
 Usage: $exe create [options] <source-directory>
 
@@ -14,8 +14,7 @@ HELP;
 }
 
 function doCreate(Vector<string> $args) : void {
-	global $verbose;
-	$verbose = false;
+	$GLOBALS['verbose'] = false;
 	// Info for creation
 	$info = parse_common_args($args);
 	$info['create_db'] = true;

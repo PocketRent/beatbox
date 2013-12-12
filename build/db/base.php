@@ -6,8 +6,7 @@ require_once 'generate.php';
 // Parses common args and strips them out of the argument list,
 // returns a map with the database info in it.
 function parse_common_args(Vector<string> &$args): Map<string,string> {
-	global $verbose;
-	$verbose = false;
+	$GLOBALS['verbose'] = false;
 
 	$rest_of = Vector<string> {};
 
@@ -54,7 +53,7 @@ function parse_common_args(Vector<string> &$args): Map<string,string> {
 			break;
 		case "-V":
 		case "--verbose":
-			$verbose = true;
+			$GLOBALS['verbose'] = true;
 			break;
 		default:
 			$rest_of->add($arg);
@@ -136,8 +135,7 @@ function command_fail(string $msg, int $code=1) : void {
 }
 
 function vprint(string $msg) : void {
-	global $verbose;
-	if ($verbose) {
+	if ($GLOBALS['verbose']) {
 		echo $msg . "\n";
 	}
 }

@@ -365,7 +365,8 @@ class PGType {
 			$file->writeLine('if ($val === null) return 0;');
 			$file->writeLine('$parts = db_parse_composite($val);');
 
-			$file->startBlock("if (count(\$parts) != {$this->elements->count()})");
+			$elem_count = $this->elements->count();
+			$file->startBlock("if (count(\$parts) != $elem_count)");
 			$file->writeLine('throw new \beatbox\orm\InvalidValueException($val);');
 			$file->endBlock();
 			$file->writeLine();
@@ -404,7 +405,7 @@ class PGType {
 			if ($this->elements->count() == 1) {
 				$file->writeLine('$str .= ")";');
 			} else {
-				$file->writeLine("\$str .= ')::\"$this->name\"';");
+				$file->writeLine("\$str .= ')::\"".$this->name."\"';");
 			}
 			$file->writeLine('return $str;');
 
@@ -429,7 +430,7 @@ class PGType {
 			}
 
 			$file->startBlock("public function __toString(): string");
-			$file->writeLine("\$str = \"$this->name {\\n\";");
+			$file->writeLine("\$str = \"".$this->name." {\\n\";");
 			foreach ($this->elements as $name => $t) {
 				$file->writeLine("\$str .= '    $name => ';");
 				$file->writeLine("\$str .= \$this->_$name . \"\\n\";");
@@ -536,14 +537,15 @@ class TypeDict {
 			}
 		}
 
-		if ($needs_els->count() > 0) {
-			vprint("  Retrieving elements for {$needs_els->count()} types");
+		$count = $needs_els->count();
+		if ($count > 0) {
+			vprint("  Retrieving elements for $count types");
 			foreach ($needs_els as $type) {
 				$type->retrieveTypeElements($conn);
 			}
 		}
 
-		vprint("Loaded {$this->types->count()} types from database");
+		vprint("Loaded ".$this->types->count()." types from database");
 	}
 
 	public function typeByOid(int $oid): PGType {
@@ -814,7 +816,7 @@ function load_tables(resource $conn, string $ns, Map<string,ExcludePattern> $exc
 
 	}
 
-	vprint("Read {$tables->count()} tables from database");
+	vprint("Read ".$tables->count()." tables from database");
 
 	return Vector::fromItems($tables->values());
 }

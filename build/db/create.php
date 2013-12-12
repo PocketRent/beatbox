@@ -444,7 +444,8 @@ function alter_and_migrate(resource $conn, string $buildfile_dir, Vector<DBFile>
 				}
 			}
 		}
-		vprint("Finished applying scripts. $count success, {$errors->count()} errors, $skipped skipped");
+		$err_count = $errors->count();
+		vprint("Finished applying scripts. $count success, $err_count errors, $skipped skipped");
 	} else {
 		vprint("No applicable ALTER or MIGRATE scripts found");
 	}

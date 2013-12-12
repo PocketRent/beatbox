@@ -196,7 +196,7 @@ class Router {
 	/**
 	 * Add routes
 	 */
-	public static function add_routes(Map<\string> $routes, \boolean $regex = false) : \void {
+	public static function add_routes(Map<\string> $routes, \bool $regex = false) : \void {
 		foreach($routes as $path => $route) {
 			$l = strlen($path);
 			$path = trim($path, '/');

@@ -91,7 +91,7 @@ function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTT
 		}
 		reset($path_parts);
 		$append = false;
-		while(list(, $part) = each($path_parts)) {
+		foreach ($path_parts as $part) {
 			// Handle a double slash
 			if($part === '') {
 				$append = true;

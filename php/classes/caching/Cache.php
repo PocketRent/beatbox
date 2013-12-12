@@ -107,7 +107,7 @@ class Cache {
 	 * the given tags and will unconditionally delete the member
 	 * keys.
 	 */
-	public static function delete_tags(/* ... */) : \void {
+	public static function delete_tags(...) : \void {
 		$args = func_get_args();
 		$tags = array_map(function (\string $t) : \string { return self::tag_name($t); }, $args);
 		// Get the members of the tags

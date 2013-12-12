@@ -137,7 +137,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	 *
 	 * If $value is less than 0, then no LIMIT is added.
 	 */
-	public function limit(?\int $value, \int $offset = null) : ORM {
+	public function limit(?\int $value, ?\int $offset = null) : ORM {
 		if ($value === null) $value = -1;
 		$new = clone $this;
 		$new->limit = (int)$value;
@@ -165,7 +165,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	 *
 	 * If no arguments are provided, returns the actual count
 	 */
-	public function count(\string $field = '*', \string $as = null) : AggregateORM {
+	public function count(\string $field = '*', ?\string $as = null) : AggregateORM {
 		if(func_num_args() == 0) {
 			return $this->agg()->count('*', 'C')->getNth(0)->join()['C'];
 		}
@@ -177,7 +177,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	 * Helper method to create an AggregateORM and add the given
 	 * max field to it.
 	 */
-	public function max(\string $field, \string $as = null) : AggregateORM {
+	public function max(\string $field, ?\string $as = null) : AggregateORM {
 		$agg = $this->agg();
 		return $agg->max($field, $as);
 	}
@@ -186,7 +186,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	 * Helper method to create an AggregateORM and add the given
 	 * min field to it.
 	 */
-	public function min(\string $field, \string $as = null) : AggregateORM {
+	public function min(\string $field, ?\string $as = null) : AggregateORM {
 		$agg = $this->agg();
 		return $agg->min($field, $as);
 	}
@@ -357,7 +357,7 @@ class AggregateORM extends ORM {
 	 *
 	 * If no alias is given, then it defaults to 'max_<FieldName>'
 	 */
-	public function max(\string $field, \string $as = null) : AggregateORM {
+	public function max(\string $field, ?\string $as = null) : AggregateORM {
 		$this->validateField($field);
 
 		if (!$as) {
@@ -382,7 +382,7 @@ class AggregateORM extends ORM {
 	 *
 	 * If no alias is given, then it defaults to 'min_<FieldName>'
 	 */
-	public function min(\string $field, \string $as = null) : AggregateORM {
+	public function min(\string $field, ?\string $as = null) : AggregateORM {
 		$this->validateField($field);
 
 		if (!$as) {
@@ -409,7 +409,7 @@ class AggregateORM extends ORM {
 	 * given, then it defaults to 'count_<FieldName>' unless the field
 	 * is '*', in which case it is 'count_<NumExtraFields>'
 	 */
-	public function count(\string $field = '*', \string $as = null) : AggregateORM {
+	public function count(\string $field = '*', ?\string $as = null) : AggregateORM {
 		if ($field != '*') {
 			$this->validateField($field);
 

@@ -39,7 +39,7 @@ class Browser {
 		return $cap && isset($cap['inlinesvg']);
 	}
 
-	public static function info(\string $key=null) : \mixed {
+	public static function info(?\string $key=null) : \mixed {
 		static $info = null;
 		if ($info === null) {
 			if (isset($_COOKIE['ci'])) {

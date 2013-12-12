@@ -3,9 +3,9 @@
 namespace beatbox\orm;
 
 abstract class Result {
-	protected \resource $result = null;
+	protected \resource $result;
 
-	private \string $tag = null;
+	private ?\string $tag = null;
 	private \int $oid = 0;
 	protected \int $count = -1;
 
@@ -142,7 +142,7 @@ class QueryResult extends Result implements \IteratorAggregate {
 class ResultIterable implements \Iterable {
 	use \LazyIterable;
 
-	private QueryResult $result = null;
+	private QueryResult $result;
 
 	public function __construct(QueryResult $result) {
 		$this->result = $result;

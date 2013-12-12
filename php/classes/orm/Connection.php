@@ -43,7 +43,7 @@ final class Connection {
 	 *    password and dbname will be automatically be filled by defined
 	 *    constants
 	 */
-	public function __construct(array $params = null) {
+	public function __construct(?array $params = null) {
 		if (!$params) {
 			$params = [];
 		}

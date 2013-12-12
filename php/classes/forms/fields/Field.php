@@ -78,7 +78,7 @@ abstract class :bb:form:field extends :bb:base {
 		$this->error = null;
 	}
 
-	public function setValid(bool $valid, string $error=null) : void {
+	public function setValid(bool $valid, ?string $error=null) : void {
 		$this->valid = $valid;
 		$this->error = $error;
 	}

@@ -6,7 +6,7 @@ namespace beatbox\test\constraint;
  * Constraint for objects that have a cmp method
  */
 class Compare extends \PHPUnit_Framework_Constraint {
-	private ?\mixed $obj = null;
+	private \mixed $obj;
 	private \int $type = 0;
 
 	public function __construct(\mixed $expected, \int $type) {

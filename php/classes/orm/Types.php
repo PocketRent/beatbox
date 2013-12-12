@@ -101,7 +101,7 @@ class DateTimeType extends \DateTime implements Type {
 	 *
 	 * Example: 2012-06-13 12:11:30 UTC
 	 */
-	public function toDBString(Connection $conn=null) : \string {
+	public function toDBString(?Connection $conn=null) : \string {
 		return $conn->escapeValue($this->__toString());
 	}
 

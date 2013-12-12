@@ -9,7 +9,7 @@ class HTTP {
 	 * @param int $code The HTTP status code
 	 * @param string $status The status description
 	 */
-	public static function error(\int $code, \string $status = null) : \void {
+	public static function error(\int $code, ?\string $status = null) : \void {
 		throw new HTTP_Exception($status, $code);
 	}
 
@@ -22,7 +22,7 @@ class HTTP {
 	 * @param string $to the URL to redirect to
 	 * @param string $fallback the URL to fallback to
 	 */
-	public static function redirect(\string $to, \string $fallback=null, \int $code = 302) : \void {
+	public static function redirect(\string $to, ?\string $fallback=null, \int $code = 302) : \void {
 		$e = new HTTP_Exception(null, $code);
 
 		if($to) {
@@ -57,7 +57,7 @@ class HTTP {
 	 *
 	 * @param string $fallback the URL to fallback to
 	 */
-	public static function redirect_back(\string $fallback = null) : \void {
+	public static function redirect_back(?\string $fallback = null) : \void {
 		$referer = empty($_SERVER['HTTP_REFERER']) ? '' : $_SERVER['HTTP_REFERER'];
 		self::redirect($referer, $fallback);
 	}
@@ -142,7 +142,7 @@ class HTTP_Exception extends Exception {
 		599 => 'Network connect timeout error',
 	};
 
-	public function __construct(\string $message = null, \int $code=0, \Exception $previous=null) {
+	public function __construct(?\string $message = null, \int $code=0, ?\Exception $previous=null) {
 		if(!$message && isset(self::$status_map[$code])) {
 			$message = self::$status_map[$code];
 		}

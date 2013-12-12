@@ -903,7 +903,7 @@ class CodeFile {
 		}
 	}
 
-	public function writeLine(string $line="", int $indent=null) : void {
+	public function writeLine(string $line="", ?int $indent=null) : void {
 		if ($this->file == null) command_fail("Code file closed!");
 		$indent = str_repeat("\t", $indent === null ? $this->indent : (int)$indent);
 		$line = sprintf("%s%s", $indent, $line);
@@ -954,7 +954,7 @@ class CodeFile {
 	}
 }
 
-function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, string $ns=null) : void {
+function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, ?string $ns=null) : void {
 	$ns = $ns ? $ns : "";
 
 	$types_file = new CodeFile($directory.'/types.php', "w");

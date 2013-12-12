@@ -29,7 +29,7 @@ class :bb:form:dropdown extends :bb:form:field {
 		return $base;
 	}
 
-	protected function childValueFields(:x:base $base = null) : Continuation {
+	protected function childValueFields(?:x:base $base = null) : Continuation {
 		if(!$base) {
 			$base = $this;
 		}

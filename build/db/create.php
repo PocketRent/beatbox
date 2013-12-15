@@ -64,13 +64,13 @@ function doCreate(Vector<string> $args) : void {
 	if (!file_exists($info['buildfile_dir'])) {
 		vprint("Creating build directory");
 		if (!mkdir($info['buildfile_dir'], 0777, true)) {
-			command_fail("Could not create destination directory '".$info['buildfile_dir']."'");
+			command_fail("Could not create destination directory '".(string)$info['buildfile_dir']."'");
 		}
 	}
 
 	$conn = do_connect($info);
 
-	$files = get_db_files($src_dir, $info['buildfile_dir'], $info['ignore_buildfiles']);
+	$files = get_db_files($src_dir, (string)$info['buildfile_dir'], (bool)$info['ignore_buildfiles']);
 
 	// Filter out create files that have matching build files
 	// Make a set with all the names of the .build files we have
@@ -90,8 +90,8 @@ function doCreate(Vector<string> $args) : void {
 
 	echo "Processing..."; vprint("");
 	run_sql(DBFile::TYPE_PRE_SQL, $conn, $files);
-	create_tables($conn, $info['buildfile_dir'], $files);
-	alter_and_migrate($conn, $info['buildfile_dir'], $files);
+	create_tables($conn, (string)$info['buildfile_dir'], $files);
+	alter_and_migrate($conn, (string)$info['buildfile_dir'], $files);
 	run_sql(DBFile::TYPE_POST_SQL, $conn, $files);
 	echo "Done!\n";
 }
@@ -105,8 +105,8 @@ class DBFile {
 	const TYPE_POST_SQL  = 5;
 	const TYPE_UNKNOWN   = 255;
 
-	public ?string $path = null;
-	public ?string $name = null;
+	public string $path;
+	public string $name;
 
 	public int $type = DBFile::TYPE_UNKNOWN;
 	public int $priority = PHP_INT_MAX;
@@ -124,10 +124,12 @@ class DBFile {
 			  '(\.(?<extension>.*))?'. // Extension
 			  '$#'; // End
 
+		$name = null;
+		$matches = [];
 		$ret = preg_match($re, $filename, $matches);
 		if ($ret == 1) {
 			if (isset($matches['name'])) {
-				$this->name = $matches['name'];
+				$name = $matches['name'];
 			} else {
 				command_fail("File '$filename' has no name!");
 			}
@@ -143,7 +145,7 @@ class DBFile {
 				$this->priority = (int)$matches['priority'];
 			}
 
-			switch ($ext) {
+			if ($ext) switch ($ext) {
 			case "sql":
 				if ($method == "create") {
 					$this->type = DBFile::TYPE_CREATE;
@@ -181,9 +183,11 @@ class DBFile {
 					}
 				}
 			}
-		} else if ($res === false) {
+		} else {
 			command_fail("Failed parsing name");
 		}
+
+		$this->name = nullthrows($name);
 
 		if ($this->timestamp != 0 && $this->timestamp > time()) {
 			fprintf(STDERR,
@@ -242,7 +246,7 @@ class DBFile {
 	}
 }
 
-function get_db_files(string $src_dir, string $buildfile_dir, bool $ignore_buildfiles) : Vector<string> {
+function get_db_files(string $src_dir, string $buildfile_dir, bool $ignore_buildfiles) : Vector<DBFile> {
 	$files = Vector {};
 
 	vprint("Searching for files...");
@@ -432,7 +436,7 @@ function alter_and_migrate(resource $conn, string $buildfile_dir, Vector<DBFile>
 					$count++;
 				}
 			} else if ($script->type == DBFile::TYPE_MIGRATE) {
-				$status;
+				$status = 0;
 				system($script->path, $status);
 				if ($status != 0) {
 					fwrite(STDERR, "	Encountered error. Skipping rest of files for {$script->name}\n");

@@ -1,11 +1,12 @@
 <?hh
 
+require_once __DIR__.'../../php/functions/invariant.php';
 require_once 'create.php';
 require_once 'generate.php';
 
 // Parses common args and strips them out of the argument list,
 // returns a map with the database info in it.
-function parse_common_args(Vector<string> &$args): Map<string,string> {
+function parse_common_args(Vector<string> &$args): Map<string,mixed> {
 	$GLOBALS['verbose'] = false;
 
 	$rest_of = Vector {};
@@ -19,12 +20,7 @@ function parse_common_args(Vector<string> &$args): Map<string,string> {
 		return $iter->current();
 	};
 
-	$info = Map {
-		"database"  => null,
-		"host"	  => null,
-		"user"	  => null,
-		"pass"	  => null,
-	};
+	$info = Map { };
 
 	$conf_dir = getcwd().'/conf';
 
@@ -67,7 +63,7 @@ function parse_common_args(Vector<string> &$args): Map<string,string> {
 	unset($rest_of);
 
 	// Check to see if we need to include 'db.php'
-	if (!($info['database'] && $info['host'] && $info['user'] && $info['pass'])) {
+	if (!($info->get('database') && $info->get('host') && $info->get('user') && $info->get('pass'))) {
 		$db_conf = $conf_dir . '/db.php';
 		if (!file_exists($db_conf)) command_fail("Cannot find database configuration file to include");
 		require_once $db_conf;
@@ -96,12 +92,12 @@ function parse_common_args(Vector<string> &$args): Map<string,string> {
 	return $info;
 }
 
-function do_connect(Map<string,string> $info) : resource {
+function do_connect(Map<string,mixed> $info) : resource {
 
 	$conn_string = '';
-	if ($info['host']) $conn_string .= ' host=\''.$info['host'].'\'';
-	if ($info['user']) $conn_string .= ' user=\''.$info['user'].'\'';
-	if ($info['pass']) $conn_string .= ' password=\''.$info['pass'].'\'';
+	if ($info['host']) $conn_string .= ' host=\''.(string)$info['host'].'\'';
+	if ($info['user']) $conn_string .= ' user=\''.(string)$info['user'].'\'';
+	if ($info['pass']) $conn_string .= ' password=\''.(string)$info['pass'].'\'';
 
 	if (isset($info['create_db']) && $info['create_db']) {
 		($conn = pg_connect($conn_string . "dbname=postgres")) ||
@@ -113,7 +109,7 @@ function do_connect(Map<string,string> $info) : resource {
 	($conn = pg_connect($conn_string . "dbname='".$info['database']."'")) ||
 				command_fail("Unable to connect to postgres");
 
-	vprint("Connected to database ".$info['database']." at ".$info['host']);
+	vprint("Connected to database ".(string)$info['database']." at ".(string)$info['host']);
 
 	return $conn;
 }
@@ -128,7 +124,11 @@ function format_desc(string $desc): string {
 	return implode("\n", $lines);
 }
 
-class CommandException extends Exception { }
+class CommandException extends Exception {
+	public function __construct(string $msg, int $code = 0) {
+		parent::__construct($msg, $code);
+	}
+}
 
 function command_fail(string $msg, int $code=1) : void {
 	throw new CommandException($msg, $code);

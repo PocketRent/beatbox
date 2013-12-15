@@ -57,7 +57,7 @@ function doGenerate(Vector<string> $args) : void {
 		case "--exclude":
 			$pattern = new ExcludePattern($getNext("exclude"));
 			if ($pattern->isValid()) {
-				$excludes[$pattern->table] = $pattern;
+				$excludes[$pattern->getTable()] = $pattern;
 			} else {
 				command_fail("Invalid Pattern '".$pattern->src."'");
 			}
@@ -91,7 +91,7 @@ function doGenerate(Vector<string> $args) : void {
 	if (!file_exists($directory)) {
 		vprint("Creating destination directory");
 		if (!mkdir($directory, 0777, true)) {
-			command_fail("Could not create destination directory '$destination'");
+			command_fail("Could not create destination directory '$directory'");
 		}
 	}
 
@@ -117,7 +117,7 @@ function doGenerate(Vector<string> $args) : void {
 
 class ExcludePattern {
 
-	public ?string $table = null;
+	private ?string $table = null;
 	public Vector<string> $columns = Vector {};
 
 	public string $src;
@@ -171,7 +171,7 @@ class ExcludePattern {
 			foreach ($pats_iter as $pat) {
 				$pat_obj = new ExcludePattern($pat);
 				if ($pat_obj->isValid()) {
-					$excludes[$pat_obj->table] = $pat_obj;
+					$excludes[$pat_obj->getTable()] = $pat_obj;
 				} else {
 					command_fail("Invalid Pattern '".$pat_obj->src."'");
 				}
@@ -185,6 +185,11 @@ class ExcludePattern {
 
 	public function isValid(): bool {
 		return $this->table !== null;
+	}
+
+	public function getTable() : string {
+		if ($this->table) return $this->table;
+		else throw new Exception("Name is null!");
 	}
 }
 
@@ -220,13 +225,13 @@ class PGType {
 	public string $type_cat = 'X';
 	public bool $type_pref = false;
 
-	public ?int $sub_type = null;
+	public int $sub_type = 0;
 
 	public ?Collection $elements = null;
 
 	public int $rel_id = 0;
 
-	public ?TypeDict $type_dict = null;
+	public TypeDict $type_dict;
 
 	public bool $written = false;
 
@@ -266,36 +271,46 @@ class PGType {
 		}
 	}
 
+	public function getCompositeElements() : ConstMap<string, PGType> {
+		// UNSAFE
+		if ($this->type == PGType::T_COMPOSITE)
+			return $this->elements;
+		else
+			throw new Exception("Wrong type for elements");
+	}
+
 	public function retrieveTypeElements($conn) {
 		if ($this->needsElements()) {
 			switch ($this->type) {
 			case PGType::T_COMPOSITE:
 				$q = pg_query_params($conn, "SELECT attname, atttypid
-					FROM pg_attribute WHERE attisdropped=FALSE AND attrelid=$1 ORDER BY attnum ASC",
+					FROM pg_attribute WHERE attisdropped=FALSE AND attrelid=\$1 ORDER BY attnum ASC",
 					[$this->rel_id]);
 				if (!$q) {
 					command_fail(pg_last_error($conn));
 				}
-				$this->elements = StableMap {};
+				$elements = StableMap {};
 				while($row = pg_fetch_assoc($q)) {
 					$attr_type = $this->type_dict->typeByOid((int)$row['atttypid']);
 					if ($attr_type === null) {
 						command_fail("Could not find entry for composite type field ".$row['attname']);
 					}
-					$this->elements[$row['attname']] = $attr_type;
+					$elements[$row['attname']] = $attr_type;
 				}
+				$this->elements = $elements;
 				break;
 			case PGType::T_ENUM:
 				$q = pg_query_params($conn, "SELECT enumlabel
-					FROM pg_enum WHERE enumtypid=$1 ORDER BY enumsortorder ASC",
+					FROM pg_enum WHERE enumtypid=\$1 ORDER BY enumsortorder ASC",
 					[$this->oid]);
 				if (!$q) {
 					command_fail(pg_last_error($conn));
 				}
-				$this->elements = Vector {};
+				$elements = Vector {};
 				while($row = pg_fetch_assoc($q)) {
-					$this->elements->add($row['enumlabel']);
+					$elements->add($row['enumlabel']);
 				}
+				$this->elements = $elements;
 				break;
 			default:
 				die("WAT");
@@ -355,7 +370,8 @@ class PGType {
 			$file->startBlock("class $this->name extends \\beatbox\\orm\\CompositeType");
 			$file->writeLine();
 
-			foreach ($this->elements as $name => $type) {
+			$elements = $this->getCompositeElements();
+			foreach ($elements as $name => $type) {
 				$file->writeLine("private \$_$name; // $type");
 			}
 			$file->writeLine();
@@ -365,7 +381,7 @@ class PGType {
 			$file->writeLine('if ($val === null) return 0;');
 			$file->writeLine('$parts = db_parse_composite($val);');
 
-			$elem_count = $this->elements->count();
+			$elem_count = $elements->count();
 			$file->startBlock("if (count(\$parts) != $elem_count)");
 			$file->writeLine('throw new \beatbox\orm\InvalidValueException($val);');
 			$file->endBlock();
@@ -374,7 +390,7 @@ class PGType {
 			$file->writeLine("\$obj = new $this->name;");
 
 			$i = 0;
-			foreach ($this->elements as $name => $type) {
+			foreach ($elements as $name => $type) {
 				$type->convertCode($file, "\$obj->_$name", "\$parts[$i]");
 				$i++;
 			}
@@ -389,20 +405,20 @@ class PGType {
 
 			$file->startBlock("public final function toDBString(\\beatbox\\orm\\Connection \$conn): string");
 
-			if ($this->elements->count() == 1) {
+			if ($elements->count() == 1) {
 				$file->writeLine('$str = "ROW(";');
 			} else {
 				$file->writeLine('$str = "(";');
 			}
-			$n = $this->elements->count() - 1;
+			$n = $elements->count() - 1;
 			$i = 0;
-			foreach ($this->elements as $name => $type) {
+			foreach ($elements as $name => $type) {
 				$file->writeLine("\$str .= \$conn->escapeValue(\$this->_$name);");
 				if ($i != $n)
 					$file->writeLine("\$str .= ',';");
 				$i++;
 			}
-			if ($this->elements->count() == 1) {
+			if ($elements->count() == 1) {
 				$file->writeLine('$str .= ")";');
 			} else {
 				$file->writeLine("\$str .= ')::\"".$this->name."\"';");
@@ -413,7 +429,7 @@ class PGType {
 
 			$file->writeLine();
 
-			foreach ($this->elements as $name => $type) {
+			foreach ($elements as $name => $type) {
 				$file->startBlock("public function get$name()");
 				$file->writeLine("return \$this->_$name;");
 				$file->endBlock();
@@ -431,7 +447,7 @@ class PGType {
 
 			$file->startBlock("public function __toString(): string");
 			$file->writeLine("\$str = \"".$this->name." {\\n\";");
-			foreach ($this->elements as $name => $t) {
+			foreach ($elements as $name => $t) {
 				$file->writeLine("\$str .= '    $name => ';");
 				$file->writeLine("\$str .= \$this->_$name . \"\\n\";");
 			}
@@ -500,7 +516,7 @@ class PGType {
 		case PGType::TCAT_UNKNOWN:
 			return 'unknown';
 		default:
-			command_fail("Unknown category given! ($cat)");
+			throw new CommandException("Unknown category given! ($cat)");
 		}
 	}
 }
@@ -508,8 +524,8 @@ class PGType {
 class TypeDict {
 
 	private Vector $types = Vector {};
-	private Map $oid_map = Map {};
-	private Map $name_map = Map {};
+	private Map<int,PGType> $oid_map = Map {};
+	private Map<string,PGType> $name_map = Map {};
 
 
 	public function __construct($conn) {
@@ -549,11 +565,11 @@ class TypeDict {
 	}
 
 	public function typeByOid(int $oid): PGType {
-		return isset($this->oid_map[$oid]) ? $this->oid_map[$oid] : null;
+		return $this->oid_map->at($oid);
 	}
 
 	public function typeByName(string $name): PGType {
-		return isset($this->name_map[$name]) ? $this->name_map[$name] : null;
+		return $this->name_map->at($name);
 	}
 }
 
@@ -561,13 +577,13 @@ class Table {
 
 	public int $oid;
 	public string $name;
-	public StableMap $columns = StableMap {};
+	public StableMap<string, Column> $columns = StableMap {};
 
 	public ?string $description = null;
 	public Map $constraints = Map {};
 
-	public Map $has_ones = Map {};
-	public Map $has_manys = Map {};
+	public Map<string, Pair<string,Vector<Pair<string,string>>>> $has_ones = Map {};
+	public Map<string, Pair<string,Vector<Pair<string,string>>>> $has_manys = Map {};
 
 	private bool $cols_sorted = false;
 
@@ -585,7 +601,7 @@ class Table {
 		vprint("Loading comments for {$this->name}");
 
 		$q = pg_query_params($conn,
-			"SELECT objsubid, description FROM pg_description WHERE objoid=$1", [$this->oid]);
+			"SELECT objsubid, description FROM pg_description WHERE objoid=\$1", [$this->oid]);
 		if (!$q) {
 			command_fail(pg_last_error($conn));
 		}
@@ -630,22 +646,22 @@ class Table {
 		}
 	}
 
-	public function primaryKeys(): Iterator {
+	public function primaryKeys(): ConstVector<Column> {
 		$this->sortColumns();
 		return $this->columns->values()->filter(function (Column $val) : bool {
 			return $val->primary;
 		});
 	}
 
-	public function addHasOne(string $name, string $table, Vector<string> $cols) : void {
+	public function addHasOne(string $name, string $table, Vector<Pair<string,string>> $cols) : void {
 		$this->has_ones[$name] = Pair { $table, $cols };
 	}
 
-	public function addHasMany(string $name, string $table, Vector<string> $cols) : void {
+	public function addHasMany(string $name, string $table, Vector<Pair<string, string>> $cols) : void {
 		$this->has_manys[$name] = Pair { $table, $cols };
 	}
 
-	public function hasOnes(): Iterator {
+	public function hasOnes(): Iterable<(string, string, Vector<Pair<string,string>>)> {
 		$table_counts = Map{};
 		foreach ($this->has_ones as $has_one) {
 			if (!isset($table_counts[$has_one[0]])) {
@@ -656,33 +672,33 @@ class Table {
 		}
 
 		return $this->has_ones->items()
-			->map(function (Pair $pair): array use ($table_counts) {
+			->map(function (Pair<string, Pair<string, Vector<Pair<string,string>>>> $pair): (string, string, Vector<Pair<string,string>>) use ($table_counts) {
 
 				if ($table_counts[$pair[1][0]] == 1) {
-					return [ $pair[1][0], $pair[1][0], $pair[1][1] ];
+					return tuple( $pair[1][0], $pair[1][0], $pair[1][1] );
 				} else {
-					return [ $pair[0], $pair[1][0], $pair[1][1] ];
+					return tuple( $pair[0], $pair[1][0], $pair[1][1] );
 				}
 			});
 	}
 
-	public function hasManys(): Iterator {
+	public function hasManys(): Iterable<(string, string, Vector<Pair<string,string>>)> {
 		$table_counts = Map{};
-		foreach ($this->has_manys as $has_one) {
-			if (!isset($table_counts[$has_one[0]])) {
-				$table_counts[$has_one[0]] = 1;
+		foreach ($this->has_manys as $has_many) {
+			if (!isset($table_counts[$has_many[0]])) {
+				$table_counts[$has_many[0]] = 1;
 			} else {
-				$table_counts[$has_one[0]]++;
+				$table_counts[$has_many[0]]++;
 			}
 		}
 
 		return $this->has_manys->items()
-			->map(function (Pair $pair): array use ($table_counts) {
+			->map(function (Pair<string, Pair<string, Vector<Pair<string,string>>>> $pair): (string, string, Vector<Pair<string,string>>) use ($table_counts) {
 
 				if ($table_counts[$pair[1][0]] == 1) {
-					return [ $pair[1][0], $pair[1][0], $pair[1][1] ];
+					return tuple( $pair[1][0], $pair[1][0], $pair[1][1] );
 				} else {
-					return [ $pair[0], $pair[1][0], $pair[1][1] ];
+					return tuple( $pair[0], $pair[1][0], $pair[1][1] );
 				}
 			});
 	}
@@ -691,8 +707,8 @@ class Table {
 class Column {
 	public string $name;
 
-	public ?string $data_type = null;
-	public ?string $udt_name = null;
+	public string $data_type;
+	public string $udt_name;
 	public ?string $element_type = null;
 
 	public bool $updatable;
@@ -717,7 +733,7 @@ class Column {
 	}
 
 	public function getType(TypeDict $dict): PGType {
-		return $dict->typeByName($this->udt_name);
+		return nullthrows($dict->typeByName($this->udt_name));
 	}
 }
 
@@ -727,7 +743,7 @@ class Constraint {
 	public string $on_table; // Table this constraint is on
 	public ?string $to_table;
 
-	public Vector $columns = Vector {};
+	public Vector<Pair<string,string>> $columns = Vector {};
 
 	public function __construct(string $type, string $name, string $on_table, ?string $to_table) {
 		$this->type = $type;
@@ -751,7 +767,7 @@ function load_tables(resource $conn, string $ns, Map<string,ExcludePattern> $exc
 	$ex_cols_it = new AppendIterator();
 	foreach ($excludes->filter(function(ExcludePattern $pat): bool {
 		return $pat->columns->count() > 0;
-	})->map(function (ExcludePattern $pat): VectorIterator<string> {
+	})->map(function (ExcludePattern $pat): Iterable<string> {
 		return $pat->columns->items();
 	}) as $it) {
 		$ex_cols_it->append($it);
@@ -764,7 +780,7 @@ function load_tables(resource $conn, string $ns, Map<string,ExcludePattern> $exc
 		$ex_tables[] = pg_escape_literal($conn, $table);
 	}
 	foreach ($ex_cols_it as $col) {
-		$ex_cols[] = pg_escape_literal($conn, $table);
+		$ex_cols[] = pg_escape_literal($conn, $col);
 	}
 
 	$ex_tables_q = '';
@@ -791,7 +807,7 @@ function load_tables(resource $conn, string $ns, Map<string,ExcludePattern> $exc
 		= (e.object_catalog, e.object_schema, e.object_name, e.object_type, e.collection_type_identifier))
 		LEFT JOIN pg_class t ON (t.relname = c.table_name)
 		LEFT JOIN pg_trigger trg ON (t.oid = trg.tgrelid)
-		WHERE c.table_schema = $1 $ex_tables_q $ex_cols_q
+		WHERE c.table_schema = \$1 $ex_tables_q $ex_cols_q
 		GROUP BY c.table_name, c.column_name, t.oid, c.ordinal_position, c.data_type, c.udt_name, e.data_type, c.is_nullable
 		ORDER BY t.oid, c.ordinal_position
 	", [$ns]);
@@ -871,7 +887,7 @@ function resolve_fk_constraints(Vector<Table> $tables, Vector<Constraint> $const
 		foreach ($tables as $table) {
 			if ($table->name == $constraint->on_table) {
 				if ($constraint->type == 'FOREIGN KEY') {
-					$table->addHasOne($constraint->name, $constraint->to_table, $constraint->columns);
+					$table->addHasOne($constraint->name, nullthrows($constraint->to_table), $constraint->columns);
 				} else if ($constraint->type == 'PRIMARY KEY') {
 					$cols = Vector::fromItems($constraint->columns->map(function ($col) {
 						return $col[0];
@@ -912,7 +928,7 @@ class CodeFile {
 
 	public function startBlock(string $before="", string $brace_char='{') : void {
 		$this->writeLine(trim($before." ".$brace_char));
-		$this->braces->append(reverse_brace($brace_char));
+		$this->braces->add(reverse_brace($brace_char));
 		$this->indent++;
 	}
 
@@ -957,7 +973,7 @@ class CodeFile {
 function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, ?string $ns=null) : void {
 	$ns = $ns ? $ns : "";
 
-	$types_file = new CodeFile($directory.'/types.php', "w");
+	$types_file = new CodeFile($directory.'/types.php');
 
 	$types_file->writePHPPreamble(true);
 	$types_file->writeLine();
@@ -1069,7 +1085,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
 					$tbl_data->writeLine("\$this->changed['$col->name'] = true;");
 					$tbl_data->writeLine("\$this->_$col->name = \Vector {};");
-					$tbl_data->writeLine("\$this->_$col->name->addAll(\$val);");
+					$tbl_data->writeLine("\$this->_{$col->name}->addAll(\$val);");
 					$tbl_data->writeLine('return $this;');
 					$tbl_data->endBlock();
 					$tbl_data->startBlock("public function append$col->name(Traversable \$val$def_val)");
@@ -1078,7 +1094,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 					$tbl_data->startBlock("if(\$this->_$col->name === null)");
 					$tbl_data->writeLine("\$this->_$col->name = \Vector {};");
 					$tbl_data->endBlock();
-					$tbl_data->writeLine("\$this->_$col->name->addAll(\$val);");
+					$tbl_data->writeLine("\$this->_{$col->name}->addAll(\$val);");
 					$tbl_data->writeLine('return $this;');
 				} else {
 					$tbl_data->startBlock("public function set$col->name($type_arg\$val$def_val)");
@@ -1101,7 +1117,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 			$tbl_data->startBlock("public function getOne{$relname}(\$klass): ORM ");
 
 			$tbl_data->writeLine("\$query = new ORM(\$klass);");
-			foreach ($columns as $i => $col_pair) {
+			foreach ($columns as $col_pair) {
 				list($local,$foreign) = $col_pair;
 				$tbl_data->writeLine("\$query = \$query->filter('$foreign', \$this->_$local);");
 			}
@@ -1249,6 +1265,6 @@ function reverse_brace(string $brace): string {
 	case '': // I know it's not a brace, but it helps to lay out code nicely.
 		return '';
 	default:
-		command_fail("Invalid brace character '$brace'");
+		throw new CommandException("Invalid brace character '$brace'");
 	}
 }

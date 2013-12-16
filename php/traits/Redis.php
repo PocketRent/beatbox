@@ -40,7 +40,7 @@ trait Redis {
 	 *
 	 * @returns the returned value from $fn
 	 */
-	protected static function redis_transaction(\callable $fn) : \mixed {
+	protected static function redis_transaction<T>((function(self):T) $fn) : T {
 		$r = self::redis();
 		$r->multi();
 		$val = call_user_func($fn, $r);

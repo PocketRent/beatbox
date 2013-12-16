@@ -5,8 +5,8 @@ namespace beatbox;
 use Map, Vector;
 
 class Event {
-	protected static Map<\string, Vector<\callable>> $exact_listeners = Map {};
-	protected static Map<\string, Vector<\callable>> $prefix_listeners = Map {};
+	protected static Map<\string, Vector<mixed>> $exact_listeners = Map {};
+	protected static Map<\string, Vector<mixed>> $prefix_listeners = Map {};
 
 	protected $name;
 	protected $args;
@@ -17,7 +17,7 @@ class Event {
 	 * $name can either be a single event or a list of events. If $prefix is
 	 * true, then the callback is called on all events with a prefix in $name
 	 */
-	public static function attach_listener(\callable $callback, \string $name, \bool $prefix = false) {
+	public static function attach_listener($callback, \string $name, \bool $prefix = false) {
 		if($prefix) {
 			if(!isset(self::$prefix_listeners[$name])) {
 				self::$prefix_listeners[$name] = Vector {$callback};
@@ -49,7 +49,7 @@ class Event {
 	/**
 	 * Create a new event of the given name
 	 */
-	public function __construct(\string $name /*, $args, ... */) {
+	public function __construct(\string $name,...) {
 		$this->args = func_get_args();
 		$this->name = array_shift($this->args);
 	}
@@ -58,7 +58,7 @@ class Event {
 	 * Send the event out to be processed asynchronously
 	 */
 	public function send() : \void {
-		add_task([get_called_class(), 'async_run'], $this->name, $this->args);
+		add_task(cast_callable([get_called_class(), 'async_run']), $this->name, $this->args);
 	}
 
 	/**

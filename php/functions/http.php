@@ -14,7 +14,7 @@ define('HTTP_URL_STRIP_ALL', HTTP_URL_STRIP_AUTH | HTTP_URL_STRIP_PORT | HTTP_UR
 define('HTTP_URL_FROM_ENV', 0x1000);
 define('HTTP_URL_SANITIZE_PATH', 0x2000);
 
-function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTTP_URL_FROM_ENV, array &$ret_array = null) : string {
+function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTTP_URL_FROM_ENV, ?array<string,mixed> &$ret_array = null) : string {
 	if($flags & HTTP_URL_FROM_ENV) {
 		$url = http_build_url(_http_url_from_env(), $url, $flags ^ HTTP_URL_FROM_ENV, $ret_array);
 	}
@@ -56,6 +56,7 @@ function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTT
 
 	if($flags & HTTP_URL_JOIN_QUERY && !empty($url['query']) && !empty($parts['query'])) {
 		if(!($flags & HTTP_URL_STRIP_QUERY)) {
+			$params = [];
 			parse_str($url['query'], $params);
 			parse_str($parts['query'], $params);
 			$new_url['query'] = http_build_query($params);

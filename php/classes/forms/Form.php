@@ -2,6 +2,8 @@
 
 use beatbox;
 
+type DataSource = array<\string,\mixed>;
+
 class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 	attribute
 		:form,
@@ -15,7 +17,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		</form>;
 	}
 
-	public function forFragment(Traversable $url, \string $fragment) : :x:base {
+	public function forFragment(\Indexish<int, string> $url, \string $fragment) : :x:base {
 		if(!$this->getAttribute('method')) {
 			$this->setAttribute('method', 'post');
 		}
@@ -30,8 +32,9 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		}
 		if(is_get()) {
 			$data = session_get('form.' . $this->getAttribute('action') . '.data');
-			if($data) {
-				$this->loadData($data, true);
+			if($data && $data instanceof \Indexish) {
+				// UNSAFE
+				$this->loadData($data);
 				$this->validate();
 				session_clear('form.' . $this->getAttribute('action') . '.data');
 			}
@@ -57,7 +60,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		return $this;
 	}
 
-	protected function getFields(:x:base $base = null) : Continuation {
+	protected function getFields(?:x:base $base = null) : Continuation {
 		if(!$base) {
 			$base = $this;
 		}
@@ -71,18 +74,25 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		}
 	}
 
-	protected static function add_to_map(Map $base, string $name, mixed $value) : void {
+	protected static function add_to_map(Map<string,mixed> $base, string $name, mixed $value) : void {
+		$matches = [];
 		if(preg_match('#^(.+?)\[(.*?)\](.*)$#', $name, $matches)) {
 			if(!$matches[2]) {
-				if(!isset($base[$matches[1]])) {
-					$base[$matches[1]] = Vector {};
+				$matchVec = $base->get($matches[1]);
+				if($matchVec == null) {
+					$matchVec = Vector {};
+					$base[$matches[1]] = $matchVec;
 				}
-				$base[$matches[1]][] = $value;
+				invariant($matchVec instanceof Vector, '$matches should be a Vector');
+				$matchVec->add($value);
 			} else {
-				if(!isset($base[$matches[1]])) {
-					$base[$matches[1]] = Map {};
+				$matchMap = $base->get($matches[1]);
+				if($matchMap == null) {
+					$matchMap = Map {};
+					$base[$matches[1]] = $matchMap;
 				}
-				self::add_to_map($base[$matches[1]], $matches[2] . $matches[3], $value);
+				invariant($matchMap instanceof Map, '$matches should be a Map');
+				self::add_to_map($matchMap, $matches[2] . $matches[3], $value);
 			}
 		} else {
 			$base[$name] = $value;
@@ -100,9 +110,10 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		return $data;
 	}
 
-	protected static array $load_count;
+	protected static array $load_count = [];
 
-	protected static function get_value(mixed $data, string $name, string $base) : mixed {
+	protected static function get_value(array<string,mixed> $data, string $name, string $base) : mixed {
+		$matches = [];
 		if(!$name) {
 			return $data;
 		} else if(preg_match('#^(.+?)\[(.*?)\](.*)$#', $name, $matches)) {
@@ -110,25 +121,28 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 				$index = isset(self::$load_count[$base . $matches[1]]) ? self::$load_count[$base . $matches[1]] + 1 : 0;
 				self::$load_count[$base . $matches[1]] = $index;
 
-				if(isset($data[$matches[1]][$index])) {
-					return $data[$matches[1]][$index];
-				} else {
-					return null;
+				if (isset($data[$matches[1]])) {
+					$field = $data[$matches[1]];
+					if (is_array($field)) {
+						if(isset($field[$index])) {
+							return $field[$index];
+						}
+					}
 				}
 			} else if(isset($data[$matches[1]])) {
-				$base .= "$matches[1]-";
-				return self::get_value($data[$matches[1]], $matches[2].$matches[3], $base);
-			} else {
-				return null;
+				$field = $data[$matches[1]];
+				if (is_array($field)) {
+					$base .= "$matches[1]-";
+					return self::get_value($field, $matches[2].$matches[3], $base);
+				}
 			}
 		} else if(isset($data[$name])) {
 			return $data[$name];
-		} else {
-			return null;
 		}
+		return null;
 	}
 
-	public function loadData(mixed $data, bool $empty = false) : :bb:form {
+	public function loadData(array<string, mixed> $data, bool $empty = false) : :bb:form {
 		self::$load_count = [];
 		foreach($this->getFields() as $field) {
 			$name = $field->getAttribute('name');
@@ -159,7 +173,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 				$errors[$name] = $error;
 			}
 		}
-		$valid = $errors->Count() == 0;
+		$valid = $errors->count() == 0;
 		$validator = $this->getAttribute('validator');
 		if(is_callable($validator)) {
 			$valid = call_user_func($validator, $fields, $errors) && $valid;

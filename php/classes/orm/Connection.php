@@ -3,6 +3,7 @@
 namespace beatbox\orm;
 
 use HH\Traversable;
+use \Awaitable;
 
 /**
  * This class represents the Postgres connection used for interacting with the
@@ -20,7 +21,7 @@ use HH\Traversable;
 final class Connection {
 	const CONNECTION_POLL_TIME = 1000;//us
 
-	private static self $connection = null;
+	private static ?Connection $connection=null;
 
 	private \Vector<resource> $connection_pool = \Vector {};
 	private \string $connection_string;
@@ -70,11 +71,11 @@ final class Connection {
 			$str .= "$name='".addslashes($value)."' ";
 		}
 
+		$this->connection_string = $str;
+
 		// This is the first connection, so make it the default one.
 		if (self::$connection === null)
 			self::$connection = $this;
-
-		$this->connection_string = $str;
 
 	}
 
@@ -85,20 +86,17 @@ final class Connection {
 		self::$connection = $conn;
 	}
 
-	public async function withRawConn<T>((function (\resource) : T) $fn) : T {
+	public async function withRawConn<T>((function (\resource) : Awaitable<T>) $fn) : Awaitable<T> {
 		if ($this->connection_pool->count() == 0) {
 			$conn = $this->newConnection();
-			$this->connection_pool->append($conn);
+			$this->connection_pool->add($conn);
 		}
 
 		$conn = $this->connection_pool->pop();
 
-		$val = $fn($conn);
-		if ($val instanceof \Awaitable) {
-			$val = await $val;
-		}
+		$val = await $fn($conn);
 
-		$this->connection_pool->append($conn);
+		$this->connection_pool->add($conn);
 
 		return $val;
 	}
@@ -137,9 +135,9 @@ final class Connection {
 			$savepoint = "__savepoint_".($this->savepoints->count()+1);
 			$this->savepoints->add($savepoint);
 			$sp = $this->escapeIdentifier($savepoint);
-			$this->query('SAVEPOINT '.$sp)->join();
+			wait($this->query('SAVEPOINT '.$sp));
 		} else {
-			$this->query('BEGIN')->join();
+			wait($this->query('BEGIN'));
 			$this->in_transaction = true;
 		}
 	}
@@ -150,7 +148,7 @@ final class Connection {
 	 */
 	public function setTransactionMode(\string $mode) : \void {
 		if ($this->in_transaction) {
-			$this->query('SET TRANSACTION '.$mode)->join();
+			wait($this->query('SET TRANSACTION '.$mode));
 		}
 	}
 
@@ -168,9 +166,9 @@ final class Connection {
 			if ($this->savepoints->count() > 0) {
 				$savepoint = $this->savepoints->pop();
 				$sp = $this->escapeIdentifier($savepoint);
-				$this->query('RELEASE SAVEPOINT '.$sp)->join();
+				wait($this->query('RELEASE SAVEPOINT '.$sp));
 			} else {
-				$this->query('COMMIT')->join();
+				wait($this->query('COMMIT'));
 				$this->in_transaction = false;
 			}
 		}
@@ -186,9 +184,9 @@ final class Connection {
 			if ($this->savepoints->count() > 0) {
 				$savepoint = $this->savepoints->pop();
 				$sp = $this->escapeIdentifier($savepoint);
-				$this->query('ROLLBACK TO SAVEPOINT '.$sp)->join();
+				wait($this->query('ROLLBACK TO SAVEPOINT '.$sp));
 			} else {
-				$this->query('ROLLBACK')->join();
+				wait($this->query('ROLLBACK'));
 				$this->in_transaction = false;
 			}
 		}
@@ -200,10 +198,10 @@ final class Connection {
 	 *
 	 * This method returns the same thing as the callable
 	 */
-	public function inTransaction(\callable $fn) : \mixed {
+	public function inTransaction<T>((function (Connection) : T) $fn) : T {
 		$this->begin();
 		try {
-			$ret = call_user_func($fn, $this);
+			$ret = $fn($this);
 		} catch (\Exception $e) {
 			$this->rollback();
 			throw $e;
@@ -222,7 +220,7 @@ final class Connection {
 	 *
 	 * To send multiple queries use the multiQuery method
 	 */
-	public async function query(\string $query, array $params=[]) : Awaitable {
+	public async function query(\string $query, array $params=[]) : Awaitable<Result> {
 		return await $this->withRawConn(async function ($conn) use ($query, $params) {
 			if (count($params) == 0) {
 				if (!pg_send_query($conn, $query)) {
@@ -257,16 +255,16 @@ final class Connection {
 	 *
 	 * The handle will return a vector of Results when joined.
 	 */
-	public async function multiQuery(\string $query, array $params=[]) : Awaitable {
+	public async function multiQuery(\string $query, array $params=[]) : Awaitable<\Vector<Result>> {
 
 		return await $this->withRawConn(async function ($conn) use ($query, $params) {
 			if (count($params) == 0) {
 				if (!pg_send_query($conn, $query)) {
-					throw new ConnectionException($this, "Failed sending query");
+					throw new ConnectionException($conn, "Failed sending query");
 				}
 			} else {
 				if (!pg_send_query_params($conn, $query, $params)) {
-					throw new ConnectionException($this, "Failed sending query");
+					throw new ConnectionException($conn, "Failed sending query");
 				}
 			}
 
@@ -279,7 +277,7 @@ final class Connection {
 
 			$results = \Vector {};
 			while ($result = pg_get_result($conn)) {
-				$results->append(Result::from_raw_result($result));
+				$results->add(Result::from_raw_result($result));
 			}
 
 			return $results;
@@ -290,9 +288,9 @@ final class Connection {
 	 * Escapes the given identifier according to postgres rules.
 	 */
 	public function escapeIdentifier(\string $id) : \string {
-		return $this->withRawConn(function ($conn) use ($id) {
+		return wait($this->withRawConn(async function ($conn) : Awaitable<\string> use ($id) {
 			return pg_escape_identifier($conn, $id);
-		})->join();
+		}));
 	}
 
 	/**
@@ -326,9 +324,9 @@ final class Connection {
 		} else if(is_bool($val)) {
 			return $val ? 'true' : 'false';
 		} else {
-			return $this->withRawConn(function ($conn) use ($val) {
+			return wait($this->withRawConn(async function ($conn) : Awaitable<\string> use ($val) {
 				return pg_escape_literal($conn, $val);
-			})->join();
+			}));
 		}
 	}
 

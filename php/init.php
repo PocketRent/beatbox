@@ -53,11 +53,13 @@ function register_autoload_map() : void {
 		makeMap();
 		$path = realpath(CONF_DIR . '/map.php');
 	}
+	$map = null;
 	if($path) {
 		require $path;
 	} else {
 		trigger_error("Cannot find class map", E_USER_ERROR);
 	}
+	invariant($map instanceof Map, '$map should be an instance of Map');
 
 	$map['function'] = Map {};
 

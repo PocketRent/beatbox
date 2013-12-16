@@ -105,6 +105,7 @@ class PHP {
 	}
 
 	private static function pretty_arg(\mixed $arg) : \string {
+		// UNSAFE
 		switch(gettype($arg)) {
 			case 'array':
 				return self::pretty_array($arg);
@@ -130,11 +131,12 @@ class PHP {
 		}
 	}
 
-	private static function pretty_array(Traversable $arg) : \string {
+	private static function pretty_array(\KeyedTraversable $arg) : \string {
 		$items = [];
 		$expected = 0;
 		foreach($arg as $key => $val) {
 			if(is_int($key) && $key === $expected) {
+				$expected = (int)$expected;
 				$items[] = self::pretty_arg($val);
 				++$expected;
 			} else {
@@ -201,7 +203,7 @@ class PHP {
 			$code = $exception->getBaseCode();
 			$path = 'error-' . $code;
 			$routes = \beatbox\Router::get_routes_for_path($path)[0];
-			if(!empty($routes['page'])) {
+			if($routes->get('page')) {
 				echo \beatbox\Router::route($path);
 			} else if(file_exists(BASE_DIR . '/src/errors/' . $path . '.html')) {
 				echo file_get_contents(BASE_DIR . '/src/errors/' . $path . '.html');

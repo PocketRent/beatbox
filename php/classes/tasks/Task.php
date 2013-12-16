@@ -45,7 +45,7 @@ class Task implements \Serializable {
 	 * The callback must be a method or function. It cannot be a closure, as it may not run
 	 * in the current process.
 	 */
-	public function __construct(\callable $callback/*, $arguments...*/) {
+	public function __construct((function (...):void) $callback,...) {
 		if($callback instanceof \Closure) {
 			throw new \InvalidArgumentException('Task passed unserializable callback');
 		}

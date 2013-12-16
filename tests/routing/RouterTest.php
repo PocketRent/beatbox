@@ -370,8 +370,8 @@ class RouterTest extends beatbox\Test {
 	 * @depends testAddRoute
 	 */
 	public function testAddChecker() {
-		beatbox\Router::add_checker('test', 'beatbox\\test\RouterTest::testAddChecker');
-		beatbox\Router::add_checker('CSRF', 'beatbox\test\RouterTest::testExtension');
+		beatbox\Router::add_checker('test', cast_callable('beatbox\\test\RouterTest::testAddChecker'));
+		beatbox\Router::add_checker('CSRF', cast_callable('beatbox\test\RouterTest::testExtension'));
 
 		// Check exact match
 		$this->assertEquals(beatbox\Router::get_checker('test'), 'beatbox\\test\RouterTest::testAddChecker');
@@ -384,7 +384,7 @@ class RouterTest extends beatbox\Test {
 		$this->assertEmpty(beatbox\Router::get_checker('none'));
 
 		// Check override
-		beatbox\Router::add_checker('test', 'beatbox\test\RouterTest::testCheckPass');
+		beatbox\Router::add_checker('test', cast_callable('beatbox\test\RouterTest::testCheckPass'));
 		$this->assertEquals(beatbox\Router::get_checker('test'), 'beatbox\test\RouterTest::testCheckPass');
 	}
 
@@ -395,7 +395,7 @@ class RouterTest extends beatbox\Test {
 	public function testCheckPass() {
 		$called = 0;
 
-		beatbox\Router::add_checker('test', function() use(&$called) {
+		beatbox\Router::add_checker('test', function($s, $m) use(&$called) {
 			$called++;
 			return true;
 		});
@@ -423,7 +423,7 @@ class RouterTest extends beatbox\Test {
 	 */
 	public function testCheckFail() {
 		// Setup
-		beatbox\Router::add_checker('test', function() {
+		beatbox\Router::add_checker('test', function($s, $m) {
 			return false;
 		});
 		beatbox\Router::add_routes(Map {
@@ -474,7 +474,7 @@ class RouterTest extends beatbox\Test {
 		// Use AJAX so we can have multiple fragments
 		$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHTTPRequest';
 		// Easier to check for failures, since passing is the default
-		beatbox\Router::add_checker('test', function() {
+		beatbox\Router::add_checker('test', function($s, $m) {
 			return false;
 		});
 		// Base: three available fragments, all require test
@@ -676,6 +676,7 @@ class RouterTest extends beatbox\Test {
 		});
 
 		$ret = beatbox\Router::route('/');
+		invariant($ret instanceof RouterTest_Callback, '$ret should be a RouterTest_Callback');
 
 		$this->assertEquals($ret->url, ['/']);
 		$this->assertEquals($ret->fragment, 'page');
@@ -685,7 +686,7 @@ class RouterTest extends beatbox\Test {
 class RouterTest_Callback implements beatbox\FragmentCallback {
 	public $url, $fragment;
 
-	public function forFragment(Traversable $url, \string $fragment) {
+	public function forFragment(\Indexish<int,string> $url, \string $fragment) : \mixed {
 		$this->url = $url;
 		$this->fragment = $fragment;
 		return $this;

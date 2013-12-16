@@ -5,7 +5,7 @@
  *
  * Behaves in a similar manner to array_merge_recusrive
  */
-function map_merge_recursive(ConstMapAccess $base, ...) : Map {
+function map_merge_recursive<Tk>(ConstMap<Tk,mixed> $base, ...) : Map<Tk,mixed> {
 	$ret = new Map();
 
 	$ret->setAll($base);
@@ -14,22 +14,23 @@ function map_merge_recursive(ConstMapAccess $base, ...) : Map {
 	array_shift($args);
 
 	foreach($args as $extra) {
-		if(!$extra instanceof ConstMapAccess) {
+		if(!$extra instanceof ConstMap) {
 			user_error(__FUNCTION__ . ' passed an argument that does not implement ConstMapAccess', E_USER_ERROR);
 		}
 		foreach($extra as $k => $v) {
 			if(isset($ret[$k])) {
+				$merge_val = $ret[$k];
 				// Recurse if both sides are maps
-				if($ret[$k] instanceof ConstMapAccess && $v instanceof ConstMapAccess) {
-					$v = map_merge_recursive($ret[$k], $v);
+				if($merge_val instanceof ConstMap && $v instanceof ConstMap) {
+					$v = map_merge_recursive($merge_val, $v);
 				// or if both are arrays
 				} else if(is_array($ret[$k]) && is_array($v)) {
 					$v = array_merge_recursive($ret[$k], $v);
 				// If they're both collections and both the same class, add one to the other
-				} else if($ret[$k] instanceof Collection && $v instanceof Collection) {
-					if(get_class($ret[$k]) == get_class($v)) {
+				} else if($merge_val instanceof Collection && $v instanceof Collection) {
+					if(get_class($merge_val) == get_class($v)) {
 						// We clone here so as to not screw up the original item
-						$v = (clone $ret[$k])->addAll($v);
+						$v = (clone $merge_val)->addAll($v);
 					}
 				}
 			}
@@ -43,7 +44,8 @@ function map_merge_recursive(ConstMapAccess $base, ...) : Map {
 /**
  * Vector equivalent of array_unshift
  */
-function vector_unshift(MutableVector $v, mixed $val) : void {
+function vector_unshift<T>(MutableVector<T> $v, T $val) : void {
+	// UNSAFE - because of the temporary null added to the beginning
 	$v->add(null); // Add a null element to the end
 	for ($i = $v->count()-1; $i > 0; $i--) {
 		$v[$i] = $v[$i-1];

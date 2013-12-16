@@ -2,21 +2,23 @@
 
 namespace beatbox\orm;
 
-class ORM implements \IteratorAggregate, \Countable {
-	private \string $data_class;
+use Awaitable;
+
+class ORM<T> implements \IteratorAggregate<T>, \Countable {
+	protected \string $data_class;
 	protected \string $table;
-	protected \resource $conn;
+	protected Connection $conn;
 
 	private \Set<\string> $valid_fields;
 
-	private \Vector $conds = \Vector {};
-	private \Vector $sorts = \Vector {};
-	private \Vector $joins = \Vector {};
+	protected \Vector $conds = \Vector {};
+	protected \Vector $sorts = \Vector {};
+	protected \Vector $joins = \Vector {};
 	private \int $limit = -1;
 	private \int $offset = -1;
 	private ?\string $from = null;
 
-	private Result $result = null;
+	private ?Result $result = null;
 	/**
 	 * Create an ORM-instance for getting this class
 	 */
@@ -32,7 +34,8 @@ class ORM implements \IteratorAggregate, \Countable {
 	 *
 	 * The underlying tables must, however, be the same.
 	 */
-	public function setDataClass(\string $data_class) : ORM {
+	public function setDataClass<Tn>(\string $data_class) : ORM<Tn> {
+		// UNSAFE
 		$new = clone $this;
 		$new->data_class = $data_class;
 		$new->table = $data_class::getTableName();
@@ -159,18 +162,20 @@ class ORM implements \IteratorAggregate, \Countable {
 		return $new;
 	}
 
+	public function count() : int {
+		$res = wait($this->countWith('*', 'C')->getNth(0));
+		return (int)nullthrows($res)->at('C');
+	}
+
 	/**
 	 * Helper method to create an AggregateORM and add the given
 	 * count field to it.
 	 *
 	 * If no arguments are provided, returns the actual count
 	 */
-	public function count(\string $field = '*', ?\string $as = null) : AggregateORM {
-		if(func_num_args() == 0) {
-			return $this->agg()->count('*', 'C')->getNth(0)->join()['C'];
-		}
+	public function countWith(\string $field = '*', ?\string $as = null) : AggregateORM {
 		$agg = $this->agg();
-		return $agg->count($field, $as);
+		return $agg->countWith($field, $as);
 	}
 
 	/**
@@ -208,8 +213,8 @@ class ORM implements \IteratorAggregate, \Countable {
 	/**
 	 * Returns a lazy iterator over the result set
 	 */
-	public function fetch() : \Iterable {
-		$result = $this->getResult()->join();
+	public function fetch() : \Iterable<T> {
+		$result = wait($this->getResult());
 		$cls = $this->data_class;
 		// Making the objects pretty much just consists of throwing
 		// each row at the class' `load` static method, so there's no
@@ -266,18 +271,18 @@ class ORM implements \IteratorAggregate, \Countable {
 		if ($this->conds->count() > 0)
 			return 'WHERE ('.bb_join(') AND (', $this->conds).')';
 		else
-			return false;
+			return null;
 	}
 
-	protected function getGROUP_BY() : ?\string { return false; }
+	protected function getGROUP_BY() : ?\string { return null; }
 
-	protected function getHAVING() : ?\string { return false; }
+	protected function getHAVING() : ?\string { return null; }
 
 	protected function getORDER_BY() : ?\string {
 		if ($this->sorts->count() > 0)
 			return "ORDER BY ".bb_join(', ', $this->sorts);
 		else
-			return false;
+			return null;
 	}
 
 	protected function getFieldList() : \string {
@@ -293,7 +298,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	/**
 	 * Gets the nth result from the results, starting at 0
 	 */
-	public async function getNth(\int $n) : DataTable {
+	public async function getNth(\int $n) : Awaitable<?T> {
 		$result = await $this->getResult();
 		if ($n < $result->numRows()) {
 			$cls = $this->data_class;
@@ -311,12 +316,13 @@ class ORM implements \IteratorAggregate, \Countable {
 		$this->joins = clone $this->joins;
 	}
 
-	protected async function getResult() : Result {
+	protected async function getResult() : Awaitable<QueryResult> {
 		if ($this->result === null) {
 			$q = $this->getQueryString();
 			$this->result = await $this->conn->query($q);
-			assert($this->result instanceof QueryResult);
 		}
+
+		invariant($this->result instanceof QueryResult, "Result should be a QueryResult");
 
 		return $this->result;
 	}
@@ -328,7 +334,7 @@ class ORM implements \IteratorAggregate, \Countable {
 	}
 }
 
-class AggregateORM extends ORM {
+class AggregateORM extends ORM<\Map<string,string>> {
 
 	private \Set $extra_fields = \Set {};
 	private \Vector $group_bys = \Vector {};
@@ -409,7 +415,7 @@ class AggregateORM extends ORM {
 	 * given, then it defaults to 'count_<FieldName>' unless the field
 	 * is '*', in which case it is 'count_<NumExtraFields>'
 	 */
-	public function count(\string $field = '*', ?\string $as = null) : AggregateORM {
+	public function countWith(\string $field = '*', ?\string $as = null) : AggregateORM {
 		if ($field != '*') {
 			$this->validateField($field);
 
@@ -472,14 +478,14 @@ class AggregateORM extends ORM {
 		if ($this->group_bys->count() > 0)
 			return "GROUP BY ".bb_join(', ', $this->group_bys);
 		else
-			return false;
+			return null;
 	}
 
 	protected function getHAVING() : ?\string {
 		if ($this->having->count() > 0)
 			return "HAVING (".bb_join(') AND (', $this->having).')';
 		else
-			return false;
+			return null;
 	}
 
 	protected function getFieldList() : \string {
@@ -492,7 +498,7 @@ class AggregateORM extends ORM {
 	 * the rows as associative arrays, not objects.
 	 */
 	public function fetch() : \Iterable {
-		return $this->getResult()->join()->rows();
+		return wait($this->getResult())->rows();
 	}
 
 	/**
@@ -500,10 +506,10 @@ class AggregateORM extends ORM {
 	 * results, only use if you are sure the data will be valid
 	 * for the object
 	 */
-	public function fetchObjects() : \Iterable {
+	public function fetchObjects<T as DataTable>() : \Iterable<T> {
 		$result = $this->getResult();
 		$cls = $this->data_class;
-		return $result->rows()->map(function ($row) use ($cls) {
+		return wait($result)->rows()->map(function ($row) use ($cls) {
 			return $cls::load($row);
 		});
 	}
@@ -511,7 +517,7 @@ class AggregateORM extends ORM {
 	/**
 	 * Returns the nth row or null
 	 */
-	public async function getNth(\int $n) : ?array {
+	public async function getNth(\int $n) : Awaitable<?\Map<\string,\string>> {
 		$result = await $this->getResult();
 		if ($n < $result->numRows()) {
 			return $result->nthRow($n);

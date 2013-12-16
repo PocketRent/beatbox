@@ -2,8 +2,6 @@
 
 namespace beatbox;
 
-use HH\Traversable;
-
 interface FragmentCallback {
-	public function forFragment(Traversable $url, \string $fragment) : :x:base;
+	public function forFragment(\Indexish<int,string> $url, \string $fragment) : \mixed;
 }

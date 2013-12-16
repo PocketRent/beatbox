@@ -1,7 +1,7 @@
 <?hh
 
 function db_parse_array(string $delimiter, string $val): Vector<string> {
-	$generator = function () : Continutaion use ($delimiter, $val) {
+	$generator = function () : \Continuation<string> use ($delimiter, $val) {
 		$len = strlen($val);
 		if ($len > 0) {
 			$start = 0;
@@ -40,7 +40,7 @@ function db_parse_array(string $delimiter, string $val): Vector<string> {
 
 function db_parse_composite(string $val): Vector<string> {
 	$val = trim($val, '"');
-	$generator = function () : Continutaion use ($val) {
+	$generator = function () : Continuation<string> use ($val) {
 		$len = strlen($val);
 		if ($len > 0 && $val != '()') {
 			$start = 1;

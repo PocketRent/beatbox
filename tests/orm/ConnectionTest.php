@@ -2,7 +2,7 @@
 
 namespace beatbox\test;
 
-use \beatbox, \beatbox\orm\Connection;
+use \beatbox, \beatbox\orm\Connection, \beatbox\orm\Result, \beatbox\orm\QueryResult;
 
 class ConnectionTest extends beatbox\Test {
 
@@ -11,11 +11,13 @@ class ConnectionTest extends beatbox\Test {
 	 */
 	public function testQueryBasic() {
 		$conn = Connection::get();
-		$result = $conn->query("SELECT 1 as \"N\";")->join();
+		$result = wait($conn->query("SELECT 1 as \"N\";"));
+		invariant($result instanceof QueryResult, '$result should be a QueryResult');
 		$val = $result->nthRow(0)['N'];
 		$this->assertEquals(1, $val);
 
-		$result = $conn->query("SELECT 't' as \"N\"; SELECT 1 as \"N\";")->join();
+		$result = wait($conn->query("SELECT 't' as \"N\"; SELECT 1 as \"N\";"));
+		invariant($result instanceof QueryResult, '$result should be a QueryResult');
 		$val = $result->nthRow(0)['N'];
 		$this->assertEquals(1, $val);
 	}
@@ -26,10 +28,15 @@ class ConnectionTest extends beatbox\Test {
 	public function testMultiQuery() {
 		$conn = Connection::get();
 
-		$result = $conn->multiQuery("SELECT 't' as \"N\"; SELECT 1 as \"N\";")->join();
+		$result = wait($conn->multiQuery("SELECT 't' as \"N\"; SELECT 1 as \"N\";"));
 
-		$this->assertEquals('t', $result[0]->nthRow(0)['N']);
-		$this->assertEquals(1, $result[1]->nthRow(0)['N']);
+		$r1 = $result[0];
+		$r2 = $result[1];
+		invariant($r1 instanceof QueryResult, '$r1 should be a QueryResult');
+		invariant($r2 instanceof QueryResult, '$r2 should be a QueryResult');
+
+		$this->assertEquals('t', $r1->nthRow(0)['N']);
+		$this->assertEquals(1, $r2->nthRow(0)['N']);
 	}
 
 	/**
@@ -44,8 +51,16 @@ class ConnectionTest extends beatbox\Test {
 		$r2 = $conn->query("SELECT 2 as \"N\", pg_sleep(0.1)");
 		$r3 = $conn->query("SELECT 3 as \"N\", pg_sleep(0.1)");
 
-		$this->assertEquals(1, $r1->join()->nthRow(0)['N']);
-		$this->assertEquals(2, $r2->join()->nthRow(0)['N']);
-		$this->assertEquals(3, $r3->join()->nthRow(0)['N']);
+		$r1 = wait($r1);
+		$r2 = wait($r2);
+		$r3 = wait($r3);
+
+		invariant($r1 instanceof QueryResult, '$r1 should be a QueryResult');
+		invariant($r2 instanceof QueryResult, '$r2 should be a QueryResult');
+		invariant($r3 instanceof QueryResult, '$r3 should be a QueryResult');
+
+		$this->assertEquals(1, $r1->nthRow(0)['N']);
+		$this->assertEquals(2, $r2->nthRow(0)['N']);
+		$this->assertEquals(3, $r3->nthRow(0)['N']);
 	}
 }

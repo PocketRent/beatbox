@@ -8,7 +8,7 @@ class Browser {
 		if ($long) {
 			return self::info('device_type');
 		} else {
-			switch(self::info('device_type')) {
+			switch((string)self::info('device_type')) {
 			case 'mobile': return DEVICE_MOBILE;
 			case 'tablet': return DEVICE_TABLET;
 			case 'desktop': return DEVICE_DESKTOP;
@@ -27,7 +27,7 @@ class Browser {
 
 	public static function svg() : \bool {
 		$cap = self::info('cap');
-		return $cap && isset($cap['svg']);
+		return $cap && is_array($cap) && isset($cap['svg']);
 	}
 
 	public static function isIE8() : \bool {
@@ -36,7 +36,7 @@ class Browser {
 
 	public static function inline_svg() : \bool {
 		$cap = self::info('cap');
-		return $cap && isset($cap['inlinesvg']);
+		return $cap && is_array($cap) && isset($cap['inlinesvg']);
 	}
 
 	public static function info(?\string $key=null) : \mixed {

@@ -14,10 +14,10 @@ class TaskTest extends beatbox\Test {
 		// Make sure the queue's empty
 		$this->assertEquals(0, self::redis()->llen(Task::QUEUE_NAME));
 
-		$this->assertEquals(1, add_task('strtolower', 'hello'));
+		$this->assertEquals(1, add_task(cast_callable('strtolower'), 'hello'));
 		$this->assertEquals(1, self::redis()->llen(Task::QUEUE_NAME));
 
-		$task = new Task('strtolower', 'goodbye');
+		$task = new Task(cast_callable('strtolower'), 'goodbye');
 		$this->assertEquals(2, $task->queue());
 		$this->assertEquals(2, self::redis()->llen(Task::QUEUE_NAME));
 	}
@@ -29,7 +29,7 @@ class TaskTest extends beatbox\Test {
 	public function testRunning() {
 		$this->assertEquals(0, self::redis()->llen(Task::QUEUE_NAME));
 
-		$this->assertEquals(1, add_task('strtolower', 'Hello'));
+		$this->assertEquals(1, add_task(cast_callable('strtolower'), 'Hello'));
 
 		$this->assertEquals('hello', Task::run());
 
@@ -38,8 +38,8 @@ class TaskTest extends beatbox\Test {
 		$this->assertEquals(0, self::redis()->llen(Task::QUEUE_NAME));
 
 		// Make sure it is a queue
-		$this->assertEquals(1, add_task('strtolower', 'Hello'));
-		$this->assertEquals(2, add_task('strtolower', 'World'));
+		$this->assertEquals(1, add_task(cast_callable('strtolower'), 'Hello'));
+		$this->assertEquals(2, add_task(cast_callable('strtolower'), 'World'));
 
 		$this->assertEquals('hello', Task::run());
 		$this->assertEquals(1, self::redis()->llen(Task::QUEUE_NAME));
@@ -54,10 +54,10 @@ class TaskTest extends beatbox\Test {
 	public function testConcurrency() {
 		$this->assertEquals(0, self::redis()->llen(Task::QUEUE_NAME));
 
-		$task = new Task('strtolower', 'Hello');
+		$task = new Task(cast_callable('strtolower'), 'Hello');
 		$task->setConcurrent(Task::CON_ALWAYS);
 
-		$otherTask = new Task('strtolower', 'World');
+		$otherTask = new Task(cast_callable('strtolower'), 'World');
 		$otherTask->setConcurrent(Task::CON_ALWAYS);
 
 		// Both can start
@@ -106,7 +106,7 @@ class TaskTest extends beatbox\Test {
 	 * @depends testConcurrency
 	 */
 	public function testLocks() {
-		$task = new Task('strtolower', 'Hello');
+		$task = new Task(cast_callable('strtolower'), 'Hello');
 		$task->setConcurrent(Task::CON_DIFF);
 
 		$this->assertTrue($task->setUp());

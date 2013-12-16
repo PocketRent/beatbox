@@ -47,5 +47,5 @@ function date_modify_this_month(DateTime &$date, string $format) : DateTime {
 	$d = new \DateTime($desc);
 	$d->setTimezone($date->getTimezone());
 	$date = \beatbox\orm\DateTimeType::fromDateTime($d);
-	return $date;
+	return nullthrows($date);
 }

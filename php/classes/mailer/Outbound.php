@@ -44,7 +44,7 @@ class Outbound {
 	 * Queue these emails ready for sending
 	 */
 	public function send() : void {
-		add_task([get_called_class(), 'real_send'], $this->to, $this->subject, $this->content, $this->from, $this->attachments);
+		add_task(cast_callable([get_called_class(), 'real_send']), $this->to, $this->subject, $this->content, $this->from, $this->attachments);
 	}
 
 	// Don't call this directly

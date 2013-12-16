@@ -1,6 +1,6 @@
 <?hh
 
-require_once __DIR__.'../../php/functions/invariant.php';
+require_once __DIR__.'/../../php/functions/invariant.php';
 require_once 'create.php';
 require_once 'generate.php';
 
@@ -68,22 +68,22 @@ function parse_common_args(Vector<string> &$args): Map<string,mixed> {
 		if (!file_exists($db_conf)) command_fail("Cannot find database configuration file to include");
 		require_once $db_conf;
 
-		if (!$info['database']) {
+		if (!$info->get('database')) {
 			if (!defined('DATABASE_NAME')) command_fail("No database name value available");
 			$info['database'] = DATABASE_NAME;
 		}
 
-		if (!$info['host']) {
+		if (!$info->get('host')) {
 			if (!defined('DATABASE_HOST')) command_fail("No database host value available");
 			$info['host'] = DATABASE_HOST;
 		}
 
-		if (!$info['user']) {
+		if (!$info->get('user')) {
 			if (!defined('DATABASE_USER')) command_fail("No database user value available");
 			$info['user'] = DATABASE_USER;
 		}
 
-		if (!$info['pass']) {
+		if (!$info->get('pass')) {
 			if (!defined('DATABASE_PASS')) command_fail("No database password value available");
 			$info['pass'] = DATABASE_PASS;
 		}

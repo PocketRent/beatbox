@@ -3,14 +3,17 @@
 namespace beatbox\orm;
 
 use HH\Traversable;
+use Awaitable,Indexish;
 
 abstract class DataTable {
+	abstract public function __construct(Indexish<string,string> $row);
+
 	/**
 	 * Updates the fields in the object from the data in the row.
 	 * This assumes that the given row is from the database and
 	 * therefore resets and marked changes for this object.
 	 */
-	abstract protected function updateFromRow(\mixed $row) : \void;
+	abstract protected function updateFromRow(Indexish<string,string> $row) : \void;
 
 	/**
 	 * Get a map of updated columns for this object, the keys are the
@@ -18,17 +21,17 @@ abstract class DataTable {
 	 *
 	 * @return Map
 	 */
-	abstract protected function getUpdatedColumns() : \Map;
+	abstract protected function getUpdatedColumns() : \Map<string,mixed>;
 
 	/**
 	 * Get a map of the original values for this object
 	 */
-	abstract protected function originalValues(): \Map;
+	abstract protected function originalValues(): \Map<string,mixed>;
 
 	/**
 	 * Returns a map of column names to their current values
 	 */
-	abstract public function toMap(): \Map;
+	abstract public function toMap(): \Map<string,mixed>;
 
 	/**
 	 * Returns the fields in as a ROW constructor literal
@@ -79,7 +82,7 @@ abstract class DataTable {
 	 *
 	 * Returns null if there is no matching object in the database
 	 */
-	public static async function get_by_pk(\mixed $id) : DataTable {
+	public static async function get_by_pk(\mixed $id) : Awaitable<?DataTable> {
 		if(!$id) {
 			return null;
 		}
@@ -91,6 +94,7 @@ abstract class DataTable {
 				throw new \InvalidArgumentException("Object has multi-column primary key, `get_by_id` expects an array or map");
 			}
 		}
+		invariant($id instanceof Indexish, '$id should be indexable');
 		$orm = static::get();
 		// Add each key as an '=' filter
 		foreach ($pks as $col) {
@@ -105,7 +109,7 @@ abstract class DataTable {
 	/**
 	 * Wrapper method for get_by_pk.
 	 */
-	public static function get_by_id(\mixed $id) : DataTable {
+	public static function get_by_id(\mixed $id) : Awaitable<?DataTable> {
 		return static::get_by_pk($id);
 	}
 
@@ -145,7 +149,7 @@ abstract class DataTable {
 	 * current values of the primary key columns for the WHERE clause
 	 * in the UPDATE query.
 	 */
-	public async function write(\bool $force=false) : \bool {
+	public async function write(\bool $force=false) : Awaitable<\bool> {
 		return await $this->writeWithConn(Connection::get(), $force);
 	}
 
@@ -153,7 +157,7 @@ abstract class DataTable {
 	 * Write this object to the database using the given connection,
 	 * $force has the same meaning as for write
 	 */
-	public async function writeWithConn(Connection $conn, \bool $force=false) : \bool {
+	public async function writeWithConn(Connection $conn, \bool $force=false) : Awaitable<\bool> {
 		if ($conn == null)
 			throw new \InvalidArgumentException("Connection object is null");
 		if ($this->deleted)
@@ -178,7 +182,8 @@ abstract class DataTable {
 				return $conn->escapeValue($val);
 			});
 
-			foreach(($this->getPrimaryKeys()->count() ? $this->getPrimaryKeys() : ['ID']) as $k) {
+			$primary_keys = static::getPrimaryKeys();
+			foreach(($primary_keys->count() ? $primary_keys : ['ID']) as $k) {
 				$func = "get$k";
 				if($this->$func() === null) {
 					$columns[] = $conn->escapeIdentifier($k);
@@ -194,7 +199,7 @@ abstract class DataTable {
 			$origVals = $this->originalValues();
 			$primaryKeys = static::getPrimaryKeys();
 
-			$pairs = $values->kvzip()->map(function (\Pair $pair) use ($conn) {
+			$pairs = $values->items()->map(function (\Pair<string,mixed> $pair) use ($conn) {
 				$col = $conn->escapeIdentifier($pair[0]);
 				$val = $conn->escapeValue($pair[1]);
 				return "$col = $val";
@@ -227,13 +232,13 @@ abstract class DataTable {
 	 * The object shouldn't be used after deletion and will cause exceptions
 	 * to be thrown if this happens.
 	 */
-	public async function delete() : \void {
+	public async function delete() : Awaitable<\void> {
 		if ($this->deleted)
 			throw new \DeletedObjectException('delete', get_called_class());
 		return await $this->deleteWithConn(Connection::get());
 	}
 
-	public async function deleteWithConn(Connection $conn) : \void {
+	public async function deleteWithConn(Connection $conn) : Awaitable<\void> {
 		if ($this->deleted)
 			throw new \DeletedObjectException('delete', get_called_class());
 		$this->deleted = true;

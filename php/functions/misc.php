@@ -50,9 +50,9 @@ function check_token(string $check, string $token) : bool {
 	$nop = strlen($token);
 	for($i = 0; $i < $stop; ++$i) {
 		if($i >= $nop) {
-			$same &= $check[$i] === null;
+			$same = $same && ($check[$i] === null);
 		} else {
-			$same &= $token[$i] === $check[$i];
+			$same = $same && ($token[$i] === $check[$i]);
 		}
 	}
 
@@ -60,14 +60,14 @@ function check_token(string $check, string $token) : bool {
 		return false;
 	}
 
-	return (bool)$same;
+	return $same;
 }
 
 /**
  * Returns if $left is strictly less than $right
  */
 function compare_items<T>(T $left, T $right) : bool {
-	if ($left instanceof \beatbox\orm\DateTimeType) {
+	if ($left instanceof \beatbox\Comparable) {
 		return $left->lt($right);
 	}
 	return item_difference($left, $right) < 0;
@@ -80,10 +80,12 @@ function item_difference<T>(T $left, T $right) : int {
 	if(is_string($left) && !is_numeric($left)) {
 		return strcmp($left, $right);
 	}
-	if(is_scalar($left)) {
+	if(is_numeric($left)) {
+		$left = (int)$left;
+		$right = (int)$right;
 		return $left - $right;
 	}
-	if($left instanceof DateTime) {
+	if($left instanceof DateTime && $right instanceof DateTime) {
 		$diff = $right->diff($left);
 		if($diff->invert == -1) {
 			$mult = -1;
@@ -105,7 +107,7 @@ function get_mime_type(string $filename) : string {
 /**
  * Gets the domain from the HTTP_HOST server variable
  */
-function host_domain() : \string {
+function host_domain() : ?\string {
 	if (!isset($_SERVER['HTTP_HOST'])) return null;
 
 	$host = $_SERVER['HTTP_HOST'];
@@ -132,4 +134,8 @@ function base_url() : \string {
 		$uri = substr($uri, 0, -strlen($url) + 1);
 	}
 	return $uri;
+}
+
+function wait<T>(Awaitable<T> $handle) : T {
+	return $handle->getWaitHandle()->join();
 }

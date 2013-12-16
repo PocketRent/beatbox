@@ -53,11 +53,11 @@ class ResultException extends DatabaseException {
 class InvalidFieldException extends DatabaseException {
 	private static int $num_fields = 4; // number of valid fields to show in the error message
 
-	public function __construct(\string $field, \mixed $valid_fields, ?\Exception $previous=null) {
+	public function __construct(\string $field, \Set<string> $valid_fields, ?\Exception $previous=null) {
 		$trunc = 0;
-		if ($valid_fields->count() > self::$num_fields && $valid_fields instanceof \Vector) {
+		if ($valid_fields->count() > self::$num_fields) {
 			$trunc = $valid_fields->count() - self::$num_fields;
-			$valid_fields = \Vector::slice($valid_fields, 0, self::$num_fields);
+			$valid_fields = \Vector::slice(\Vector::fromItems($valid_fields), 0, self::$num_fields);
 		}
 		$valid_fields = $valid_fields->map(function ($val) { return "'$val'"; });
 		$message = "Invalid field '$field', expected one of [".bb_join(', ', $valid_fields);

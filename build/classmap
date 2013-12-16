@@ -53,6 +53,8 @@ function handleDir(string $dir) : Map<string, Map<string, string>> {
 			$filename = str_replace($base, '', $file);
 			$filename = ltrim($filename, '/');
 
+			if (substr($filename, -4) != '.php') continue;
+
 			$contents = file_get_contents($file);
 			// Pull out namespace
 			if(preg_match('#^namespace +(\S+);#mi', $contents, $match)) {
@@ -63,7 +65,7 @@ function handleDir(string $dir) : Map<string, Map<string, string>> {
 
 			$class = false;
 
-			if(preg_match_all('#^(?:(?:abstract|final) *)?(?:class|interface|trait) +(\S+)[ \n]#mi', $contents, $matches, PREG_SET_ORDER)) {
+			if(preg_match_all('#^(?:(?:abstract|final) *)?(?:class|interface|trait) +(:?[a-z_][a-z0-9:_-]*)#mi', $contents, $matches, PREG_SET_ORDER)) {
 				foreach($matches as $match) {
 					if($match[1][0] == ':') {
 						$match[1] = :x:base::element2class(substr($match[1], 1));

@@ -85,7 +85,7 @@ class ModifyResult extends Result {
 
 }
 
-class QueryResult extends Result implements \IteratorAggregate {
+class QueryResult extends Result implements \IteratorAggregate<array<string,string>> {
 
 	private \int $num_rows = -1;
 
@@ -109,7 +109,7 @@ class QueryResult extends Result implements \IteratorAggregate {
 	 *
 	 * Will throw an exception if the given position is out of bounds
 	 */
-	public function nthRow(\int $pos) : array {
+	public function nthRow(\int $pos) : \Map<\string,\string> {
 		if ($pos >= 0 && $pos < $this->numRows()) {
 			if ($pos >= $this->rows->count()) {
 				$iter = $this->getIterator();
@@ -139,8 +139,8 @@ class QueryResult extends Result implements \IteratorAggregate {
 	}
 }
 
-class ResultIterable implements \Iterable {
-	use \LazyIterable;
+class ResultIterable implements \Iterable<array<string,string>> {
+	use \LazyIterable<array<string,string>>;
 
 	private QueryResult $result;
 
@@ -153,7 +153,7 @@ class ResultIterable implements \Iterable {
 	}
 }
 
-class ResultIterator implements \Iterator {
+class ResultIterator implements \Iterator<array<string,string>> {
 	private \resource $result;
 	private \Vector $rows;
 	private \int $num_rows;
@@ -167,10 +167,7 @@ class ResultIterator implements \Iterator {
 	}
 
 	public function current() : array {
-		if ($this->cur_idx == $this->num_rows) {
-			// We're out of rows
-			return null;
-		}
+		invariant($this->cur_idx != $this->num_rows, "Tried to iterate past the end of the iterator");
 		if ($this->cur_idx == $this->rows->count()) {
 			// We've run out of rows from the given object, fetch them
 			$row = pg_fetch_assoc($this->result);

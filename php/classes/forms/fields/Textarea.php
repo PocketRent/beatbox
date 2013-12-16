@@ -20,6 +20,6 @@ class :bb:form:textarea extends :bb:form:field {
 	}
 
 	public function getValue() : string {
-		return implode($this->getChildren());
+		return implode('', $this->getChildren());
 	}
 }

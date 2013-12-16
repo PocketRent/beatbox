@@ -15,13 +15,13 @@ trait Settings {
 	/**
 	 * Returns the ID for this object. This should be unique across objects that have the same table name.
 	 */
-	abstract protected function getID() : \mixed;
+	abstract protected function getID() : \string;
 
 	private \bool $settings_loaded = false;
 	private \Map<\string, \mixed> $settings_data = \Map {};
 	private \Map<\string, \mixed> $settings_original = \Map {};
 
-	private \string $settings_key;
+	private ?\string $settings_key = null;
 
 	protected static function config_redis(\Redis $inst) : \void {
 		$inst->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);

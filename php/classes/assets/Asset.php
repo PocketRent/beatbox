@@ -1,5 +1,4 @@
-<?hh
-
+<?hh // decl
 namespace beatbox;
 
 class Asset {

@@ -6,15 +6,15 @@ namespace beatbox\test\constraint;
  * Constraint for objects that have a cmp method
  */
 class Compare extends \PHPUnit_Framework_Constraint {
-	private \mixed $obj;
+	private \beatbox\Comparable $obj;
 	private \int $type = 0;
 
-	public function __construct(\mixed $expected, \int $type) {
+	public function __construct(\beatbox\Comparable $expected, \int $type) {
 		$this->obj = $expected;
 		$this->type = $type;
 	}
 
-	public function matches(\mixed $other) : \bool {
+	public function matches(\mixed $other) {
 		$res = $this->obj->cmp($other);
 
 		if ($this->type == 0) return $res == 0;
@@ -31,7 +31,7 @@ class Compare extends \PHPUnit_Framework_Constraint {
 		return $val.' '.$this->toString();
 	}
 
-	public function toString() : \string {
+	public function toString() {
 		if (method_exists($this->obj, '__toString'))
 			$val = (string)$this->obj;
 		else

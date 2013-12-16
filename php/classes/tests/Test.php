@@ -16,7 +16,7 @@ class Test extends \PHPUnit_Framework_TestCase {
 	}
 
 	public static function assertEquals(\mixed $expected, \mixed $actual, \string $message='', \int $delta=0, \int $maxDepth=10, \bool $canonicalize=FALSE, \bool $ignoreCase=FALSE) : \void {
-		if (is_object($expected) && method_exists($expected, 'cmp')) {
+		if ($expected instanceof Comparable) {
 			$constraint = new test\constraint\Compare($expected, 0);
 			self::assertThat($actual, $constraint, $message);
 		} else {
@@ -24,20 +24,20 @@ class Test extends \PHPUnit_Framework_TestCase {
 		}
 	}
 
-	public static function assertProduces(\mixed $expected, \mixed $actual, \string $message='', \bool $overrun=false, \bool $underrun=false) : \void {
+	public static function assertProduces(array $expected, \mixed $actual, \string $message='', \bool $overrun=false, \bool $underrun=false) : \void {
 		$constraint = new test\constraint\Produce($expected, $overrun, $underrun);
 		self::assertThat($actual, $constraint, $message);
 	}
 
 	public static function assertSetsEquals(\mixed $expected, \mixed $actual, \string $message='', \int $delta=0, \int $maxDepth=10, \bool $canonicalize=FALSE, \bool $ignoreCase=FALSE) : \void {
-		if(is_object($expected)) {
+		if($expected instanceof Traversable) {
 			$e = [];
 			foreach($expected as $v) $e[] = $v;
 			$expected = $e;
 		} else {
 			$expected = (array)$expected;
 		}
-		if(is_object($actual)) {
+		if($actual instanceof Traversable) {
 			$e = [];
 			foreach($actual as $v) $e[] = $v;
 			$actual = $e;

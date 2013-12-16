@@ -45,7 +45,7 @@ class Cache {
 	 *	});
 	 *
 	 */
-	public static function get_or_set(\string $key, (function(): \mixed) $fn, \int $expire = Cache::DEFAULT_EXPIRE, array $tags = []) : \mixed {
+	public static function get_or_set(\string $key, (function(): \mixed) $fn, \int $expire = Cache::DEFAULT_EXPIRE, Traversable<string> $tags = \Vector {}) : \mixed {
 		if (self::test($key)) {
 			return self::get($key);
 		} else {
@@ -60,7 +60,7 @@ class Cache {
 	 *
 	 * An expire value <= 0 means no expiration.
 	 */
-	public static function set(\string $key, \mixed $value, \int $expire = Cache::DEFAULT_EXPIRE, array $tags = []) : \void {
+	public static function set(\string $key, \mixed $value, \int $expire = Cache::DEFAULT_EXPIRE, Traversable<string> $tags = \Vector {}) : \void {
 		$key = self::key_name($key);
 		self::redis()->set($key, $value, $expire);
 		// If expire is already over (so < 1) then don't bother adding it to
@@ -76,11 +76,11 @@ class Cache {
 	 * $expire is either an integer representing the unix timestamp, or a
 	 * DateTime object instance.
 	 */
-	public static function set_until(\string $key, \mixed $value, \mixed $expire, array $tags = []) : \void {
+	public static function set_until(\string $key, \mixed $value, \mixed $expire, Traversable<string> $tags = \Vector {}) : \void {
 		$key = self::key_name($key);
 
 		if ($expire instanceof \DateTime) {
-			$expire = (int)$expire->date('U');
+			$expire = (int)$expire->format('U');
 		}
 
 		assert(is_numeric($expire));
@@ -125,7 +125,7 @@ class Cache {
 		});
 	}
 
-	private static function add_tags(\string $key, Traversable $tags) : \void {
+	private static function add_tags(\string $key, Traversable<string> $tags) : \void {
 		// Add the key to a set for each tag.
 		foreach ($tags as $tag) {
 			$tag = self::tag_name($tag);

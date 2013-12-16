@@ -8,10 +8,10 @@ abstract class CompositeType implements Type {
 	abstract static function fromString(\string $val) : CompositeType;
 }
 
-class DateTimeType extends \DateTime implements Type {
+class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 	use beatbox\Compare;
 
-	public final static function fromDateTime(\DateTime $date) : DateTimeType {
+	public final static function fromDateTime(\DateTime $date) : ?DateTimeType {
 		if ($date instanceof DateTimeType) return clone $date;
 		$date_type = new self($date->format('@U')); // The unix epoch is always UTC
 		return $date_type->setTimezone($date->getTimezone());
@@ -48,7 +48,7 @@ class DateTimeType extends \DateTime implements Type {
 			if (parent::setTimezone(new \DateTimeZone(date_default_timezone_get()))) {
 				return $this;
 			} else {
-				return false;
+				return null;
 			}
 		}
 		if (!($timezone instanceof \DateTimeZone)) {
@@ -62,7 +62,7 @@ class DateTimeType extends \DateTime implements Type {
 		if (parent::setTimezone($timezone)) {
 			return $this;
 		} else {
-			return false;
+			return null;
 		}
 	}
 
@@ -101,7 +101,7 @@ class DateTimeType extends \DateTime implements Type {
 	 *
 	 * Example: 2012-06-13 12:11:30 UTC
 	 */
-	public function toDBString(?Connection $conn=null) : \string {
+	public function toDBString(Connection $conn) : \string {
 		return $conn->escapeValue($this->__toString());
 	}
 
@@ -116,7 +116,7 @@ class DateTimeType extends \DateTime implements Type {
 	}
 
 	// Compare trait cmp function
-	public function cmp(\DateTime $other) : \int {
+	public function cmp($other) : \int {
 		if ($other instanceof DateTimeType) {
 			// other is a DateTimeType, check for infinities
 			if ($this->isInfinite() || $other->isInfinite()) {

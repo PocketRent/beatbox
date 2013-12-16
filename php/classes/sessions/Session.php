@@ -11,22 +11,22 @@ class Session {
 
 	const NAME = 'PR';
 
-	private static ?self $inst = null;
+	private static ?Session $inst = null;
 
-	private static \string $id;
+	private static ?\string $id=null;
 
 	protected static function getTableName() : \string {
 		return 'session';
 	}
 
 	protected function getID() : \string {
-		return self::$id;
+		return nullthrows(self::$id);
 	}
 
 	/**
 	 * Start the session if needed
 	 */
-	protected static function start(\bool $force = false) : Session {
+	protected static function start(\bool $force = false) : ?Session {
 		if(!self::$inst) {
 			if($force || !empty($_COOKIE[self::NAME])) {
 				self::$inst = new self();
@@ -43,15 +43,19 @@ class Session {
 		return self::$inst;
 	}
 
+	private static function inst() : Session {
+		return nullthrows(self::$inst);
+	}
+
 	protected function __construct() {}
 	protected function __destruct() {}
 
 	/**
 	 * Initialise a session
 	 */
-	protected function init() : \void {
-		if(!self::$inst->hasSetting('CSRF')) {
-			self::$inst->setSetting('CSRF', generate_random_token());
+	protected static function init() : \void {
+		if(!self::inst()->hasSetting('CSRF')) {
+			self::inst()->setSetting('CSRF', generate_random_token());
 		}
 	}
 
@@ -60,7 +64,7 @@ class Session {
 	 */
 	public static function get(\string $key) : \mixed {
 		if(self::start($key === 'CSRF') && self::exists($key)) {
-			return self::$inst->getSetting($key);
+			return self::inst()->getSetting($key);
 		}
 		return null;
 	}
@@ -69,7 +73,7 @@ class Session {
 	 * Check if there is a value set for the key in the session
 	 */
 	public static function exists(\string $key) : \bool {
-		return self::start(false) && self::$inst->hasSetting($key);
+		return self::start(false) && self::inst()->hasSetting($key);
 	}
 
 	/**
@@ -79,14 +83,14 @@ class Session {
 		if($key === 'CSRF') {
 			throw new \InvalidArgumentException('Unable to set CSRF key.');
 		}
-		self::start(true) && self::$inst->setSetting($key, $value);
+		self::start(true) && self::inst()->setSetting($key, $value);
 	}
 
 	/**
 	 * Clear the value from the session for the given key
 	 */
 	public static function clear(\string $key) : \void {
-		self::start(false) && self::$inst->clearSetting($key);
+		self::start(false) && self::inst()->clearSetting($key);
 	}
 
 	/**

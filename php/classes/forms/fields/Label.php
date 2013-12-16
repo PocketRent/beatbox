@@ -16,7 +16,7 @@ class :bb:form:label extends :bb:form:field {
 		return $this;
 	}
 
-	public function getValue() : null {
+	public function getValue() : mixed {
 		return null;
 	}
 

@@ -4,16 +4,18 @@ namespace beatbox;
 
 use Map, Pair, Vector;
 
+type HandlerTable = Map<\string,(function(array, ?\string, \Map<\string, \mixed>):\mixed)>;
+
 class Router {
-	protected static Map<\string, Pair<Map<\string, (function(array, ?\string, \Map):\mixed)>, Map<\string>>> $routes = Map {};
+	protected static Map<\string, Pair<HandlerTable, Map<\string, \mixed>>> $routes = Map {};
 
-	protected static Map<\string, Pair<Map<\string, (function(array, ?\string, \Map):\mixed)>, Map<\string>>> $regex_routes = Map {};
+	protected static Map<\string, Pair<HandlerTable, Map<\string, \mixed>>> $regex_routes = Map {};
 
-	protected static Map<\string, (function(\string, \Map):\bool)> $checkers = Map {};
+	protected static Map<\string, (function(\string, \Map<\string,\mixed>):\bool)> $checkers = Map {};
 
-	protected static Map<\string> $last_md = Map {};
+	protected static Map<\string, mixed> $last_md = Map {};
 
-	protected static Map<\string, (function(array, ?\string, \Map):\mixed)> $last_frags = Map {};
+	protected static Map<\string, (function(array, ?\string, \Map<\string, \mixed>):\mixed)> $last_frags = Map {};
 
 	protected static array $last_url = [];
 
@@ -113,12 +115,12 @@ class Router {
 	 *
 	 * @returns an array of fragment-name => content
 	 */
-	public static function process_pagelet_fragments(\string $url, Vector<\string> $fragments) : array {
+	public static function process_pagelet_fragments(array<string> $url, Vector<\string> $fragments) : array {
 		assert(pagelet_server_is_enabled() && is_get());
 		$res = [];
 		$tasks = [];
 
-		$url = implode($url, '/');
+		$url = implode('/', $url);
 
 		$task_headers = apache_request_headers() ?: [];
 		// is_pagelet looks for this header
@@ -196,7 +198,7 @@ class Router {
 	/**
 	 * Add routes
 	 */
-	public static function add_routes(Map<\string> $routes, \bool $regex = false) : \void {
+	public static function add_routes(Map<\string,mixed> $routes, \bool $regex = false) : \void {
 		foreach($routes as $path => $route) {
 			$l = strlen($path);
 			$path = trim($path, '/');
@@ -215,14 +217,17 @@ class Router {
 				$base = isset(self::$routes[$path]) ? self::$routes[$path] : Pair { new Map(), new Map() };
 			}
 			if($fragments) {
+				invariant($fragments instanceof Map, "Fragments should be a map");
 				$base[0]->setAll($fragments);
 			}
 			if($md) {
 				$base[1]->setAll($md);
 			}
 			if($regex) {
+				// UNSAFE
 				self::$regex_routes[$path] = $base;
 			} else {
+				// UNSAFE
 				self::$routes[$path] = $base;
 			}
 		}
@@ -231,7 +236,7 @@ class Router {
 	/**
 	 * Gets the routes available for a given path
 	 */
-	public static function get_routes_for_path(\string $path) : Pair<Map<\string, \callable>, Map<\string>> {
+	public static function get_routes_for_path(\string $path) : Pair<HandlerTable, Map<\string, \mixed>> {
 		$l = strlen($path);
 		$path = trim($path, '/');
 		if(!$path && $l) {
@@ -246,31 +251,29 @@ class Router {
 				}
 			}
 		}
+		// UNSAFE
 		return Pair { new Map(), new Map() };
 	}
 
 	/**
 	 * Add a checker for the given metadata key
 	 */
-	public static function add_checker(\string $key, \callable $callback) : \void {
+	public static function add_checker(\string $key, (function(\string, \Map<\string,\mixed>):\bool) $callback) : \void {
 		self::$checkers[strtolower($key)] = $callback;
 	}
 
 	/**
 	 * Return the checker for the given metadata key
 	 */
-	public static function get_checker(\string $key) : \callable {
+	public static function get_checker(\string $key) : ?(function(\string, \Map<\string,\mixed>):\bool) {
 		$key = strtolower($key);
-		if(isset(self::$checkers[$key])) {
-			return self::$checkers[$key];
-		}
-		return null;
+		return self::$checkers->get($key);
 	}
 
 	/**
 	 * Check if we're allowed to access the current fragment based on the metadata
 	 */
-	protected static function check_frag(\string $frag, Map<string> $md) : \void {
+	protected static function check_frag(\string $frag, Map<\string,\mixed> $md) : \void {
 		foreach($md as $key => $val) {
 			if(!$val) {
 				continue;
@@ -288,24 +291,24 @@ class Router {
 					continue;
 				}
 			}
-			if(!call_user_func($checker, $frag, $md)) {
+			if(!$checker($frag, $md)) {
 				http_error(403);
 			}
 		}
 	}
 
-	protected static function render_fragment(\string $fragName, \callable $frag, array $url, \string $extension, Map $md) : \mixed {
-		$val = call_user_func($frag, $url, $extension, $md);
+	protected static function render_fragment(\string $fragName, (function(array, ?\string, \Map<\string, \mixed>):\mixed) $frag, array $url, ?\string $extension, Map $md) : \mixed {
+		$val = $frag($url, $extension, $md);
 		// If the response from the fragment is awaitable, then block on it here. This is a nice
 		// convenience for fragment writers, meaning they can write fragments as async functions
 		// when that is easier to work with.
 		if ($val instanceof \Awaitable) {
-			$val = $val->getWaithandle()->join();
+			$val = wait($val);
 		}
 		if($val && $val instanceof \beatbox\FragmentCallback) {
 			$val = $val->forFragment($url, $fragName);
 			if ($val instanceof \Awaitable) {
-				$val = $val->getWaithandle()->join();
+				$val = wait($val);
 			}
 		}
 		return $val;
@@ -327,4 +330,5 @@ class Router {
 			return FRAGMENT_TIMEOUT;
 		return 100;
 	}
+
 }

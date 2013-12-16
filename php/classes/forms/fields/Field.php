@@ -17,11 +17,8 @@ abstract class :bb:form:field extends :bb:base {
 	protected $error;
 
 	protected function buildField() : :input {
-		if(!$this->type) {
-			throw new InvalidArgumentException('A type must be set');
-		}
 
-		return <input type={$this->type} class={$this->type} />;
+		return <input type={$this->getType()} class={$this->getType()} />;
 	}
 
 	public function setValue($value) : :bb:form:field {
@@ -98,7 +95,7 @@ abstract class :bb:form:field extends :bb:base {
 			}
 		}
 		// maxlength
-		if($this->valid && self::$lenVal->contains($this->type)) {
+		if($this->valid && self::$lenVal->contains($this->getType())) {
 			if(($len = $this->getAttribute('maxlength')) && mb_strlen($value) > $len) {
 				$this->valid = false;
 				$this->error = 'Maximum length is ' . $len;
@@ -109,7 +106,7 @@ abstract class :bb:form:field extends :bb:base {
 			}
 		}
 		// pattern
-		if($this->valid && self::$patternVal->contains($this->type) && $value !== null && $value !== '') {
+		if($this->valid && self::$patternVal->contains($this->getType()) && $value !== null && $value !== '') {
 			if(($pattern = $this->getAttribute('pattern'))) {
 				$regex = '/^(?:' . str_replace('/', '\\/', $pattern) . ')$/';
 				if($this->getAttribute('multiple')) {
@@ -120,14 +117,14 @@ abstract class :bb:form:field extends :bb:base {
 							$this->error = $value . ' does not match allowed format for ' . $this->getAttribute('name');
 						}
 					}
-				} else if(!preg_match($regex, $value)) {
+				} else if(!preg_match($regex, (string)$value)) {
 					$this->valid = false;
 					$this->error = $displayName . ' does not match allowed format';
 				}
 			}
 		}
 		// min, max, step
-		if($this->valid && self::$rangeVal->contains($this->type) && $value !== null && $value !== '') {
+		if($this->valid && self::$rangeVal->contains($this->getType()) && $value !== null && $value !== '') {
 			if(($min = $this->getAttribute('min'))) {
 				if(compare_items($value, $min)) {
 					$this->valid = false;
@@ -149,5 +146,13 @@ abstract class :bb:form:field extends :bb:base {
 			}
 		}
 		return [$this->valid, $this->error];
+	}
+
+	private function getType() : string {
+		if(!$this->type) {
+			throw new InvalidArgumentException('A type must be set');
+		}
+
+		return $this->type;
 	}
 }

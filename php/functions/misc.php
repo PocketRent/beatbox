@@ -139,3 +139,7 @@ function base_url() : \string {
 function wait<T>(Awaitable<T> $handle) : T {
 	return $handle->getWaitHandle()->join();
 }
+
+function tuple(...) {
+	return func_get_args();
+}

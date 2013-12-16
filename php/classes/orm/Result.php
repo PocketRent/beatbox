@@ -85,7 +85,8 @@ class ModifyResult extends Result {
 
 }
 
-class QueryResult extends Result implements \IteratorAggregate<array<string,string>> {
+class QueryResult extends Result implements \Iterable<array<string,string>> {
+	use StrictIterable<array<string,string>>;
 
 	private \int $num_rows = -1;
 

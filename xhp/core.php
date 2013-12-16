@@ -1,4 +1,4 @@
-<?hh
+<?hh // decl
 /*
   +----------------------------------------------------------------------+
   | XHP                                                                  |
@@ -103,6 +103,7 @@ abstract class :x:composable-element extends :x:base {
    * @param $children      list of children
    */
   final public function __construct($attributes, $children) {
+	// UNSAFE - thinks we have to call the parent constructor, which is abstract...
     foreach ($children as $child) {
       $this->appendChild($child);
     }
@@ -168,7 +169,7 @@ abstract class :x:composable-element extends :x:base {
    *
    * @param $children  Single child or array of children
    */
-  final public function replaceChildren(/* ... */) {
+  final public function replaceChildren(...) {
     // This function has been micro-optimized
     $args = func_get_args();
     $new_children = array();

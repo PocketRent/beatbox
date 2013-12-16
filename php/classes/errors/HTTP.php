@@ -145,6 +145,9 @@ class HTTP_Exception extends Exception {
 	public function __construct(?\string $message = null, \int $code=0, ?\Exception $previous=null) {
 		if(!$message && isset(self::$status_map[$code])) {
 			$message = self::$status_map[$code];
+		} else
+		if (!$message){
+			$message = "There was an error";
 		}
 		parent::__construct($message, $code, $previous);
 	}
@@ -161,8 +164,8 @@ class HTTP_Exception extends Exception {
 
 	public function sendToBrowser() : \void {
 		$line = 'HTTP/1.1 ' . $this->getBaseCode();
-		if(isset($this->status_map[$this->getBaseCode()])) {
-			$line .= ' ' . $this->status_map[$this->getBaseCode()];
+		if(isset(static::$status_map[$this->getBaseCode()])) {
+			$line .= ' ' . static::$status_map[$this->getBaseCode()];
 		}
 		if(is_ajax()) {
 			if ($this->getBaseCode() >= 300 && $this->getBaseCode() <= 399) {

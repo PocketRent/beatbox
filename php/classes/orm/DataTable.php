@@ -118,7 +118,7 @@ abstract class DataTable {
 	 *
 	 * @return DataTable
 	 */
-	public static function load(array $row) : DataTable {
+	public static function load(Indexish<string,string> $row) : DataTable {
 		$c = new static($row);
 		return $c;
 	}

@@ -1,6 +1,7 @@
 <?hh
 
 require_once __DIR__.'/../../php/functions/invariant.php';
+require_once __DIR__.'/../../php/functions/misc.php';
 require_once 'create.php';
 require_once 'generate.php';
 

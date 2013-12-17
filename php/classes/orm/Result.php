@@ -86,7 +86,7 @@ class ModifyResult extends Result {
 }
 
 class QueryResult extends Result implements \Iterable<array<string,string>> {
-	use StrictIterable<array<string,string>>;
+	use \StrictIterable<array<string,string>>;
 
 	private \int $num_rows = -1;
 
@@ -174,7 +174,7 @@ class ResultIterator implements \Iterator<array<string,string>> {
 			$row = pg_fetch_assoc($this->result);
 			if (!$row) // We shouldn't ever get NULL, so false is an error
 				throw new ResultException($this->result, "Error getting next row");
-			$this->rows->add($row);
+			$this->rows->add(new \Map($row));
 		}
 		return $this->rows->at($this->cur_idx);
 	}

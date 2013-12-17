@@ -993,6 +993,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 		$tbl_data->writeLine();
 		$tbl_data->writeLine('use beatbox\\orm\\ORM, beatbox\\orm\\Connection;');
 		$tbl_data->writeLine('use HH\Traversable;');
+		$tbl_data->writeLine('use Indexish;');
 		$tbl_data->writeLine();
 
 		$tbl_data->startBlock("abstract class $table->name extends \\beatbox\\orm\\DataTable");
@@ -1147,7 +1148,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 		$tbl_data->blockComment("Abstract function implementations");
 		$tbl_data->writeLine();
 
-		$tbl_data->startBlock("protected final function updateFromRow(\$row)");
+		$tbl_data->startBlock("protected final function updateFromRow(Indexish<string,string> \$row)");
 		$tbl_data->writeLine('$this->orig = \Map {};');
 		$tbl_data->writeLine('$this->changed = \Map {};');
 

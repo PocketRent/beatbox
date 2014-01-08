@@ -70,13 +70,13 @@ function compare_items<T>(T $left, T $right) : bool {
 	if ($left instanceof \beatbox\Comparable) {
 		return $left->lt($right);
 	}
-	return item_difference($left, $right) < 0;
+	return (int)item_difference($left, $right) < 0;
 }
 
 /**
  * Calculates the difference between two items
  */
-function item_difference<T>(T $left, T $right) : mixed {
+function item_difference<T>(T $left, T $right) {
 	if(is_string($left) && !is_numeric($left)) {
 		return strcmp($left, $right);
 	}

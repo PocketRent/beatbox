@@ -343,7 +343,8 @@ class PGType {
 			$subtype->convertCode($f, "\$__convElem_$hash", "\$__elem_$hash", true);
 			$f->writeLine("{$dest}->append(\$__convElem_$hash);");
 			$f->endBlock();
-		} else if ($this->type == PGType::T_COMPOSITE) {
+		} else if ($this->type == PGType::T_COMPOSITE ||
+				   $this->type_cat == PGType::TCAT_GEOM) {
 			$f->writeLine("$dest = {$this->name}::fromString($raw);");
 		} else if ($this->type_cat == PGType::TCAT_DATETIME) {
 			$f->writeLine("$dest = new \\beatbox\\orm\\DateTimeType($raw);");
@@ -559,6 +560,10 @@ class TypeDict {
 			foreach ($needs_els as $type) {
 				$type->retrieveTypeElements($conn);
 			}
+		}
+
+		foreach ($this->types as $ty) {
+			vprint("Type: ".$ty->name.' ('.$ty->type_cat.')');
 		}
 
 		vprint("Loaded ".$this->types->count()." types from database");

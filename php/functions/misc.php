@@ -76,13 +76,13 @@ function compare_items<T>(T $left, T $right) : bool {
 /**
  * Calculates the difference between two items
  */
-function item_difference<T>(T $left, T $right) : int {
+function item_difference<T>(T $left, T $right) : mixed {
 	if(is_string($left) && !is_numeric($left)) {
 		return strcmp($left, $right);
 	}
 	if(is_numeric($left)) {
-		$left = (int)$left;
-		$right = (int)$right;
+		$left = (float)$left;
+		$right = (float)$right;
 		return $left - $right;
 	}
 	if($left instanceof DateTime && $right instanceof DateTime) {

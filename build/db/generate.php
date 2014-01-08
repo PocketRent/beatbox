@@ -337,7 +337,7 @@ class PGType {
 			$hash = substr(md5($dest.$raw.$this), 0, 6);
 
 			$f->writeLine("\$__tmpArr_$hash = \db_parse_array('$subtype->delim', substr($raw,1,-1));");
-			$f->writeLine("$dest = \Vector {};");
+			$f->writeLine("$dest = \HH\Vector {};");
 			$f->writeLine("{$dest}->reserve(count(\$__tmpArr_$hash));");
 			$f->startBlock("foreach (\$__tmpArr_$hash as \$__elem_$hash)");
 			$subtype->convertCode($f, "\$__convElem_$hash", "\$__elem_$hash", true);
@@ -463,7 +463,7 @@ class PGType {
 	public function __toString(): string {
 		if ($this->type == PGType::T_BASE) {
 			if ($this->type_cat == PGType::TCAT_ARRAY) {
-				return '\Vector';
+				return '\HH\Vector';
 			} else if ($this->type_cat == PGType::TCAT_NUMERIC) {
 				if (substr($this->name, 0, 3) == 'int') {
 					return '\int';
@@ -1085,7 +1085,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 					$tbl_data->startBlock("public function set$col->name(Traversable \$val$def_val)");
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
 					$tbl_data->writeLine("\$this->changed['$col->name'] = true;");
-					$tbl_data->writeLine("\$this->_$col->name = \Vector {};");
+					$tbl_data->writeLine("\$this->_$col->name = \HH\Vector {};");
 					$tbl_data->writeLine("\$this->_{$col->name}->addAll(\$val);");
 					$tbl_data->writeLine('return $this;');
 					$tbl_data->endBlock();
@@ -1093,7 +1093,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
 					$tbl_data->writeLine("\$this->changed['$col->name'] = true;");
 					$tbl_data->startBlock("if(\$this->_$col->name === null)");
-					$tbl_data->writeLine("\$this->_$col->name = \Vector {};");
+					$tbl_data->writeLine("\$this->_$col->name = \HH\Vector {};");
 					$tbl_data->endBlock();
 					$tbl_data->writeLine("\$this->_{$col->name}->addAll(\$val);");
 					$tbl_data->writeLine('return $this;');

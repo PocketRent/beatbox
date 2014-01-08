@@ -2,7 +2,7 @@
 
 namespace beatbox;
 
-use Map, Pair, Vector;
+use Map, Pair, HH\Vector;
 
 type HandlerTable = Map<\string,(function(array, ?\string, \Map<\string, \mixed>):\mixed)>;
 

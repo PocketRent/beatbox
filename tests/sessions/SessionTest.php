@@ -2,7 +2,7 @@
 
 namespace beatbox\test;
 
-use beatbox, beatbox\Session;
+use beatbox, beatbox\Session, HH\Vector;
 
 class SessionTest extends beatbox\Test {
 	use beatbox\Test\Redis {
@@ -22,7 +22,7 @@ class SessionTest extends beatbox\Test {
 		Session::set('test', 'value');
 		$this->assertSame('value', session_get('test'));
 
-		session_set('test', $val = \Vector {});
+		session_set('test', $val = Vector {});
 		$this->assertSame($val, Session::get('test'));
 	}
 

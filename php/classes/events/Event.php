@@ -2,7 +2,7 @@
 
 namespace beatbox;
 
-use Map, Vector;
+use Map, HH\Vector;
 
 class Event {
 	protected static Map<\string, Vector<mixed>> $exact_listeners = Map {};

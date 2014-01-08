@@ -2,6 +2,8 @@
 
 namespace beatbox\orm;
 
+use HH\Vector, Map;
+
 abstract class Result {
 	protected \resource $result;
 
@@ -90,7 +92,7 @@ class QueryResult extends Result implements \Iterable<array<string,string>> {
 
 	private \int $num_rows = -1;
 
-	private \Vector $rows = \Vector {};
+	private Vector $rows = Vector {};
 
 	public function __construct(\resource $result) {
 		parent::__construct($result);
@@ -110,7 +112,7 @@ class QueryResult extends Result implements \Iterable<array<string,string>> {
 	 *
 	 * Will throw an exception if the given position is out of bounds
 	 */
-	public function nthRow(\int $pos) : \Map<\string,\string> {
+	public function nthRow(\int $pos) : Map<\string,\string> {
 		if ($pos >= 0 && $pos < $this->numRows()) {
 			if ($pos >= $this->rows->count()) {
 				$iter = $this->getIterator();
@@ -156,12 +158,12 @@ class ResultIterable implements \Iterable<array<string,string>> {
 
 class ResultIterator implements \Iterator<array<string,string>> {
 	private \resource $result;
-	private \Vector $rows;
+	private Vector $rows;
 	private \int $num_rows;
 
 	private \int $cur_idx = 0;
 
-	public function __construct(\resource $result, \Vector $rows, \int $num_rows) {
+	public function __construct(\resource $result, Vector $rows, \int $num_rows) {
 		$this->result = $result;
 		$this->rows = $rows;
 		$this->num_rows = $num_rows;
@@ -174,7 +176,7 @@ class ResultIterator implements \Iterator<array<string,string>> {
 			$row = pg_fetch_assoc($this->result);
 			if (!$row) // We shouldn't ever get NULL, so false is an error
 				throw new ResultException($this->result, "Error getting next row");
-			$this->rows->add(new \Map($row));
+			$this->rows->add(new Map($row));
 		}
 		return $this->rows->at($this->cur_idx);
 	}

@@ -3,6 +3,7 @@
 namespace beatbox;
 
 use \Redis as R;
+use HH\Set, Map;
 
 class Task implements \Serializable {
 	use redis;
@@ -62,7 +63,7 @@ class Task implements \Serializable {
 	 * Valid options are always, different args and never.
 	 */
 	public function setConcurrent(\int $policy) : Task {
-		if(!(\Set {self::CON_ALWAYS, self::CON_NEVER, self::CON_DIFF})->contains($policy)) {
+		if(!(Set {self::CON_ALWAYS, self::CON_NEVER, self::CON_DIFF})->contains($policy)) {
 			throw new \InvalidArgumentException('Concurrency policy must be one of the CON_ constants');
 		}
 		$this->policy = $policy;
@@ -178,7 +179,7 @@ class Task implements \Serializable {
 	 * Serialize this object. Should not be called directly.
 	 */
 	public function serialize() : \string {
-		$data = \Map {'c' => unserialize($this->callback), 'a' => unserialize($this->arguments), 'p' => $this->policy};
+		$data = Map {'c' => unserialize($this->callback), 'a' => unserialize($this->arguments), 'p' => $this->policy};
 		return serialize($data);
 	}
 

@@ -2,7 +2,7 @@
 
 namespace beatbox\test;
 
-use beatbox, Map, Pair, Vector;
+use beatbox, Map, Pair, HH\Vector;
 use HH\Traversable;
 
 class RouterTest extends beatbox\Test {

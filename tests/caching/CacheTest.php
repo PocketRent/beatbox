@@ -2,7 +2,7 @@
 
 namespace beatbox\test;
 
-use beatbox, beatbox\Cache;
+use beatbox, beatbox\Cache, HH\Vector;
 
 class CacheTest extends beatbox\Test {
 
@@ -49,9 +49,9 @@ class CacheTest extends beatbox\Test {
 	 * @group fast
 	 */
 	public function testAddTags() {
-		Cache::set("tagged1", 'a', 0, \Vector {"tag1", "tag2"});
-		Cache::set("tagged2", 'a', 0, \Vector {"tag1", "tag3"});
-		Cache::set("tagged3", 'a', 0, \Vector {"tag4", "tag5"});
+		Cache::set("tagged1", 'a', 0, Vector {"tag1", "tag2"});
+		Cache::set("tagged2", 'a', 0, Vector {"tag1", "tag3"});
+		Cache::set("tagged3", 'a', 0, Vector {"tag4", "tag5"});
 
 		$this->assertTrue(Cache::test("tagged1"));
 		$this->assertTrue(Cache::test("tagged2"));

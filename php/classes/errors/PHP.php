@@ -2,10 +2,10 @@
 
 namespace beatbox\errors;
 
-use HH\Traversable;
+use HH\Traversable, HH\FrozenSet;
 
 class PHP {
-	private static \Set<\int> $fatal_errors = \Set {
+	private static FrozenSet<\int> $fatal_errors = FrozenSet {
 		E_ERROR,
 		E_PARSE,
 		E_CORE_ERROR,

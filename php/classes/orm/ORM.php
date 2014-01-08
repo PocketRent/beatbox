@@ -3,17 +3,18 @@
 namespace beatbox\orm;
 
 use Awaitable;
+use HH\Set, HH\Vector;
 
 class ORM<T> implements \IteratorAggregate<T>, \Countable {
 	protected \string $data_class;
 	protected \string $table;
 	protected Connection $conn;
 
-	private \Set<\string> $valid_fields;
+	private Set<\string> $valid_fields;
 
-	protected \Vector $conds = \Vector {};
-	protected \Vector $sorts = \Vector {};
-	protected \Vector $joins = \Vector {};
+	protected Vector $conds = Vector {};
+	protected Vector $sorts = Vector {};
+	protected Vector $joins = Vector {};
 	private \int $limit = -1;
 	private \int $offset = -1;
 	private ?\string $from = null;
@@ -336,9 +337,9 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 
 class AggregateORM extends ORM<\Map<string,string>> {
 
-	private \Set $extra_fields = \Set {};
-	private \Vector $group_bys = \Vector {};
-	private \Vector $having = \Vector {};
+	private Set $extra_fields = Set {};
+	private Vector $group_bys = Vector {};
+	private Vector $having = Vector {};
 
 	/**
 	 * Adds a field to select from the database, use $force to

@@ -2,7 +2,7 @@
 
 namespace beatbox\orm;
 
-use HH\Traversable;
+use HH\Traversable, HH\Vector;
 use \Awaitable;
 
 /**
@@ -23,7 +23,7 @@ final class Connection {
 
 	private static ?Connection $connection=null;
 
-	private \Vector<resource> $connection_pool = \Vector {};
+	private Vector<resource> $connection_pool = Vector {};
 	private \string $connection_string;
 
 	/**
@@ -124,7 +124,7 @@ final class Connection {
 	}
 
 	private \bool $in_transaction = false;
-	private \Vector $savepoints = \Vector {};
+	private Vector $savepoints = Vector {};
 	/**
 	 * Starts an SQL transaction. If there is already a transaction in
 	 * progress, this creates a savepoint instead that can be rolled back
@@ -255,7 +255,7 @@ final class Connection {
 	 *
 	 * The handle will return a vector of Results when joined.
 	 */
-	public async function multiQuery(\string $query, array $params=[]) : Awaitable<\Vector<Result>> {
+	public async function multiQuery(\string $query, array $params=[]) : Awaitable<Vector<Result>> {
 
 		return await $this->withRawConn(async function ($conn) use ($query, $params) {
 			if (count($params) == 0) {
@@ -275,7 +275,7 @@ final class Connection {
 				await \SleepWaitHandle::create(self::CONNECTION_POLL_TIME);
 			}
 
-			$results = \Vector {};
+			$results = Vector {};
 			while ($result = pg_get_result($conn)) {
 				$results->add(Result::from_raw_result($result));
 			}
@@ -335,6 +335,6 @@ final class Connection {
 		foreach ($this->connection_pool as $conn) {
 			pg_close($conn);
 		}
-		$this->connection_pool = \Vector {};
+		$this->connection_pool = Vector {};
 	}
 }

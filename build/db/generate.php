@@ -1212,7 +1212,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 
 		$tbl_data->startBlock("public final static function getColumnNames(): \Set<string>");
 
-		$tbl_data->startBlock('return \Set {', '');
+		$tbl_data->startBlock('return \HH\FrozenSet {', '');
 		foreach ($table->columns as $col) {
 			$tbl_data->writeLine("'$col->name',");
 		}
@@ -1230,7 +1230,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 		}
 		$tbl_data->startBlock("public$final static function getPrimaryKeys(): \Set<string>");
 
-		$tbl_data->writeLine('$keys = \Set {};');
+		$tbl_data->writeLine('$keys = \HH\FrozenSet {};');
 		foreach ($table->primaryKeys() as $key) {
 			$tbl_data->writeLine("\$keys->add(\"$key->name\");");
 		}

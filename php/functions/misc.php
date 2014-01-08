@@ -8,13 +8,13 @@
  * A variant of the standard `join`/`implode` function that works
  * for any traversable, not just arrays
  */
-function bb_join(string $delimiter, Traversable $trav) : string {
+function bb_join<Tv>(string $delimiter, Traversable<Tv> $trav) : string {
 	$add_delim = false;
 	$str = "";
 	foreach ($trav as $elem) {
 		if ($add_delim)
 			$str .= $delimiter;
-		$str .= $elem;
+		$str .= (string)$elem;
 		$add_delim = true;
 	}
 
@@ -142,4 +142,16 @@ function wait<T>(Awaitable<T> $handle) : T {
 
 function tuple(...) {
 	return func_get_args();
+}
+
+function fun(string $name) {
+	return $name;
+}
+
+function inst_meth<T>(T $obj, string $meth) {
+	return [$obj, $meth];
+}
+
+function class_meth(string $class, string $meth) {
+	return [$class, $meth];
 }

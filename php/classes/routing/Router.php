@@ -4,18 +4,18 @@ namespace beatbox;
 
 use Map, Pair, HH\Vector;
 
-type HandlerTable = Map<\string,(function(array, ?\string, \Map<\string, \mixed>):\mixed)>;
+type HandlerTable = Map<\string,(function(array, ?\string, Map<\string, \mixed>):\mixed)>;
 
 class Router {
 	protected static Map<\string, Pair<HandlerTable, Map<\string, \mixed>>> $routes = Map {};
 
 	protected static Map<\string, Pair<HandlerTable, Map<\string, \mixed>>> $regex_routes = Map {};
 
-	protected static Map<\string, (function(\string, \Map<\string,\mixed>):\bool)> $checkers = Map {};
+	protected static Map<\string, (function(\string, Map<\string,\mixed>):\bool)> $checkers = Map {};
 
 	protected static Map<\string, mixed> $last_md = Map {};
 
-	protected static Map<\string, (function(array, ?\string, \Map<\string, \mixed>):\mixed)> $last_frags = Map {};
+	protected static Map<\string, (function(array, ?\string, Map<\string, \mixed>):\mixed)> $last_frags = Map {};
 
 	protected static array $last_url = [];
 
@@ -161,6 +161,7 @@ class Router {
 				// We need to do this to ensure that processing the fragments using
 				// pagelets has the same result as processing them serially
 				$obj = json_decode($result, true);
+				assert(is_array($obj));
 				assert(count($obj) == 1);
 
 				$res[$frag] = $obj[$frag];

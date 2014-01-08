@@ -244,7 +244,7 @@ class RouterTest extends beatbox\Test {
 		// Setup AJAX
 		$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHTTPRequest';
 
-		$response = beatbox\Router::route('/', Vector {'a', 'b'});
+		$response = (string)beatbox\Router::route('/', Vector {'a', 'b'});
 
 		$this->assertTrue($called, 'The a callback was not called');
 		$this->assertEquals($args, [['/'], null, Map {}]);
@@ -316,14 +316,14 @@ class RouterTest extends beatbox\Test {
 			'/' => Map { 'page' => function() { return <div></div>; } }
 		});
 
-		$response = beatbox\Router::route('/');
+		$response = (string)beatbox\Router::route('/');
 
 		$this->assertEquals($response, '<div></div>');
 
 		// Setup AJAX
 		$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHTTPRequest';
 
-		$response = json_decode(beatbox\Router::route('/'), true);
+		$response = json_decode((string)beatbox\Router::route('/'), true);
 		$this->assertEquals($response, ['page' => '<div></div>']);
 	}
 

@@ -337,9 +337,9 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 
 class AggregateORM extends ORM<\Map<string,string>> {
 
-	private Set $extra_fields = Set {};
-	private Vector $group_bys = Vector {};
-	private Vector $having = Vector {};
+	private Set<string> $extra_fields = Set {};
+	private Vector<string> $group_bys = Vector {};
+	private Vector<string> $having = Vector {};
 
 	/**
 	 * Adds a field to select from the database, use $force to

@@ -22,13 +22,13 @@ class Event {
 			if(!isset(self::$prefix_listeners[$name])) {
 				self::$prefix_listeners[$name] = Vector {$callback};
 			} else {
-				self::$prefix_listeners[$name][] = $callback;
+				self::$prefix_listeners[$name]->add($callback);
 			}
 		} else {
 			if(!isset(self::$exact_listeners[$name])) {
 				self::$exact_listeners[$name] = Vector {$callback};
 			} else {
-				self::$exact_listeners[$name][] = $callback;
+				self::$exact_listeners[$name]->add($callback);
 			}
 		}
 	}
@@ -67,7 +67,7 @@ class Event {
 	public function blockSend() : Vector<\mixed> {
 		$vals = Vector {};
 		foreach(self::listeners_for($this->name) as $cb) {
-			$vals[] = call_user_func_array($cb, $this->args);
+			$vals->add(call_user_func_array($cb, $this->args));
 		}
 		return $vals;
 	}
@@ -78,7 +78,7 @@ class Event {
 	public static function async_run(\string $name, array $args) : Vector<\mixed> {
 		$vals = Vector {};
 		foreach(self::listeners_for($name) as $cb) {
-			$vals[] = call_user_func_array($cb, $args);
+			$vals->add(call_user_func_array($cb, $args));
 		}
 		return $vals;
 	}

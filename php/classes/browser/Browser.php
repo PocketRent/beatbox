@@ -44,6 +44,8 @@ class Browser {
 		if ($info === null) {
 			if (isset($_COOKIE['ci'])) {
 				$info = json_decode($_COOKIE['ci'], true);
+				if (!is_array($info))
+					$info = [];
 			} else {
 				$info = [];
 			}

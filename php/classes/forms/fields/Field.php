@@ -85,7 +85,7 @@ abstract class :bb:form:field extends :bb:base {
 	}
 
 	public function validate() : array {
-		$value = $this->getValue();
+		$value = (string)$this->getValue();
 		$displayName = $this->getAttribute('label') ?: $this->getAttribute('name');
 		// required
 		if($this->valid && $this->getAttribute('required')) {

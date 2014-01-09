@@ -55,7 +55,8 @@ class SessionTest extends beatbox\Test {
 	public function testCSRF() {
 		$this->assertNotNull($token = Session::get('CSRF'), 'Should always have a CSRF token');
 		Session::end();
-		$this->assertEquals($token, Session::get('CSRF'), 'Restarting session should maintain the token.');
+		$this->assertEquals($token, Session::get('CSRF'),
+							'Restarting session should maintain the token.');
 
 		try {
 			Session::set('CSRF', 2);

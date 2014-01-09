@@ -284,7 +284,8 @@ class PGType {
 			switch ($this->type) {
 			case PGType::T_COMPOSITE:
 				$q = pg_query_params($conn, "SELECT attname, atttypid
-					FROM pg_attribute WHERE attisdropped=FALSE AND attrelid=\$1 ORDER BY attnum ASC",
+					FROM pg_attribute
+					WHERE attisdropped=FALSE AND attrelid=\$1 ORDER BY attnum ASC",
 					[$this->rel_id]);
 				if (!$q) {
 					command_fail(pg_last_error($conn));
@@ -293,7 +294,8 @@ class PGType {
 				while($row = pg_fetch_assoc($q)) {
 					$attr_type = $this->type_dict->typeByOid((int)$row['atttypid']);
 					if ($attr_type === null) {
-						command_fail("Could not find entry for composite type field ".$row['attname']);
+						command_fail("Could not find entry for composite type field "
+										.$row['attname']);
 					}
 					$elements[$row['attname']] = $attr_type;
 				}
@@ -336,7 +338,8 @@ class PGType {
 			$subtype = $this->type_dict->typeByOid($this->sub_type);
 			$hash = substr(md5($dest.$raw.$this), 0, 6);
 
-			$f->writeLine("\$__tmpArr_$hash = \db_parse_array('$subtype->delim', substr($raw,1,-1));");
+			$f->writeLine("\$__tmpArr_$hash = \db_parse_array('$subtype->delim',"
+							. " substr($raw,1,-1));");
 			$f->writeLine("$dest = \HH\Vector {};");
 			$f->writeLine("{$dest}->reserve(count(\$__tmpArr_$hash));");
 			$f->startBlock("foreach (\$__tmpArr_$hash as \$__elem_$hash)");
@@ -355,7 +358,8 @@ class PGType {
 	}
 
 	public function needsWrite(): bool {
-		if(($this->type_cat == PGType::TCAT_ARRAY || $this->type == PGType::T_DOMAIN) && $this->type_dict) {
+		if(($this->type_cat == PGType::TCAT_ARRAY || $this->type == PGType::T_DOMAIN)
+			&& $this->type_dict) {
 			$subType = $this->type_dict->typeByOid($this->sub_type);
 			return $subType && $subType->needsWrite();
 		}
@@ -405,7 +409,8 @@ class PGType {
 
 			$file->writeLine();
 
-			$file->startBlock("public final function toDBString(\\beatbox\\orm\\Connection \$conn): string");
+			$file->startBlock("public final function toDBString(\\beatbox\\orm\\Connection"
+								. " \$conn): string");
 
 			if ($elements->count() == 1) {
 				$file->writeLine('$str = "ROW(";');
@@ -657,11 +662,13 @@ class Table {
 		});
 	}
 
-	public function addHasOne(string $name, string $table, Vector<Pair<string,string>> $cols) : void {
+	public function addHasOne(string $name, string $table,
+								Vector<Pair<string,string>> $cols) : void {
 		$this->has_ones[$name] = Pair { $table, $cols };
 	}
 
-	public function addHasMany(string $name, string $table, Vector<Pair<string, string>> $cols) : void {
+	public function addHasMany(string $name, string $table,
+								Vector<Pair<string, string>> $cols) : void {
 		$this->has_manys[$name] = Pair { $table, $cols };
 	}
 
@@ -676,7 +683,8 @@ class Table {
 		}
 
 		return $this->has_ones->items()
-			->map(function (Pair<string, Pair<string, Vector<Pair<string,string>>>> $pair): (string, string, Vector<Pair<string,string>>) use ($table_counts) {
+			->map(function (Pair<string, Pair<string, Vector<Pair<string,string>>>> $pair):
+					(string, string, Vector<Pair<string,string>>) use ($table_counts) {
 
 				if ($table_counts[$pair[1][0]] == 1) {
 					return tuple( $pair[1][0], $pair[1][0], $pair[1][1] );
@@ -697,7 +705,8 @@ class Table {
 		}
 
 		return $this->has_manys->items()
-			->map(function (Pair<string, Pair<string, Vector<Pair<string,string>>>> $pair): (string, string, Vector<Pair<string,string>>) use ($table_counts) {
+			->map(function (Pair<string, Pair<string, Vector<Pair<string,string>>>> $pair):
+					(string, string, Vector<Pair<string,string>>) use ($table_counts) {
 
 				if ($table_counts[$pair[1][0]] == 1) {
 					return tuple( $pair[1][0], $pair[1][0], $pair[1][1] );
@@ -761,7 +770,8 @@ class Constraint {
 	}
 }
 
-function load_tables(resource $conn, string $ns, Map<string,ExcludePattern> $excludes): Vector<Table> {
+function load_tables(resource $conn, string $ns,
+						Map<string,ExcludePattern> $excludes): Vector<Table> {
 	vprint("Reading tables...");
 
 	$ex_tables_it = $excludes->filter(function (ExcludePattern $pat): bool {
@@ -808,11 +818,13 @@ function load_tables(resource $conn, string $ns, Map<string,ExcludePattern> $exc
 		information_schema.columns c
 		LEFT JOIN information_schema.element_types e
 		ON ((c.table_catalog, c.table_schema, c.table_name, 'TABLE', c.dtd_identifier)
-		= (e.object_catalog, e.object_schema, e.object_name, e.object_type, e.collection_type_identifier))
+		= (e.object_catalog, e.object_schema, e.object_name,
+			e.object_type, e.collection_type_identifier))
 		LEFT JOIN pg_class t ON (t.relname = c.table_name)
 		LEFT JOIN pg_trigger trg ON (t.oid = trg.tgrelid)
 		WHERE c.table_schema = \$1 $ex_tables_q $ex_cols_q
-		GROUP BY c.table_name, c.column_name, t.oid, c.ordinal_position, c.data_type, c.udt_name, e.data_type, c.is_nullable
+		GROUP BY c.table_name, c.column_name, t.oid, c.ordinal_position, c.data_type,
+			c.udt_name, e.data_type, c.is_nullable
 		ORDER BY t.oid, c.ordinal_position
 	", [$ns]);
 
@@ -847,13 +859,17 @@ function load_constraints(resource $conn): Vector<Constraint> {
 	$fkc = pg_query_params($conn, "SELECT
 		c.table_name as on_table, k2.table_name as to_table,
 		k.column_name as local_column, k2.column_name as foreign_column,
-		c.constraint_name, c.constraint_type FROM
-		information_schema.table_constraints c LEFT JOIN
-		information_schema.referential_constraints r ON(r.constraint_name = c.constraint_name) LEFT JOIN
-		information_schema.key_column_usage k
-		ON(c.table_name=k.table_name AND k.constraint_name=c.constraint_name) LEFT JOIN
-		information_schema.key_column_usage k2
-		ON(k.position_in_unique_constraint=k2.ordinal_position AND k2.constraint_name=r.unique_constraint_name)
+		c.constraint_name, c.constraint_type
+		FROM information_schema.table_constraints c
+		LEFT JOIN information_schema.referential_constraints r
+			ON(r.constraint_name = c.constraint_name)
+		LEFT JOIN information_schema.key_column_usage k
+			ON(c.table_name=k.table_name AND k.constraint_name=c.constraint_name)
+		LEFT JOIN information_schema.key_column_usage k2
+			ON(
+				k.position_in_unique_constraint=k2.ordinal_position AND
+				k2.constraint_name=r.unique_constraint_name
+			)
 		WHERE c.constraint_type IN ('PRIMARY KEY', 'FOREIGN KEY')
 		ORDER BY c.constraint_name ASC", []);
 
@@ -891,7 +907,8 @@ function resolve_fk_constraints(Vector<Table> $tables, Vector<Constraint> $const
 		foreach ($tables as $table) {
 			if ($table->name == $constraint->on_table) {
 				if ($constraint->type == 'FOREIGN KEY') {
-					$table->addHasOne($constraint->name, nullthrows($constraint->to_table), $constraint->columns);
+					$table->addHasOne($constraint->name, nullthrows($constraint->to_table),
+										$constraint->columns);
 				} else if ($constraint->type == 'PRIMARY KEY') {
 					$cols = Vector::fromItems($constraint->columns->map(function ($col) {
 						return $col[0];
@@ -974,7 +991,8 @@ class CodeFile {
 	}
 }
 
-function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, ?string $ns=null) : void {
+function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
+						?string $ns=null) : void {
 	$ns = $ns ? $ns : "";
 
 	$types_file = new CodeFile($directory.'/types.php');
@@ -1039,7 +1057,8 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 		$tbl_data->writeLine();
 		$tbl_data->blockComment("Constructor - Internal use only");
 		$tbl_data->startBlock("public function __construct(\$row = null)");
-		$tbl_data->writeLine("assert(is_null(\$row) || is_array(\$row) || \$row instanceof \ConstMapAccess);");
+		$tbl_data->writeLine("assert(is_null(\$row) || is_array(\$row) || "
+								. "\$row instanceof \ConstMapAccess);");
 		$tbl_data->startBlock('if($row)', '');
 		$tbl_data->writeLine("\$this->updateFromRow(\$row);");
 		$tbl_data->endBlock();
@@ -1073,7 +1092,8 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 					$tbl_data->startBlock('else if(is_numeric($val))');
 					$tbl_data->writeLine('$val = new \beatbox\orm\DateTimeType(\'@\' . $val);');
 					$tbl_data->endBlock();
-					$tbl_data->writeLine('assert($val instanceof \beatbox\orm\DateTimeType || $val === null);');
+					$tbl_data->writeLine('assert($val instanceof \beatbox\orm\DateTimeType || "
+											. "$val === null);');
 					$tbl_data->writeLine("\$this->changed['$col->name'] = ".
 						"\$this->orig == null || (\$this->orig['$col->name']->cmp(\$val) != 0);");
 					$tbl_data->writeLine("\$this->_$col->name = \$val;");
@@ -1086,20 +1106,21 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 					$tbl_data->writeLine("\$this->_$col->name = \$val;");
 					$tbl_data->writeLine('return $this;');
 				} else if ($type->type_cat == PGType::TCAT_ARRAY) {
-					$tbl_data->startBlock("public function set$col->name(Traversable \$val$def_val)");
+					$name = $col->name;
+					$tbl_data->startBlock("public function set$name(Traversable \$val$def_val)");
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
-					$tbl_data->writeLine("\$this->changed['$col->name'] = true;");
-					$tbl_data->writeLine("\$this->_$col->name = \HH\Vector {};");
-					$tbl_data->writeLine("\$this->_{$col->name}->addAll(\$val);");
+					$tbl_data->writeLine("\$this->changed['$name'] = true;");
+					$tbl_data->writeLine("\$this->_$name = \HH\Vector {};");
+					$tbl_data->writeLine("\$this->_{$name}->addAll(\$val);");
 					$tbl_data->writeLine('return $this;');
 					$tbl_data->endBlock();
-					$tbl_data->startBlock("public function append$col->name(Traversable \$val$def_val)");
+					$tbl_data->startBlock("public function append$name(Traversable \$val$def_val)");
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
-					$tbl_data->writeLine("\$this->changed['$col->name'] = true;");
-					$tbl_data->startBlock("if(\$this->_$col->name === null)");
-					$tbl_data->writeLine("\$this->_$col->name = \HH\Vector {};");
+					$tbl_data->writeLine("\$this->changed['$name'] = true;");
+					$tbl_data->startBlock("if(\$this->_$name === null)");
+					$tbl_data->writeLine("\$this->_$name = \HH\Vector {};");
 					$tbl_data->endBlock();
-					$tbl_data->writeLine("\$this->_{$col->name}->addAll(\$val);");
+					$tbl_data->writeLine("\$this->_{$name}->addAll(\$val);");
 					$tbl_data->writeLine('return $this;');
 				} else {
 					$tbl_data->startBlock("public function set$col->name($type_arg\$val$def_val)");
@@ -1152,7 +1173,8 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 		$tbl_data->blockComment("Abstract function implementations");
 		$tbl_data->writeLine();
 
-		$tbl_data->startBlock("protected final function updateFromRow(Indexish<string,string> \$row)");
+		$tbl_data->startBlock("protected final function "
+								. "updateFromRow(Indexish<string,string> \$row)");
 		$tbl_data->writeLine('$this->orig = \Map {};');
 		$tbl_data->writeLine('$this->changed = \Map {};');
 
@@ -1214,7 +1236,8 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 		$tbl_data->endBlock();
 		$tbl_data->writeLine();
 
-		$tbl_data->startBlock("public final static function getColumnNames(): \HH\FrozenSet<string>");
+		$tbl_data->startBlock("public final static function getColumnNames(): "
+								. "\HH\FrozenSet<string>");
 
 		$tbl_data->startBlock('return \HH\FrozenSet {', '');
 		foreach ($table->columns as $col) {
@@ -1232,7 +1255,8 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory, 
 		} else {
 			$final = '';
 		}
-		$tbl_data->startBlock("public$final static function getPrimaryKeys(): \HH\FrozenSet<string>");
+		$tbl_data->startBlock("public$final static function getPrimaryKeys(): "
+								. "\HH\FrozenSet<string>");
 
 		$tbl_data->startBlock('return \HH\FrozenSet {', '');
 		foreach ($table->primaryKeys() as $key) {

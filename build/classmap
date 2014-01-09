@@ -37,6 +37,7 @@ PHP;
 
 function handleDir(string $dir) : Map<string, Map<string, string>> {
 	$dir = realpath($dir);
+	static $cR = '#^(?:(?:abstract|final) *)?(?:class|interface|trait) +(:?[a-z_][a-z0-9:_-]*)#mi';
 	if(!$dir) return Map<string, Map<string, string>> {};
 
 	$map = Map<string, Map<string, string>> {
@@ -64,7 +65,7 @@ function handleDir(string $dir) : Map<string, Map<string, string>> {
 				$ns = '';
 			}
 
-			if(preg_match_all('#^(?:(?:abstract|final) *)?(?:class|interface|trait) +(:?[a-z_][a-z0-9:_-]*)#mi', $contents, $matches, PREG_SET_ORDER)) {
+			if(preg_match_all($cR, $contents, $matches, PREG_SET_ORDER)) {
 				foreach($matches as $match) {
 					if($match[1][0] == ':') {
 						$match[1] = :x:base::element2class(substr($match[1], 1));
@@ -80,7 +81,8 @@ function handleDir(string $dir) : Map<string, Map<string, string>> {
 				}
 			}
 
-			if (preg_match_all('#^\s*define\([\'"](\S+)[\'"]#mi', $contents, $matches, PREG_SET_ORDER)) {
+			if (preg_match_all('#^\s*define\([\'"](\S+)[\'"]#mi', $contents, $matches,
+								PREG_SET_ORDER)) {
 				foreach ($matches as $match) {
 					$map['constant'][$match[1]] = $filename;
 				}

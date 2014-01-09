@@ -83,7 +83,7 @@ class PHP {
 				if(is_a($class, :x:base::element2class('x:base'), true)) {
 					$class = '<' . :x:base::class2element($class) . '>';
 				}
-				$bt_line .= "$class$line[type]";
+				$bt_line .= "$class{$line['type']}";
 			}
 			$bt_line .= "$line[function](";
 			$bt_line .= self::pretty_args($line['args']);
@@ -96,11 +96,12 @@ class PHP {
 			$bt[] = $bt_line;
 			++$i;
 		}
+		assert(count($bt) == count($stack));
 		return implode("\n", $bt);
 	}
 
 	private static function pretty_args(array $args) : \string {
-		$pretty = array_map([__CLASS__, 'pretty_arg'], $args);
+		$pretty = array_map(class_meth('beatbox\Errors\PHP', 'pretty_arg'), $args);
 		return implode(', ', $pretty);
 	}
 
@@ -125,13 +126,14 @@ class PHP {
 				return 'NULL';
 			case 'integer':
 			case 'double':
-				return $arg;
+				return (string)$arg;
 			default:
+				invariant_violation(__METHOD__ . ' requires handling for ' . gettype($arg));
 				return (string)$arg;
 		}
 	}
 
-	private static function pretty_array(\KeyedTraversable $arg) : \string {
+	private static function pretty_array(Traversable $arg) : \string {
 		$items = [];
 		$expected = 0;
 		foreach($arg as $key => $val) {
@@ -140,7 +142,7 @@ class PHP {
 				$items[] = self::pretty_arg($val);
 				++$expected;
 			} else {
-				$items[] = "$key => " . self::pretty_arg($val);
+				$items[] = self::pretty_arg($key) . ' => ' . self::pretty_arg($val);
 				if(is_int($key)) {
 					$expected = $key + 1;
 				} else {
@@ -148,6 +150,7 @@ class PHP {
 				}
 			}
 		}
+		assert(count($items) == count($arg));
 		return '[' . implode(', ', $items) . ']';
 	}
 
@@ -221,5 +224,5 @@ class PHP {
 
 
 // Load the error handlers
-set_error_handler([__NAMESPACE__ . '\PHP', 'errors']);
-set_exception_handler([__NAMESPACE__ . '\PHP', 'exceptions']);
+set_error_handler(['beatbox\errors\PHP', 'errors']);
+set_exception_handler(['beatbox\errors\PHP', 'exceptions']);

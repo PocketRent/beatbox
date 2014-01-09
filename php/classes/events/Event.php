@@ -4,9 +4,11 @@ namespace beatbox;
 
 use Map, HH\Vector;
 
+type CallbackFunction = (function(...):\mixed);
+
 class Event {
-	protected static Map<\string, Vector<mixed>> $exact_listeners = Map {};
-	protected static Map<\string, Vector<mixed>> $prefix_listeners = Map {};
+	protected static Map<\string, Vector<CallbackFunction>> $exact_listeners = Map {};
+	protected static Map<\string, Vector<CallbackFunction>> $prefix_listeners = Map {};
 
 	protected $name;
 	protected $args;
@@ -17,7 +19,7 @@ class Event {
 	 * $name can either be a single event or a list of events. If $prefix is
 	 * true, then the callback is called on all events with a prefix in $name
 	 */
-	public static function attach_listener($callback, \string $name, \bool $prefix = false) {
+	public static function attach_listener((function(...):\mixed) $callback, \string $name, \bool $prefix = false) {
 		if($prefix) {
 			if(!isset(self::$prefix_listeners[$name])) {
 				self::$prefix_listeners[$name] = Vector {$callback};
@@ -33,7 +35,7 @@ class Event {
 		}
 	}
 
-	protected static function listeners_for(\string $name) : \Continuation {
+	protected static function listeners_for(\string $name) : \Continuation<CallbackFunction> {
 		foreach(self::$exact_listeners as $key => $cbs) {
 			if($key == $name) {
 				foreach($cbs as $cb) yield $cb;

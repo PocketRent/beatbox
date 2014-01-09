@@ -19,7 +19,10 @@ class DropdownFieldTest extends beatbox\Test {
 		$field->setValue('Bye');
 		$this->assertEmpty($field->getValue());
 
-		$field->appendChild(<optgroup label="H"><option value="Bye">B</option><option value="C">C</option></optgroup>);
+		$field->appendChild(<optgroup label="H">
+			<option value="Bye">B</option>
+			<option value="C">C</option>
+		</optgroup>);
 
 		$this->assertEquals('Bye', $field->getValue());
 
@@ -36,7 +39,9 @@ class DropdownFieldTest extends beatbox\Test {
 	 * @depends testGetValue
 	 */
 	public function testRequiredValidation() {
-		$field = <bb:form:dropdown required="true"><option value="Hello">Hello</option></bb:form:dropdown>;
+		$field = <bb:form:dropdown required="true">
+			<option value="Hello">Hello</option>
+		</bb:form:dropdown>;
 
 		$field->setValue('Bye');
 		$this->assertFalse($field->validate()[0]);

@@ -64,13 +64,15 @@ function doCreate(Vector<string> &$args) : void {
 	if (!file_exists($info['buildfile_dir'])) {
 		vprint("Creating build directory");
 		if (!mkdir($info['buildfile_dir'], 0777, true)) {
-			command_fail("Could not create destination directory '".(string)$info['buildfile_dir']."'");
+			command_fail("Could not create destination directory '"
+							.(string)$info['buildfile_dir']."'");
 		}
 	}
 
 	$conn = do_connect($info);
 
-	$files = get_db_files($src_dir, (string)$info['buildfile_dir'], (bool)$info['ignore_buildfiles']);
+	$files = get_db_files($src_dir, (string)$info['buildfile_dir'],
+							(bool)$info['ignore_buildfiles']);
 
 	// Filter out create files that have matching build files
 	// Make a set with all the names of the .build files we have
@@ -246,7 +248,8 @@ class DBFile {
 	}
 }
 
-function get_db_files(string $src_dir, string $buildfile_dir, bool $ignore_buildfiles) : Vector<DBFile> {
+function get_db_files(string $src_dir, string $buildfile_dir,
+						bool $ignore_buildfiles) : Vector<DBFile> {
 	$files = Vector {};
 
 	vprint("Searching for files...");
@@ -261,7 +264,8 @@ function get_db_files(string $src_dir, string $buildfile_dir, bool $ignore_build
 	return $files;
 }
 
-function get_db_files_r(string $dirname, Vector<DBFile> &$files, bool $buildfiles=false) : Pair<int, int> {
+function get_db_files_r(string $dirname, Vector<DBFile> &$files,
+							bool $buildfiles=false) : Pair<int, int> {
 	$dir = dir($dirname);
 	if (!$dir) {
 		command_fail("Unable to open directory '$dirname'");
@@ -384,7 +388,8 @@ function alter_and_migrate(resource $conn, string $buildfile_dir, Vector<DBFile>
 		return Pair { $info->name, $info->timestamp };
 	}));
 
-	$alters = $files->filter(function (DBFile $info): bool use (&$nscripts, $builds, $buildfile_dir) {
+	$alters = $files->filter(function (DBFile $info): bool use (&$nscripts, $builds,
+																	$buildfile_dir) {
 		if ($info->type == DBFile::TYPE_ALTER ||
 			$info->type == DBFile::TYPE_MIGRATE) {
 
@@ -439,7 +444,8 @@ function alter_and_migrate(resource $conn, string $buildfile_dir, Vector<DBFile>
 				$status = 0;
 				system($script->path, $status);
 				if ($status != 0) {
-					fwrite(STDERR, "	Encountered error. Skipping rest of files for {$script->name}\n");
+					fwrite(STDERR,
+							"	Encountered error. Skipping rest of files for {$script->name}\n");
 					$errors->add($script->name);
 				} else {
 					$buildfile = $buildfile_dir.'/'.$script->name.'.build';

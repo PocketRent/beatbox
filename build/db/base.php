@@ -64,9 +64,12 @@ function parse_common_args(Vector<string> &$args): Map<string,mixed> {
 	unset($rest_of);
 
 	// Check to see if we need to include 'db.php'
-	if (!($info->get('database') && $info->get('host') && $info->get('user') && $info->get('pass'))) {
+	if (!($info->get('database') && $info->get('host')
+			&& $info->get('user') && $info->get('pass'))) {
 		$db_conf = $conf_dir . '/db.php';
-		if (!file_exists($db_conf)) command_fail("Cannot find database configuration file to include");
+		if (!file_exists($db_conf)) {
+			command_fail("Cannot find database configuration file to include");
+		}
 		require_once $db_conf;
 
 		if (!$info->get('database')) {

@@ -18,11 +18,11 @@ class Browser {
 	}
 
 	/**
-	 * Returns an array with the width and height of the screen, in that order
+	 * Returns a tuple with the width and height of the screen, in that order
 	 * [w, h]
 	 */
-	public static function size() : array {
-		return [self::info('width'), self::info('height')];
+	public static function size() : (\int, \int) {
+		return tuple((int)self::info('width'), (int)self::info('height'));
 	}
 
 	public static function svg() : \bool {

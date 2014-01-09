@@ -29,7 +29,15 @@ pg_query($con, 'CREATE DATABASE "' . $dbname . '"') || die('Unable to create dat
 pg_close($con);
 
 // Build the schema by running the command
-$args = ['create', '-d', $dbname, '-C', __DIR__ . '/../conf/', '--ignore-buildfiles', __DIR__ . '/../db/'];
+$args = [
+	'create',
+	'-d',
+	$dbname,
+	'-C',
+	__DIR__ . '/../conf/',
+	'--ignore-buildfiles',
+	__DIR__ . '/../db/'
+];
 $cmd = escapeshellcmd(__DIR__ . '/../build/database');
 $args = array_map('escapeshellarg', $args);
 $cmd = $cmd . ' ' . implode(' ', $args);

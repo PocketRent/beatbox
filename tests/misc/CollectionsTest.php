@@ -25,11 +25,13 @@ class CollectionsText extends beatbox\Test {
 
 		$second = Map {2 => 1, 4 => 3};
 
-		$this->assertMapsEqual(Map {1 => 2, 2 => 1, 3 => 4, 4 => 3}, map_merge_recursive($first, $second));
+		$this->assertMapsEqual(Map {1 => 2, 2 => 1, 3 => 4, 4 => 3},
+								map_merge_recursive($first, $second));
 
 		$third = Map {5 => 5};
 
-		$this->assertMapsEqual(Map {1 => 2, 2 => 1, 3 => 4, 4 => 3, 5 => 5}, map_merge_recursive($first, $second, $third));
+		$this->assertMapsEqual(Map {1 => 2, 2 => 1, 3 => 4, 4 => 3, 5 => 5},
+								map_merge_recursive($first, $second, $third));
 
 		$fourth = Map {1 => 1};
 

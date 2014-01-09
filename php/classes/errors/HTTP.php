@@ -43,8 +43,10 @@ class HTTP {
 
 			$uri = base_url();
 
-			$to = $uri . ltrim($to, '/');
+			$to = rtrim($uri, '/') . '/' . ltrim($to, '/');
 		}
+
+		assert($to[0] == '/');
 
 		$e->setHeader('Location', $to);
 
@@ -157,6 +159,7 @@ class HTTP_Exception extends Exception {
 	protected $headers = Vector {};
 
 	public function setHeader(\string $header, \string $value, \bool $replace = true) : \void {
+		assert(strpos($header, ':') === false);
 		$this->headers[] = Pair {"$header: $value", $replace };
 	}
 

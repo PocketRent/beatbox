@@ -26,7 +26,10 @@ class RouterTest extends beatbox\Test {
 	public function testAddRoute() {
 		beatbox\Router::add_routes(Map {
 			'/' => Map { 'page' => 'pageGenerator' },
-			'home' => Pair { Map {'form' => 'homeForm', 'logout' => 'homeLogout'}, Map {'CSRF' => true}}
+			'home' => Pair { Map {
+				'form' => 'homeForm',
+				'logout' => 'homeLogout'
+			}, Map {'CSRF' => true}}
 		});
 
 		$this->assertEquals(
@@ -62,7 +65,10 @@ class RouterTest extends beatbox\Test {
 	public function testReset() {
 		beatbox\Router::add_routes(Map {
 			'/' => Map {'page' => 'pageGenerator'},
-			'home' => Pair { Map {'form' => 'homeForm', 'logout' => 'homeLogout'}, Map {'CSRF' => true}}
+			'home' => Pair { Map {
+				'form' => 'homeForm',
+				'logout' => 'homeLogout'
+			}, Map {'CSRF' => true}}
 		});
 		beatbox\Router::reset();
 		$this->assertEquals(beatbox\Router::get_routes_for_path('/'), Pair { Map {}, Map {}});
@@ -88,7 +94,8 @@ class RouterTest extends beatbox\Test {
 		$actual = beatbox\Router::route('/', Vector {'page'});
 
 		$this->assertTrue($called, 'Was our callback called');
-		$this->assertEquals($args, [['/'], null, Map {}], 'We should have a list of segments, no extension and no metadata');
+		$this->assertEquals($args, [['/'], null, Map {}],
+								'We should have a list of segments, no extension and no metadata');
 		$this->assertEquals($actual, 'Hello', 'Our callback correctly returned');
 
 		// Test that overriding works properly
@@ -103,7 +110,8 @@ class RouterTest extends beatbox\Test {
 		$actual = beatbox\Router::route('/', Vector {'page'});
 
 		$this->assertFalse($called, 'Was our callback called');
-		$this->assertEquals($args, [Map {}, null, ['/']], 'We should have a list of segments, no extension and no metadata');
+		$this->assertEquals($args, [Map {}, null, ['/']],
+							'We should have a list of segments, no extension and no metadata');
 		$this->assertEquals($actual, 'Good bye', 'Our callback correctly returned');
 	}
 
@@ -126,7 +134,8 @@ class RouterTest extends beatbox\Test {
 		$actual = beatbox\Router::route('test/123', Vector {'page'});
 
 		$this->assertTrue($called, 'Was our callback called');
-		$this->assertEquals($args, [['test', '123'], null, Map {}], 'We should have a list of segments, no extension and no metadata');
+		$this->assertEquals($args, [['test', '123'], null, Map {}],
+							'We should have a list of segments, no extension and no metadata');
 		$this->assertEquals($actual, 'Hello', 'Our callback correctly returned');
 
 		// Test that overriding works properly
@@ -141,7 +150,8 @@ class RouterTest extends beatbox\Test {
 		$actual = beatbox\Router::route('test/4', Vector {'page'});
 
 		$this->assertFalse($called, 'Was our callback called');
-		$this->assertEquals($args, [Map {}, null, ['test', '4']], 'We should have a list of segments, no extension and no metadata');
+		$this->assertEquals($args, [Map {}, null, ['test', '4']],
+							'We should have a list of segments, no extension and no metadata');
 		$this->assertEquals($actual, 'Good bye', 'Our callback correctly returned');
 	}
 
@@ -179,7 +189,10 @@ class RouterTest extends beatbox\Test {
 		});
 
 		$routes = beatbox\Router::get_routes_for_path('home');
-		$this->assertMapsEqual($routes[0], Map {'page' => 'outerPageHandler', 'form' => 'formHandler'});
+		$this->assertMapsEqual($routes[0], Map {
+			'page' => 'outerPageHandler',
+			'form' => 'formHandler'
+		});
 		$this->assertMapsEqual($routes[1], Map {'CSRF' => '0', 'MemberCheck' => 1});
 	}
 
@@ -370,22 +383,22 @@ class RouterTest extends beatbox\Test {
 	 * @depends testAddRoute
 	 */
 	public function testAddChecker() {
-		beatbox\Router::add_checker('test', cast_callable('beatbox\\test\RouterTest::testAddChecker'));
-		beatbox\Router::add_checker('CSRF', cast_callable('beatbox\test\RouterTest::testExtension'));
+		beatbox\Router::add_checker('test', cast_callable(__CLASS__ . '::testAddChecker'));
+		beatbox\Router::add_checker('CSRF', cast_callable(__CLASS__ . '::testExtension'));
 
 		// Check exact match
-		$this->assertEquals(beatbox\Router::get_checker('test'), 'beatbox\\test\RouterTest::testAddChecker');
-		$this->assertEquals(beatbox\Router::get_checker('CSRF'), 'beatbox\test\RouterTest::testExtension');
+		$this->assertEquals(beatbox\Router::get_checker('test'), __CLASS__ . '::testAddChecker');
+		$this->assertEquals(beatbox\Router::get_checker('CSRF'), __CLASS__ . '::testExtension');
 
 		// Check different case
-		$this->assertEquals(beatbox\Router::get_checker('TEST'), 'beatbox\\test\RouterTest::testAddChecker');
+		$this->assertEquals(beatbox\Router::get_checker('TEST'), __CLASS__ . '::testAddChecker');
 
 		// Check non-existent
 		$this->assertEmpty(beatbox\Router::get_checker('none'));
 
 		// Check override
-		beatbox\Router::add_checker('test', cast_callable('beatbox\test\RouterTest::testCheckPass'));
-		$this->assertEquals(beatbox\Router::get_checker('test'), 'beatbox\test\RouterTest::testCheckPass');
+		beatbox\Router::add_checker('test', cast_callable(__CLASS__ . '::testCheckPass'));
+		$this->assertEquals(beatbox\Router::get_checker('test'), __CLASS__ . '::testCheckPass');
 	}
 
 	/**

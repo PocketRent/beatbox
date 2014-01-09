@@ -33,7 +33,7 @@ class Asset {
 	 * 'tmp_name' must be an uploaded file
 	 *
 	 */
-	public static function store(\ConstMapAccess $file) : Asset {
+	public static async function store(\ConstMapAccess $file) : \Awaitable<Asset> {
 		if (!isset($file['name']) || !isset($file['tmp_name'])) {
 			throw new \InvalidArgumentException("\$file must have 'name' and 'tmp_name' keys");
 		}
@@ -55,7 +55,7 @@ class Asset {
 		$asset->setName($name);
 		$asset->setMIME($mime);
 		$asset->loadSourceFile($source);
-		$asset->write();
+		await $asset->write();
 
 		send_event("asset::store", $name, $mime);
 
@@ -67,7 +67,7 @@ class Asset {
 	 *
 	 * @return Asset or null, if it doesn't exist
 	 */
-	public static async function load(\mixed $id) : ?Asset {
+	public static async function load(\mixed $id) : \Awaitable<?self> {
 		$conn = orm\Connection::get();
 
 		$eid = $conn->escapeValue($id);
@@ -158,7 +158,7 @@ class Asset {
 	/**
 	 * Writes the Asset information to the database
 	 */
-	public function write() : \void {
+	public async function write() : \Awaitable<\void> {
 		$conn = orm\Connection::get();
 
 		$name = $conn->escapeValue($this->name);
@@ -171,25 +171,25 @@ class Asset {
 				(\"Name\", \"Type\", \"SourcePath\") VALUES
 				($name, $type, $source_path) RETURNING \"ID\"";
 
-			$res = $conn->query($query)->join();
+			$res = await $conn->query($query);
 			assert($res->numRows() == 1);
 			$this->id = $res->nthRow(0)['ID'];
 		} else {
 			$id = $conn->escapeValue($this->id);
 			$query = "UPDATE \"Asset\" SET \"Name\"=$name, \"Type\"=$type,
 				\"SourcePath\"=$source_path WHERE \"ID\"=$id";
-			$res = $conn->query($query)->join();
+			$res = await $conn->query($query);
 			assert($res->numRows() == 1);
 		}
 	}
 
-	public function delete() : \void {
+	public async function delete() : \Awaitable<\void> {
 		$conn = orm\Connection::get();
 
 		if ($this->id !== null) {
 			send_event("asset::delete", $this->id);
 			$query = "DELETE FROM \"Asset\" WHERE \"ID\"=".((int)$this->id);
-			$conn->query($query);
+			await $conn->query($query);
 			$this->id = null;
 			if ($this->source_path) {
 				$filepath = ASSET_PATH.'/'.$this->source_path;

@@ -269,7 +269,10 @@ class FormTest extends beatbox\Test {
 		$form->setAttribute('handler', function($f, $d) use($form, &$called) {
 			$called = true;
 			$this->assertSame($form, $f);
-			$this->assertEquals(Map { 'Field' => Map { 'a' => Vector {'a', 'c'}, 'b' => Vector {'b'}} }, $d);
+			$this->assertEquals(Map { 'Field' => Map {
+				'a' => Vector {'a', 'c'},
+				'b' => Vector {'b'}
+			} }, $d);
 		});
 
 		$form->forFragment(['/'], 'form');

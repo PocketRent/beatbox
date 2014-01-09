@@ -109,11 +109,11 @@ class Cache {
 	 */
 	public static function delete_tags(...) : \void {
 		$args = func_get_args();
-		$tags = array_map(function (\string $t) : \string { return self::tag_name($t); }, $args);
+		$tags = array_map(class_meth('beatbox\Cache', 'tag_name'), $args);
 		// Get the members of the tags
 		$members = self::redis()->sunion($tags);
 		// The data is serialized, so we need to unserialize it here
-		$members = array_map(function ($m) { return unserialize($m); }, $members);
+		$members = array_map(fun('unserialize'), $members);
 		// Delete in a transaction
 		self::redis_transaction(function ($r) use ($tags, $members) {
 			// Delete the members

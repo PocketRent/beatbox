@@ -85,7 +85,7 @@ abstract class :bb:form:field extends :bb:base {
 	}
 
 	public function validate() : array {
-		$value = (string)$this->getValue();
+		$value = $this->getValue();
 		$displayName = $this->getAttribute('label') ?: $this->getAttribute('name');
 		// required
 		if($this->valid && $this->getAttribute('required')) {
@@ -96,6 +96,7 @@ abstract class :bb:form:field extends :bb:base {
 		}
 		// maxlength
 		if($this->valid && self::$lenVal->contains($this->getType())) {
+			assert(is_string($value) || is_null($value));
 			if(($len = $this->getAttribute('maxlength')) && mb_strlen($value) > $len) {
 				$this->valid = false;
 				$this->error = 'Maximum length is ' . $len;
@@ -107,6 +108,7 @@ abstract class :bb:form:field extends :bb:base {
 		}
 		// pattern
 		if($this->valid && self::$patternVal->contains($this->getType()) && $value !== null && $value !== '') {
+			assert(is_string($value) || is_null($value));
 			if(($pattern = $this->getAttribute('pattern'))) {
 				$regex = '/^(?:' . str_replace('/', '\\/', $pattern) . ')$/';
 				if($this->getAttribute('multiple')) {

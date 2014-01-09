@@ -80,3 +80,10 @@ class DeletedObjectException extends DatabaseException {
 		parent::__construct($message, 4, $previous);
 	}
 }
+
+class TypeParseException extends DatabaseException {
+	public function __construct(\string $type, \string $message, ?\Exception $previous = null) {
+		$message = "Failed while parsing $type: '$message'";
+		parent::__construct($message, 5, $previous);
+	}
+}

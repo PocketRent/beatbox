@@ -343,9 +343,10 @@ class PGType {
 			$subtype->convertCode($f, "\$__convElem_$hash", "\$__elem_$hash", true);
 			$f->writeLine("{$dest}->append(\$__convElem_$hash);");
 			$f->endBlock();
-		} else if ($this->type == PGType::T_COMPOSITE ||
-				   $this->type_cat == PGType::TCAT_GEOM) {
+		} else if ($this->type == PGType::T_COMPOSITE) {
 			$f->writeLine("$dest = {$this->name}::fromString($raw);");
+		} else if ($this->type_cat) {
+			$f->writeLine("$dest = $tstring::fromString($raw);");
 		} else if ($this->type_cat == PGType::TCAT_DATETIME) {
 			$f->writeLine("$dest = new \\beatbox\\orm\\DateTimeType($raw);");
 		} else {
@@ -477,6 +478,8 @@ class PGType {
 				return "\string";
 			} else if ($this->type_cat == PGType::TCAT_DATETIME) {
 				return "\\beatbox\\orm\\DateTimeType";
+			} else if ($this->type_cat == PGType::TCAT_GEOM) {
+				return "\\beatbox\\orm\\geom\\".$this->name;
 			}
 		} else if ($this->type == PGType::T_DOMAIN) {
 			return $this->type_dict->typeByOid($this->sub_type)->__toString();
@@ -560,10 +563,6 @@ class TypeDict {
 			foreach ($needs_els as $type) {
 				$type->retrieveTypeElements($conn);
 			}
-		}
-
-		foreach ($this->types as $ty) {
-			vprint("Type: ".$ty->name.' ('.$ty->type_cat.')');
 		}
 
 		vprint("Loaded ".$this->types->count()." types from database");

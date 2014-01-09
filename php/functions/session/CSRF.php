@@ -4,7 +4,7 @@
  * Check if the provided token matches the expected one
  */
 function check_csrf_token(string $token) : bool {
-	return check_token((string)session_get("CSRF"), $token);
+	return check_token(get_csrf_token(), $token);
 }
 
 /**

@@ -37,7 +37,7 @@ trait Settings {
 			$this->settings_data = Map::fromArray($data);
 			$this->settings_original = Map::fromArray($data);
 		}
-		register_shutdown_function([$this, 'endSettings']);
+		register_shutdown_function(inst_meth($this, 'endSettings'));
 	}
 
 	public function getSetting(\string $key) : \mixed {
@@ -81,7 +81,7 @@ trait Settings {
 					$del[] = $key;
 				}
 				if(count($del) > 1) {
-					call_user_func_array([$r, 'hdel'], $del);
+					call_user_func_array(inst_meth($r, 'hdel'), $del);
 				}
 			});
 

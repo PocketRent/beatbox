@@ -15,18 +15,20 @@ function db_parse_array(string $delimiter, string $val): Vector<string> {
 				if (!$in_string && $brace_count == 0 && $c == $delimiter) {
 					yield trim(substr($val, $start, ($i-$start)));
 					$start = $i+1;
-				}
-				if ($c == '"')
+				} else if ($c == '"') {
 					$in_string = !$in_string;
-
-				if ($c == '{' && !$in_string) {
+				} else if ($c == '{' && !$in_string) {
 					$brace_count++;
 				} else if ($c == '}' && !$in_string) {
 					$brace_count--;
+					assert($brace_count >= 0);
+				} else if ($c == '\\' && $in_string) {
+					$i++;
 				}
-				if ($c == '\\' && $in_string) $i++;
 			}
 			yield trim(substr($val, $start));
+			assert(!$in_string);
+			assert($brace_count == 0);
 		}
 	};
 
@@ -54,18 +56,20 @@ function db_parse_composite(string $val): Vector<string> {
 				if (!$in_string && $brace_count == 1 && $c == ',') {
 					yield trim(substr($val, $start, ($i-$start)));
 					$start = $i+1;
-				}
-				if ($c == '"')
+				} else if ($c == '"') {
 					$in_string = !$in_string;
-
-				if ($c == '(' && !$in_string) {
+				} else if ($c == '(' && !$in_string) {
 					$brace_count++;
 				} else if ($c == ')' && !$in_string) {
 					$brace_count--;
+					assert($brace_count >= 0);
+				} else if ($c == '\\' && $in_string) {
+					$i++;
 				}
-				if ($c == '\\' && $in_string) $i++;
 			}
 			yield trim(substr($val, $start, -1));
+			assert(!$in_string);
+			assert($brace_count == 0);
 		}
 	};
 
@@ -81,6 +85,7 @@ function db_parse_composite(string $val): Vector<string> {
 function db_parse_string(string $val) : string {
 	if (strlen($val) < 2) return $val;
 	if ($val[0] == '"') {
+		assert($val[strlen($val)-1] == '"');
 		// Strip off the leading/trailing '"'
 		$val = substr($val, 1, -1);
 		// Replace '""' with '"' (postgres escaping is weird sometimes)

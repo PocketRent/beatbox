@@ -101,7 +101,7 @@ function do_connect(Map<string,mixed> $info) : resource {
 	if ($info['pass']) $conn_string .= ' password=\''.(string)$info['pass'].'\'';
 
 	if (isset($info['create_db']) && $info['create_db']) {
-		($conn = pg_connect($conn_string . "dbname=postgres")) ||
+		($conn = pg_connect($conn_string . ' dbname=postgres')) ||
 					command_fail("Unable to connect to postgres");
 		@pg_query($conn, "CREATE DATABASE ".pg_escape_identifier($conn, $info['database']));
 		pg_close($conn);
@@ -137,6 +137,6 @@ function command_fail(string $msg, int $code=1) : void {
 
 function vprint(string $msg) : void {
 	if ($GLOBALS['verbose']) {
-		echo $msg . "\n";
+		echo $msg, "\n";
 	}
 }

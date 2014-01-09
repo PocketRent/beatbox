@@ -60,6 +60,9 @@ function check_token(string $check, string $token) : bool {
 		return false;
 	}
 
+	assert(!$same || $check == $token);
+	assert($same || $check != $token);
+
 	return $same;
 }
 
@@ -76,9 +79,9 @@ function compare_items<T>(T $left, T $right) : bool {
 /**
  * Calculates the difference between two items
  */
-function item_difference<T>(T $left, T $right) {
+function item_difference<T>(T $left, T $right) : float {
 	if(is_string($left) && !is_numeric($left)) {
-		return strcmp($left, $right);
+		return (float)strcmp($left, $right);
 	}
 	if(is_numeric($left)) {
 		$left = (float)$left;
@@ -92,9 +95,9 @@ function item_difference<T>(T $left, T $right) {
 		} else {
 			$mult = 1;
 		}
-		return $diff->days * $mult;
+		return (float)$diff->days * $mult;
 	}
-	return 0;
+	return 0.0;
 }
 
 /**
@@ -107,7 +110,7 @@ function get_mime_type(string $filename) : string {
 /**
  * Gets the domain from the HTTP_HOST server variable
  */
-function host_domain() : ?\string {
+function host_domain() : ?string {
 	if (!isset($_SERVER['HTTP_HOST'])) return null;
 
 	$host = $_SERVER['HTTP_HOST'];
@@ -141,17 +144,21 @@ function wait<T>(Awaitable<T> $handle) : T {
 }
 
 function tuple(...) {
+	invariant(func_num_args() > 1, 'Tuples of one element are not allowed');
 	return func_get_args();
 }
 
 function fun(string $name) {
+	assert(function_exists($name));
 	return $name;
 }
 
 function inst_meth<T>(T $obj, string $meth) {
+	assert(method_exists($obj, $meth) || method_exists($obj, '__call'));
 	return [$obj, $meth];
 }
 
 function class_meth(string $class, string $meth) {
+	assert(method_exists($class, $meth) || method_exists($class, '__callStatic'));
 	return [$class, $meth];
 }

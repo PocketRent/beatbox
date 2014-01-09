@@ -13,7 +13,7 @@ Usage: $exe create [options] <source-directory>
 HELP;
 }
 
-function doCreate(Vector<string> $args) : void {
+function doCreate(Vector<string> &$args) : void {
 	$GLOBALS['verbose'] = false;
 	// Info for creation
 	$info = parse_common_args($args);

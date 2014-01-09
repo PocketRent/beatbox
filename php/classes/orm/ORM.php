@@ -234,7 +234,15 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 
 		$table = $this->getFrom();
 
-		$query = "SELECT DISTINCT ".$this->getFieldList()." FROM $table";
+		$distinct = $this->getPrimaryKeyList();
+
+		if($distinct) {
+			$query = 'SELECT DISTINCT ON (' . $distinct . ') ';
+		} else {
+			$query = 'SELECT DISTINCT ';
+		}
+
+		$query .= $this->getFieldList()." FROM $table";
 		$query .= bb_join("\n", $this->joins);
 
 		// WHERE
@@ -290,6 +298,17 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 		$conn = $this->conn;
 		$table = $this->conn->escapeIdentifier($this->table);
 		$fields = $this->valid_fields->map(function ($f) use ($conn, $table) {
+			return "$table.".$this->conn->escapeIdentifier($f);
+		});
+
+		return bb_join(', ', $fields);
+	}
+
+	protected function getPrimaryKeyList() : \string {
+		$conn = $this->conn;
+		$table = $this->conn->escapeIdentifier($this->table);
+		$data_class = $this->data_class;
+		$fields = $data_class::getPrimaryKeys()->map(function ($f) use ($conn, $table) {
 			return "$table.".$this->conn->escapeIdentifier($f);
 		});
 
@@ -492,6 +511,10 @@ class AggregateORM extends ORM<\Map<string,string>> {
 	protected function getFieldList() : \string {
 		assert($this->extra_fields->count() > 0 && "Can't select no fields!");
 		return bb_join(', ', $this->extra_fields);
+	}
+
+	protected function getPrimaryKeyList() : \string {
+		return '';
 	}
 
 	/**

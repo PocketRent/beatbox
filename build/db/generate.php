@@ -1092,8 +1092,8 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 					$tbl_data->startBlock('else if(is_numeric($val))');
 					$tbl_data->writeLine('$val = new \beatbox\orm\DateTimeType(\'@\' . $val);');
 					$tbl_data->endBlock();
-					$tbl_data->writeLine('assert($val instanceof \beatbox\orm\DateTimeType || "
-											. "$val === null);');
+					$tbl_data->writeLine('assert($val instanceof \beatbox\orm\DateTimeType || '
+											. '$val === null);');
 					$tbl_data->writeLine("\$this->changed['$col->name'] = ".
 						"\$this->orig == null || (\$this->orig['$col->name']->cmp(\$val) != 0);");
 					$tbl_data->writeLine("\$this->_$col->name = \$val;");

@@ -49,7 +49,11 @@ class :bb:form:file extends :bb:form:field {
 				return;
 			}
 			// get mime type
-			$mime = get_mime_type($file['tmp_name']);
+			if(file_exists($file['tmp_name'])) {
+				$mime = get_mime_type($file['tmp_name']);
+			} else {
+				$mime = $file['type'];
+			}
 			$mime = explode(';', $mime)[0];
 			if(in_array($mime, $allowed)) {
 				return;
@@ -59,6 +63,7 @@ class :bb:form:file extends :bb:form:field {
 			if(in_array($base, ['video', 'audio', 'image']) && in_array($base . '/*', $allowed)) {
 				return;
 			}
+			$_POST[$this->getAttribute('name')] = $mime;
 			$this->valid = false;
 			$this->error = "Files of type '$mime' are not allowed.";
 		}

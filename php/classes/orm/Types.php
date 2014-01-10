@@ -13,8 +13,12 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 
 	public final static function fromDateTime(\DateTime $date) : ?DateTimeType {
 		if ($date instanceof DateTimeType) return clone $date;
-		$date_type = new self($date->format('@U')); // The unix epoch is always UTC
+		$date_type = new static($date->format('@U')); // The unix epoch is always UTC
 		return $date_type->setTimezone($date->getTimezone());
+	}
+
+	public final static function fromString(\string $val) : DateTimeType {
+		return new static($val);
 	}
 
 	private \int $infinity = 0;

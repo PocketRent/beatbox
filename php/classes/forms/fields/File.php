@@ -7,6 +7,8 @@ class :bb:form:file extends :bb:form:field {
 
 	protected string $type = 'file';
 
+	protected FrozenSet<string> $skipTransfer = Set { 'value' };
+
 	public function validate() : array {
 		$value = $this->getAttribute('value');
 		if($this->valid && $value) {
@@ -63,7 +65,7 @@ class :bb:form:file extends :bb:form:field {
 			if(in_array($base, ['video', 'audio', 'image']) && in_array($base . '/*', $allowed)) {
 				return;
 			}
-			$_POST[$this->getAttribute('name')] = $mime;
+			$_FILES[$this->getAttribute('name')]['type'] = $mime;
 			$this->valid = false;
 			$this->error = "Files of type '$mime' are not allowed.";
 		}

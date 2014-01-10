@@ -46,7 +46,8 @@ class HTTP {
 			$to = rtrim($uri, '/') . '/' . ltrim($to, '/');
 		}
 
-		assert($to[0] == '/');
+		assert((is_cli() && $to[0] == '/') ||
+				(!is_cli() && substr($to, 0, 6) == substr(base_url(), 0, 6)));
 
 		$e->setHeader('Location', $to);
 

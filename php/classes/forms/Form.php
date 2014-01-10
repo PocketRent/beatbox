@@ -39,11 +39,11 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 				session_clear('form.' . $this->getAttribute('action') . '.data');
 			}
 		} else {
-			$this->loadData($_POST, true);
+			$this->loadData($_POST + $_FILES, true);
 			if(!$this->validate()) {
 				if(!is_ajax()) {
 					// Save session data
-					session_set('form.' . $this->getAttribute('action') . '.data', $_POST);
+					session_set('form.' . $this->getAttribute('action') . '.data', $_POST + $_FILES);
 					// Redirect back
 					redirect_back($base);
 				} else {

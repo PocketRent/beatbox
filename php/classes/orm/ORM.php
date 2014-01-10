@@ -234,12 +234,17 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 
 		$table = $this->getFrom();
 
-		$distinct = $this->getPrimaryKeyList();
+		$distinct = $this->joins->count() > 0;
 
 		if($distinct) {
-			$query = 'SELECT DISTINCT ON (' . $distinct . ') ';
+			$keys = $this->getPrimaryKeyList();
+			if($keys) {
+				$query = 'SELECT DISTINCT ON (' . $distinct . ') ';
+			} else {
+				$query = 'SELECT DISTINCT ';
+			}
 		} else {
-			$query = 'SELECT DISTINCT ';
+			$query = 'SELECT ';
 		}
 
 		$query .= $this->getFieldList()." FROM $table";

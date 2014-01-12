@@ -126,6 +126,7 @@ class PHP {
 				return 'NULL';
 			case 'integer':
 			case 'double':
+			case 'resource':
 				return (string)$arg;
 			default:
 				invariant_violation(__METHOD__ . ' requires handling for ' . gettype($arg));

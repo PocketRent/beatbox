@@ -31,7 +31,10 @@ class :bb:form:file extends :bb:form:field {
 
 	protected function validateFile(array $file) : void {
 		if($file['error'] != UPLOAD_ERR_OK) {
-			if(in_array($file['error'], [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE])) {
+			if($file['error'] == UPLOAD_ERR_NO_FILE) {
+				$this->setValue(array());
+				return;
+			} else if(in_array($file['error'], [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE])) {
 				$this->valid = false;
 				$this->error = 'File is too big';
 			} else if(in_array($file['error'], [UPLOAD_ERR_NO_FILE, UPLOAD_ERR_PARTIAL])) {

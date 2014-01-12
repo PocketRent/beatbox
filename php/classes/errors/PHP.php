@@ -2,8 +2,6 @@
 
 namespace beatbox\errors;
 
-use HH\Traversable, HH\FrozenSet;
-
 class PHP {
 	private static FrozenSet<\int> $fatal_errors = FrozenSet {
 		E_ERROR,
@@ -111,13 +109,17 @@ class PHP {
 			case 'array':
 				return self::pretty_array($arg);
 			case 'object':
-				if($arg instanceof Traversable) {
-					return get_class($arg) . ' ' . self::pretty_array($arg);
-				} else if($arg instanceof :x:base) {
-					$class = get_class($arg);
-					return '<' . $arg::class2element($class) . '>';
+				$name = get_class($arg);
+				if(substr($name, 0, 3) == 'HH\\') {
+					$name = substr($name, 3);
 				}
-				return get_class($arg);
+				if($arg instanceof Traversable) {
+					return $name . ' '
+							. self::pretty_array($arg, $arg instanceof Collection ? '{}' : '[]');
+				} else if($arg instanceof :x:base) {
+					return '<' . $arg::class2element($name) . '>';
+				}
+				return $name;
 			case 'boolean':
 				return $arg ? 'TRUE' : 'FALSE';
 			case 'string':
@@ -134,7 +136,8 @@ class PHP {
 		}
 	}
 
-	private static function pretty_array(Traversable $arg) : \string {
+	private static function pretty_array(Traversable $arg, \string $braces = '[]') : \string {
+		assert(strlen($braces) == 2);
 		$items = [];
 		$expected = 0;
 		foreach($arg as $key => $val) {
@@ -152,7 +155,7 @@ class PHP {
 			}
 		}
 		assert(count($items) == count($arg));
-		return '[' . implode(', ', $items) . ']';
+		return $braces[0] . implode(', ', $items) . $braces[1];
 	}
 
 	/**

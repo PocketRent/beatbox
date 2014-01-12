@@ -101,3 +101,6 @@ if (!defined('ASSET_PATH')) {
 	// This shouldn't really be in the document root, but it'll do for now
 	define('ASSET_PATH', BASE_DOC_DIR.'/assets');
 }
+if (!defined('ASSET_DIR')) {
+	define('ASSET_DIR', basename(ASSET_PATH));
+}

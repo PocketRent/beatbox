@@ -104,7 +104,7 @@ function item_difference<T>(T $left, T $right) : float {
  * Gets the mime type of a file
  */
 function get_mime_type(string $filename) : string {
-	return (new finfo(FILEINFO_MIME))->file($filename);
+	return (new finfo(FILEINFO_MIME_TYPE))->file($filename);
 }
 
 /**

@@ -33,7 +33,7 @@ class Asset {
 	 * 'tmp_name' must be an uploaded file
 	 *
 	 */
-	public static async function store(\ConstMapAccess $file) : \Awaitable<Asset> {
+	public static async function store(\Indexish $file) : \Awaitable<Asset> {
 		if (!isset($file['name']) || !isset($file['tmp_name'])) {
 			throw new \InvalidArgumentException("\$file must have 'name' and 'tmp_name' keys");
 		}
@@ -205,10 +205,10 @@ class Asset {
 	 */
 	public function getURI(\string $fallback = '') : \string {
 		if ($this->source_path) {
-			$filepath = ASSET_PATH.'/'.$this->source_path;
+			$filepath = ASSET_PATH .'/'.$this->source_path;
 			if (file_exists($filepath) && is_file($filepath)) {
 				// Currently hard-coded, should be changed later.
-				return $filepath;
+				return ASSET_DIR . '/'. $this->source_path;
 			} else {
 				send_event("asset::file-miss", $filepath);
 				$this->delete();
@@ -229,17 +229,19 @@ class Asset {
 	/**
 	 * Creates an Icon for this file
 	 *
-	 * If $thumnail is false, then no thumbnail is created, even if
+	 * If $thumbnail is false, then no thumbnail is created, even if
 	 * the asset can be thumbnailed
 	 *
 	 */
-	public function icon(\bool $thumnail = true) : :bb:icon {
-		if ($thumnail && $this->thumbnailable()) {
+	public function icon(\bool $thumbnail = true) : :bb:icon {
+		if ($thumbnail && $this->thumbnailable()) {
 			$icon = <bb:thumbnail />;
 			$icon->setAsset($this);
 			return $icon;
+		} else if($thumbnail) {
+			return <bb:icon src={$this->getURI()} width="100" height="100" />;
 		} else {
-			return <bb:icon src={$this->iconName()} />;
+			return <bb:icon src={$this->getURI()} />;
 		}
 	}
 
@@ -262,7 +264,7 @@ class Asset {
 	 * Returns the appropriate icon name for this asset
 	 */
 	public function iconName() : \string {
-		$mime = $this>getMIME();
+		$mime = $this->getMIME();
 		if (substr($mime, 0, 5) == 'image') {
 			return 'image';
 		}

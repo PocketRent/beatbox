@@ -2,7 +2,7 @@
 
 namespace beatbox;
 
-use Map, Pair, HH\Vector;
+use Map, Pair;
 
 type HandlerTable = Map<\string,(function(array, ?\string, Map<\string, \mixed>):\mixed)>;
 
@@ -87,7 +87,7 @@ class Router {
 
 					$res[$frag] = self::render_fragment($frag, $available[$frag], $url, $ext, $md);
 					// This mostly handles XHP objects
-					if(is_object($res[$frag]) && !$res[$frag] instanceof \JsonSerializable && !$res[$frag] instanceof \Collection) {
+					if(is_object($res[$frag]) && !$res[$frag] instanceof \JsonSerializable && !$res[$frag] instanceof Collection) {
 						$res[$frag] = (string)$res[$frag];
 					}
 				}

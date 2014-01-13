@@ -4,15 +4,19 @@ namespace beatbox;
 
 use Map, Pair;
 
-type HandlerTable = Map<\string,(function(array, ?\string, Map<\string, \mixed>):\mixed)>;
-type CheckerFunction = (function(\string, Map<\string,\mixed>):\bool);
+type Metadata = Map<\string, \mixed>;
+
+type HandlerCallback = (function(array, ?\string, Metadata):\mixed);
+type CheckerCallback = (function(\string, Map<\string,\mixed>):\bool);
+
+type HandlerTable = Map<\string, HandlerCallback>;
 
 class Router {
-	protected static Map<\string, Pair<HandlerTable, Map<\string, \mixed>>> $routes = Map {};
+	protected static Map<\string, Pair<HandlerTable, Metadata>> $routes = Map {};
 
-	protected static Map<\string, Pair<HandlerTable, Map<\string, \mixed>>> $regex_routes = Map {};
+	protected static Map<\string, Pair<HandlerTable, Metadata>> $regex_routes = Map {};
 
-	protected static Map<\string, CheckerFunction> $checkers = Map {};
+	protected static Map<\string, CheckerCallback> $checkers = Map {};
 
 	protected static Map<\string, mixed> $last_md = Map {};
 
@@ -234,10 +238,8 @@ class Router {
 				$base[1]->setAll($md);
 			}
 			if($regex) {
-				// UNSAFE
 				self::$regex_routes[$path] = $base;
 			} else {
-				// UNSAFE
 				self::$routes[$path] = $base;
 			}
 		}
@@ -269,14 +271,14 @@ class Router {
 	/**
 	 * Add a checker for the given metadata key
 	 */
-	public static function add_checker(\string $key, CheckerFunction $callback) : \void {
+	public static function add_checker(\string $key, CheckerCallback $callback) : \void {
 		self::$checkers[strtolower($key)] = $callback;
 	}
 
 	/**
 	 * Return the checker for the given metadata key
 	 */
-	public static function get_checker(\string $key) : ?CheckerFunction {
+	public static function get_checker(\string $key) : ?CheckerCallback {
 		$key = strtolower($key);
 		return self::$checkers->get($key);
 	}
@@ -309,7 +311,7 @@ class Router {
 	}
 
 	protected static function render_fragment(\string $fragName,
-								(function(array, ?\string, \Map<\string, \mixed>):\mixed) $frag,
+								HandlerCallback $frag,
 								array $url, ?\string $extension, Map $md) : \mixed {
 		$val = $frag($url, $extension, $md);
 		// If the response from the fragment is awaitable, then block on it here. This is a nice
@@ -340,8 +342,10 @@ class Router {
 	}
 
 	protected static function fragment_timeout() : \int {
-		if (defined('FRAGMENT_TIMEOUT'))
+		if (defined('FRAGMENT_TIMEOUT')) {
+			// UNSAFE
 			return FRAGMENT_TIMEOUT;
+		}
 		return 100;
 	}
 

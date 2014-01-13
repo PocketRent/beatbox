@@ -44,7 +44,10 @@ class :bb:form:file extends :bb:form:field {
 				http_error(500);
 			}
 		} else if($accept = $this->getAttribute('accept')) {
-			$allowed = array_map('strtolower', array_map('trim', explode(',', $accept)));
+			$allowed = array_map(
+				fun('strtolower'),
+				array_map(fun('trim'),
+				explode(',', $accept)));
 			$allowed = array_filter($allowed);
 			if(($pos = strrpos($file['name'], '.')) !== false) {
 				$ext = substr($file['name'], $pos);

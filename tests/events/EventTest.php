@@ -14,19 +14,19 @@ class EventTest extends beatbox\Test {
 		Event::reset();
 
 		// Add in default listeners
-		Event::attach_listener(function() {
+		Event::attach_listener(function(...) {
 			$this->called[] = 'prefix';
 			$this->args[] = func_get_args();
 			return 1;
 		}, 'prefix', true);
 
-		Event::attach_listener(function() {
+		Event::attach_listener(function(...) {
 			$this->called[] = 'prefix:suffix';
 			$this->args[] = func_get_args();
 			return 2;
 		}, 'prefix:suffix', false);
 
-		Event::attach_listener(function() {
+		Event::attach_listener(function(...) {
 			$this->called[] = 'test';
 			$this->args[] = func_get_args();
 			return 3;

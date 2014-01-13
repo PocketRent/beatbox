@@ -113,7 +113,8 @@ abstract class :bb:form:field extends :bb:base {
 			if(($pattern = $this->getAttribute('pattern'))) {
 				$regex = '/^(?:' . str_replace('/', '\\/', $pattern) . ')$/';
 				if($this->getAttribute('multiple')) {
-					$values = array_filter(array_map('trim', explode(',', $value)));
+					$value = (string)$value;
+					$values = array_filter(array_map(fun('trim'), explode(',', $value)));
 					foreach($values as $value) {
 						if(!preg_match($regex, $value)) {
 							$this->valid = false;

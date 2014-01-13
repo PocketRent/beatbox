@@ -89,7 +89,7 @@ function db_parse_string(string $val) : string {
 		// Strip off the leading/trailing '"'
 		$val = substr($val, 1, -1);
 		// Replace '""' with '"' (postgres escaping is weird sometimes)
-		$val = preg_replace('#""#', '"', $val);
+		$val = preg_replace('#""#', '"', $val) ?: "";
 		$len = strlen($val);
 		$str = "";
 		for ($i = 0; $i < $len; $i++) {

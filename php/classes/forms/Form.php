@@ -24,7 +24,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		if($url[0] == '/') {
 			$base = '/';
 		} else {
-			$base = implode('/', array_map('rawurlencode', $url));
+			$base = implode('/', array_map(fun('rawurlencode'), $url));
 		}
 		if(!$this->getAttribute('action')) {
 			$action = $base . '?fragments=' . rawurlencode($fragment);

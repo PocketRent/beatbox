@@ -17,7 +17,7 @@ class :bb:form:email extends :bb:form:field {
 		$value = (string)$this->getValue();
 		if($value) {
 			if($this->getAttribute('multiple')) {
-				$values = array_filter(array_map('trim', explode(',', $value)));
+				$values = array_filter(array_map(fun('trim'), explode(',', $value)));
 				foreach($values as $value) {
 					if(!filter_var($value, FILTER_VALIDATE_EMAIL)) {
 						$this->valid = false;

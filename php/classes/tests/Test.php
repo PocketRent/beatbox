@@ -54,8 +54,8 @@ class Test extends \PHPUnit_Framework_TestCase {
 
 		// We serialize so that we can provide a consistent sort
 
-		$expected = array_map('serialize', $expected);
-		$actual = array_map('serialize', $actual);
+		$expected = array_map(fun('serialize'), $expected);
+		$actual = array_map(fun('serialize'), $actual);
 
 		sort($expected);
 		sort($actual);

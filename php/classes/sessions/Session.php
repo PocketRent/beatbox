@@ -30,11 +30,14 @@ class Session {
 		if(!self::$inst) {
 			if($force || !empty($_COOKIE[self::NAME])) {
 				self::$inst = new self();
-				self::$id = !empty($_COOKIE[self::NAME]) ? $_COOKIE[self::NAME] : generate_random_token();
+				self::$id = !empty($_COOKIE[self::NAME]) ?
+					$_COOKIE[self::NAME] :
+					generate_random_token();
 				$_COOKIE[self::NAME] = self::$id;
 				if(!is_cli()) {
 					$host = in_dev() ? null : host_domain();
-					setcookie(self::NAME, self::$id, time() + self::EXPIRE, '/', $host, false, true);
+					setcookie(self::NAME, self::$id, time() + self::EXPIRE, '/',
+								$host, false, true);
 				}
 				register_shutdown_function([__CLASS__, 'end']);
 				self::init();

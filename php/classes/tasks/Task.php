@@ -64,7 +64,9 @@ class Task implements \Serializable {
 	 */
 	public function setConcurrent(\int $policy) : Task {
 		if(!(Set {self::CON_ALWAYS, self::CON_NEVER, self::CON_DIFF})->contains($policy)) {
-			throw new \InvalidArgumentException('Concurrency policy must be one of the CON_ constants');
+			throw new \InvalidArgumentException(
+				'Concurrency policy must be one of the CON_ constants'
+			);
 		}
 		$this->policy = $policy;
 		return $this;
@@ -116,7 +118,10 @@ class Task implements \Serializable {
 			return null;
 		}
 		try {
-			$ret = call_user_func_array(unserialize($this->callback), unserialize($this->arguments));
+			$ret = call_user_func_array(
+				unserialize($this->callback),
+				unserialize($this->arguments)
+			);
 		} catch(\Exception $e) {
 			$this->tearDown();
 			throw $e;
@@ -179,7 +184,11 @@ class Task implements \Serializable {
 	 * Serialize this object. Should not be called directly.
 	 */
 	public function serialize() : \string {
-		$data = Map {'c' => unserialize($this->callback), 'a' => unserialize($this->arguments), 'p' => $this->policy};
+		$data = Map {
+			'c' => unserialize($this->callback),
+			'a' => unserialize($this->arguments),
+			'p' => $this->policy,
+		};
 		return serialize($data);
 	}
 

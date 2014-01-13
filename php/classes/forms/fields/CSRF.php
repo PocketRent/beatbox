@@ -9,7 +9,8 @@ final class :bb:form:csrf extends :bb:form:field {
 		return get_csrf_token();
 	}
 
-	public function setValue(mixed $value) {
+	public function setValue(mixed $value): self {
 		// nop
+		return $this;
 	}
 }

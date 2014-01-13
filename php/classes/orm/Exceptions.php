@@ -2,7 +2,7 @@
 
 namespace beatbox\orm;
 
-use beatbox\errors\Exception, HH\Set;
+use beatbox\errors\Exception;
 
 /**
  * Common exception for database-related errors
@@ -35,7 +35,8 @@ class ConnectionException extends DatabaseException {
  * Exception for errors that occur with results and result sets.
  */
 class ResultException extends DatabaseException {
-	public function __construct(\resource $result, \string $message="", ?\Exception $previous=null) {
+	public function __construct(\resource $result, \string $message="",
+								?\Exception $previous=null) {
 		$err = pg_result_error($result);
 		if ($message != "") {
 			$message = $message . ": '" . $err . "'";
@@ -53,7 +54,8 @@ class ResultException extends DatabaseException {
 class InvalidFieldException extends DatabaseException {
 	private static int $num_fields = 4; // number of valid fields to show in the error message
 
-	public function __construct(\string $field, Set<string> $valid_fields, ?\Exception $previous=null) {
+	public function __construct(\string $field, Set<string> $valid_fields,
+								?\Exception $previous=null) {
 		$trunc = 0;
 		if ($valid_fields->count() > self::$num_fields) {
 			$trunc = $valid_fields->count() - self::$num_fields;

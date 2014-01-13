@@ -2,7 +2,7 @@
 
 namespace beatbox\errors;
 
-use HH\Vector, Map, Pair;
+use Pair;
 
 class HTTP {
 	/**
@@ -24,7 +24,7 @@ class HTTP {
 	 * @param string $to the URL to redirect to
 	 * @param string $fallback the URL to fallback to
 	 */
-	public static function redirect(\string $to, ?\string $fallback=null, \int $code = 302) : \void {
+	public static function redirect(\string $to, ?\string $fallback=null, \int $code = 302): \void {
 		$e = new HTTP_Exception(null, $code);
 
 		if($to) {
@@ -69,7 +69,7 @@ class HTTP {
 }
 
 class HTTP_Exception extends Exception {
-	protected static Map<\int, \string> $status_map = Map {
+	protected static FrozenMap<\int, \string> $status_map = FrozenMap {
 		100 => 'Continue',
 		101 => 'Switching Protocols',
 		102 => 'Processing',
@@ -147,7 +147,8 @@ class HTTP_Exception extends Exception {
 		599 => 'Network connect timeout error',
 	};
 
-	public function __construct(?\string $message = null, \int $code=0, ?\Exception $previous=null) {
+	public function __construct(?\string $message = null, \int $code=0,
+								?\Exception $previous=null) {
 		if(!$message && isset(self::$status_map[$code])) {
 			$message = self::$status_map[$code];
 		} else
@@ -157,7 +158,7 @@ class HTTP_Exception extends Exception {
 		parent::__construct($message, $code, $previous);
 	}
 
-	protected $headers = Vector {};
+	protected Vector<Pair<\string, \bool>> $headers = Vector {};
 
 	public function setHeader(\string $header, \string $value, \bool $replace = true) : \void {
 		assert(strpos($header, ':') === false);

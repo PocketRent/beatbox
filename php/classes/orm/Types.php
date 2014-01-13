@@ -59,7 +59,9 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 			if (is_string($timezone)) {
 				$timezone = new \DateTimeZone($timezone);
 			} else {
-				throw new \InvalidArgumentException("\$timezone should be string or instance of DateTimeZone");
+				throw new \InvalidArgumentException(
+					"\$timezone should be string or instance of DateTimeZone"
+				);
 			}
 		}
 

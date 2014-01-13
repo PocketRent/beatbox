@@ -2,7 +2,6 @@
 
 namespace beatbox\orm;
 
-use HH\Traversable, HH\Vector;
 use Awaitable,Indexish;
 
 abstract class DataTable {
@@ -91,7 +90,9 @@ abstract class DataTable {
 			$id = [array_values($pks->toArray())[0] => $id];
 		} else {
 			if (!(is_array($id) || $id instanceof ConstMapAccess)) {
-				throw new \InvalidArgumentException("Object has multi-column primary key, `get_by_id` expects an array or map");
+				throw new \InvalidArgumentException(
+					"Object has multi-column primary key, `get_by_id` expects an array or map"
+				);
 			}
 		}
 		invariant($id instanceof Indexish, '$id should be indexable');
@@ -217,7 +218,7 @@ abstract class DataTable {
 
 		$result = await $conn->query($query);
 		assert($result instanceof QueryResult && "Object write should always return rows");
-		assert($result->numRows() == 1 && "Object write should only return one row" || (var_dump($query) && false));
+		assert($result->numRows() == 1 || (var_dump($query) && false));
 
 		$row = $result->nthRow(0);
 

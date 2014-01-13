@@ -13,7 +13,8 @@ trait Settings {
 	abstract protected static function getTableName() : \string;
 
 	/**
-	 * Returns the ID for this object. This should be unique across objects that have the same table name.
+	 * Returns the ID for this object. This should be unique across objects that have the same
+	 * table name.
 	 */
 	abstract protected function getID() : \string;
 
@@ -77,7 +78,8 @@ trait Settings {
 				}
 				// call_user_func_array wants an array
 				$del = [$this->settings_key];
-				foreach($this->settings_original->differenceByKey($this->settings_data)->keys() as $key) {
+				foreach($this->settings_original->differenceByKey($this->settings_data)->keys()
+					as $key) {
 					$del[] = $key;
 				}
 				if(count($del) > 1) {

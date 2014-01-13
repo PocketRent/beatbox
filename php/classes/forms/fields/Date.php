@@ -14,7 +14,7 @@ class :bb:form:date extends :bb:form:field {
 
 	protected string $type = 'date';
 
-	protected Set<string> $skipTransfer = Set { 'label', 'value', 'name' };
+	protected FrozenSet<string> $skipTransfer = FrozenSet { 'label', 'value', 'name' };
 
 	protected function buildField() : :div {
 		$withDay = $this->getAttribute('withDay');
@@ -47,17 +47,30 @@ class :bb:form:date extends :bb:form:field {
 		if($withDay) {
 			$days = range(1, 31);
 			$days = [0 => 'Day'] + array_combine($days, $days);
-			$days = <bb:form:dropdown class="days" items={$days} name={$this->getAttribute('name') . '[Day]'} id={$this->getID()} value={$dV} />;
+			$days = <bb:form:dropdown
+				class="days"
+				items={$days}
+				name={$this->getAttribute('name') . '[Day]'}
+				id={$this->getID()}
+				value={$dV} />;
 		} else {
 			$days = <x:frag />;
 		}
 
-		$months = <bb:form:dropdown class="months" items={$months} name={$this->getAttribute('name') . '[Month]'} value={$mV} />;
+		$months = <bb:form:dropdown
+			class="months"
+			items={$months}
+			name={$this->getAttribute('name') . '[Month]'}
+			value={$mV} />;
 		if(!$withDay) {
 			$months->setAttribute('id', $this->getID());
 		}
 
-		$years = <bb:form:number placeholder="YYYY" class="year" name={$this->getAttribute('name') . '[Year]'} value={$yV} />;
+		$years = <bb:form:number
+			placeholder="YYYY"
+			class="year"
+			name={$this->getAttribute('name') . '[Year]'}
+			value={$yV} />;
 
 		$this->cascadeAttributes($days);
 		$this->cascadeAttributes($months);

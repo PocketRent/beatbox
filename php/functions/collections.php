@@ -14,7 +14,9 @@ function map_merge_recursive<Tk>(ConstMap<Tk,mixed> $base, ...) : Map<Tk,mixed> 
 	array_shift($args);
 
 	foreach($args as $extra) {
-		invariant($extra instanceof ConstMap, __FUNCTION__ . ' passed an argument that does not implement ConstMapAccess', E_USER_ERROR);
+		invariant($extra instanceof ConstMap,
+					__FUNCTION__ . ' passed an argument that does not implement ConstMapAccess',
+					E_USER_ERROR);
 		foreach($extra as $k => $v) {
 			if(isset($ret[$k])) {
 				$merge_val = $ret[$k];

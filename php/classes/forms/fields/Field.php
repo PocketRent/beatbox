@@ -107,7 +107,8 @@ abstract class :bb:form:field extends :bb:base {
 			}
 		}
 		// pattern
-		if($this->valid && self::$patternVal->contains($this->getType()) && $value !== null && $value !== '') {
+		if($this->valid && self::$patternVal->contains($this->getType())
+			&& $value !== null && $value !== '') {
 			assert(is_string($value) || is_null($value));
 			if(($pattern = $this->getAttribute('pattern'))) {
 				$regex = '/^(?:' . str_replace('/', '\\/', $pattern) . ')$/';
@@ -116,7 +117,8 @@ abstract class :bb:form:field extends :bb:base {
 					foreach($values as $value) {
 						if(!preg_match($regex, $value)) {
 							$this->valid = false;
-							$this->error = $value . ' does not match allowed format for ' . $this->getAttribute('name');
+							$this->error = $value . ' does not match allowed format for ' .
+								$this->getAttribute('name');
 						}
 					}
 				} else if(!preg_match($regex, (string)$value)) {
@@ -126,7 +128,8 @@ abstract class :bb:form:field extends :bb:base {
 			}
 		}
 		// min, max, step
-		if($this->valid && self::$rangeVal->contains($this->getType()) && $value !== null && $value !== '') {
+		if($this->valid && self::$rangeVal->contains($this->getType())
+			&& $value !== null && $value !== '') {
 			if(($min = $this->getAttribute('min'))) {
 				if(compare_items($value, $min)) {
 					$this->valid = false;
@@ -136,7 +139,8 @@ abstract class :bb:form:field extends :bb:base {
 					$mult = (int)($difference / $step);
 					if($difference - $step * $mult > 0) {
 						$this->valid = false;
-						$this->error = $displayName . ' is not a multiple of ' . $step . ' above the min value';
+						$this->error = $displayName . ' is not a multiple of ' . $step .
+							' above the min value';
 					}
 				}
 			}

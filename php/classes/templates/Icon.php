@@ -3,7 +3,7 @@
 class :bb:icon extends :bb:base {
 	attribute :img;
 
-	protected Set<string> $skipTransfer = Set {'src'};
+	protected FrozenSet<string> $skipTransfer = FrozenSet {'src'};
 
 	protected function compose() : :x:element {
 		$src = $this->getAttribute('src');
@@ -46,7 +46,8 @@ class :bb:icon extends :bb:base {
 	/**
 	 * Format a DOM element.
 	 *
-	 * This function takes in a DOM element, and removes whitespace to make it smaller for embedding.
+	 * This function takes in a DOM element, and removes whitespace
+	 * to make it smaller for embedding.
 	 *
 	 * @param DOMElement $root  The root element which should be formatted.
 	 */

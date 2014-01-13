@@ -5,7 +5,7 @@ final class :bb:fragment extends :bb:base {
 		:div,
 		string name @required;
 
-	protected Set<string> $skipTransfer = Set {'name'};
+	protected FrozenSet<string> $skipTransfer = FrozenSet {'name'};
 
 	protected function compose() : :div {
 		$name = $this->getAttribute('name');

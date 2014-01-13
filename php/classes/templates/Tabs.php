@@ -19,9 +19,14 @@ class :bb:tabs extends :bb:base {
 			$title = $tab->getAttribute('title');
 			$id = $tab->getID();
 			$tabs->appendChild($tab);
-			$icon = $tab->isAttributeSet('icon') ? <bb:icon src={$tab->getAttribute('icon')} /> : '';
+			$icon = $tab->isAttributeSet('icon') ?
+				<bb:icon src={$tab->getAttribute('icon')} /> :
+				'';
 
-			$button = <bb:button role="tab" aria-controls={$id}>{$icon}<span>{$title}</span></bb:button>;
+			$button = <bb:button role="tab" aria-controls={$id}>
+				{$icon}
+				<span>{$title}</span>
+			</bb:button>;
 			if ($first) {
 				$button->setAttribute('aria-selected', 'true');
 				$button->setAttribute('tabindex', '0');
@@ -45,7 +50,7 @@ class :bb:tab extends :bb:base {
 		string title @required,
 		string icon;
 
-	protected Set<string> $skipTransfer = Set {'title'};
+	protected FrozenSet<string> $skipTransfer = FrozenSet {'title'};
 
 	protected function compose() : :div {
 		return <div class="tab hide" id={$this->getID()}>

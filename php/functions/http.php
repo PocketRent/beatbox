@@ -10,11 +10,13 @@ define('HTTP_URL_STRIP_PORT', 0x020);
 define('HTTP_URL_STRIP_PATH', 0x040);
 define('HTTP_URL_STRIP_QUERY', 0x080);
 define('HTTP_URL_STRIP_FRAGMENT', 0x100);
-define('HTTP_URL_STRIP_ALL', HTTP_URL_STRIP_AUTH | HTTP_URL_STRIP_PORT | HTTP_URL_STRIP_PATH | HTTP_URL_STRIP_QUERY | HTTP_URL_STRIP_FRAGMENT);
+define('HTTP_URL_STRIP_ALL', HTTP_URL_STRIP_AUTH | HTTP_URL_STRIP_PORT | HTTP_URL_STRIP_PATH
+							| HTTP_URL_STRIP_QUERY | HTTP_URL_STRIP_FRAGMENT);
 define('HTTP_URL_FROM_ENV', 0x1000);
 define('HTTP_URL_SANITIZE_PATH', 0x2000);
 
-function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTTP_URL_FROM_ENV, ?array<string,mixed> &$ret_array = null) : string {
+function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTTP_URL_FROM_ENV,
+						?array<string,mixed> &$ret_array = null) : string {
 	if($flags & HTTP_URL_FROM_ENV) {
 		$url = http_build_url(_http_url_from_env(), $url, $flags ^ HTTP_URL_FROM_ENV, $ret_array);
 	}
@@ -31,7 +33,9 @@ function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTT
 
 	$new_url = array();
 	if(!($flags & HTTP_URL_STRIP_PORT)) {
-		$new_url['port'] = array_key_exists('port', $parts) ? $parts['port'] : (array_key_exists('port', $url) ? $url['port'] : 0);
+		$new_url['port'] = array_key_exists('port', $parts) ?
+			$parts['port'] :
+			(array_key_exists('port', $url) ? $url['port'] : 0);
 	}
 
 	$copies = Map {
@@ -42,7 +46,8 @@ function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTT
 		'fragment' => HTTP_URL_STRIP_FRAGMENT,
 	};
 
-	if($flags & HTTP_URL_JOIN_PATH && !empty($url['path']) && !empty($parts['path']) && $parts['path'] != '/') {
+	if($flags & HTTP_URL_JOIN_PATH && !empty($url['path']) && !empty($parts['path'])
+		&& $parts['path'] != '/') {
 		if(!($flags & HTTP_URL_STRIP_PATH)) {
 			$new_url['path'] = $url['path'];
 			if(substr($new_url['path'], -1) != '/') {
@@ -67,7 +72,9 @@ function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTT
 
 	foreach($copies as $name => $const) {
 		if(!($flags & $const)) {
-			$new_url[$name] = array_key_exists($name, $parts) ? $parts[$name] : (array_key_exists($name, $url) ? $url[$name] : null);
+			$new_url[$name] = array_key_exists($name, $parts) ?
+				$parts[$name] :
+				(array_key_exists($name, $url) ? $url[$name] : null);
 		}
 	}
 
@@ -83,7 +90,8 @@ function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTT
 		$new_url['path'] = '/' . $new_url['path'];
 	}
 
-	if($flags & HTTP_URL_SANITIZE_PATH && isset($new_url['path'][0]) && ($new_url['path'][0] != '/' || isset($new_url['path'][1]))) {
+	if($flags & HTTP_URL_SANITIZE_PATH && isset($new_url['path'][0]) &&
+		($new_url['path'][0] != '/' || isset($new_url['path'][1]))) {
 		$path_parts = explode('/', $new_url['path']);
 		$new_parts = [];
 		if($path_parts[0] === '') {

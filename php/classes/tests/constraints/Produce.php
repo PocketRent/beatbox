@@ -1,7 +1,6 @@
 <?hh
 
 namespace beatbox\test\constraint;
-use HH\Traversable;
 
 /**
  * Constraint for iterators/traversables to check to see if they
@@ -27,7 +26,8 @@ class Produce extends \PHPUnit_Framework_Constraint {
 		$this->underrun = $underrun;
 	}
 
-	public function evaluate(Traversable $other, \string $description = '', \bool $returnResult = false) : \bool {
+	public function evaluate(Traversable $other, \string $description = '',
+			\bool $returnResult = false) : \bool {
 		$success = false;
 
 		$comp_factory = \PHPUnit_Framework_ComparatorFactory::getDefaultInstance();
@@ -39,7 +39,8 @@ class Produce extends \PHPUnit_Framework_Constraint {
 				if ($index >= $exp_n) {
 					if ($this->overrun) break;
 					throw new \PHPUnit_Framework_ExpectationFailedException(
-						trim($description."\nTraversable overran $exp_n expected values\nexpected: $exp_n"),
+						trim($description.
+							"\nTraversable overran $exp_n expected values\nexpected: $exp_n"),
 						null
 					);
 				}
@@ -50,7 +51,9 @@ class Produce extends \PHPUnit_Framework_Constraint {
 			}
 			if ($index < $exp_n && !$this->underrun) {
 				throw new \PHPUnit_Framework_ExpectationFailedException(
-					trim($description."\nTraversable produced fewer values than expected\nexpected: $exp_n, actual: $index"),
+					trim($description.
+						"\nTraversable produced fewer values than expected\n".
+						"expected: $exp_n, actual: $index"),
 					null
 				);
 			}

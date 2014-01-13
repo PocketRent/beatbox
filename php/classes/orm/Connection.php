@@ -2,7 +2,6 @@
 
 namespace beatbox\orm;
 
-use HH\Traversable, HH\Vector;
 use \Awaitable;
 
 /**

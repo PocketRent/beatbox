@@ -15,21 +15,28 @@ class Test extends \PHPUnit_Framework_TestCase {
 		return $this->assertEquals($ea, $aa, $message);
 	}
 
-	public static function assertEquals(\mixed $expected, \mixed $actual, \string $message='', \int $delta=0, \int $maxDepth=10, \bool $canonicalize=FALSE, \bool $ignoreCase=FALSE) : \void {
+	public static function assertEquals(\mixed $expected, \mixed $actual, \string $message='',
+										\int $delta=0, \int $maxDepth=10, \bool $canonicalize=FALSE,
+										\bool $ignoreCase=FALSE) : \void {
 		if ($expected instanceof Comparable) {
 			$constraint = new test\constraint\Compare($expected, 0);
 			self::assertThat($actual, $constraint, $message);
 		} else {
-			parent::assertEquals($expected, $actual, $message, $delta, $maxDepth, $canonicalize, $ignoreCase);
+			parent::assertEquals($expected, $actual, $message, $delta, $maxDepth, $canonicalize,
+									$ignoreCase);
 		}
 	}
 
-	public static function assertProduces(array $expected, \mixed $actual, \string $message='', \bool $overrun=false, \bool $underrun=false) : \void {
+	public static function assertProduces(array $expected, \mixed $actual, \string $message='',
+											\bool $overrun=false, \bool $underrun=false) : \void {
 		$constraint = new test\constraint\Produce($expected, $overrun, $underrun);
 		self::assertThat($actual, $constraint, $message);
 	}
 
-	public static function assertSetsEquals(\mixed $expected, \mixed $actual, \string $message='', \int $delta=0, \int $maxDepth=10, \bool $canonicalize=FALSE, \bool $ignoreCase=FALSE) : \void {
+	public static function assertSetsEquals(\mixed $expected, \mixed $actual, \string $message='',
+											\int $delta=0, \int $maxDepth=10,
+											\bool $canonicalize=FALSE,
+											\bool $ignoreCase=FALSE) : \void {
 		if($expected instanceof Traversable) {
 			$e = [];
 			foreach($expected as $v) $e[] = $v;
@@ -53,6 +60,7 @@ class Test extends \PHPUnit_Framework_TestCase {
 		sort($expected);
 		sort($actual);
 
-		self::assertEquals($expected, $actual, $message, $delta, $maxDepth, $canonicalize, $ignoreCase);
+		self::assertEquals($expected, $actual, $message, $delta, $maxDepth, $canonicalize,
+							$ignoreCase);
 	}
 }

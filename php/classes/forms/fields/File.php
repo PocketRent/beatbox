@@ -44,7 +44,8 @@ class :bb:form:file extends :bb:form:field {
 				http_error(500);
 			}
 		} else if($accept = $this->getAttribute('accept')) {
-			$allowed = array_filter(array_map('strtolower', array_map('trim', explode(',', $accept))));
+			$allowed = array_map('strtolower', array_map('trim', explode(',', $accept)));
+			$allowed = array_filter($allowed);
 			if(($pos = strrpos($file['name'], '.')) !== false) {
 				$ext = substr($file['name'], $pos);
 			} else {
@@ -78,7 +79,9 @@ class :bb:form:file extends :bb:form:field {
 		$value = $this->getAttribute('value');
 		if($value) {
 			if(is_array($value['error'])) {
-				$values = array_filter($value['error'], function($v) { return $v != UPLOAD_ERR_OK;});
+				$values = array_filter($value['error'], function($v) {
+					return $v != UPLOAD_ERR_OK;
+				});
 				if($values) {
 					return null;
 				}

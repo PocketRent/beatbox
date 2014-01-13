@@ -10,11 +10,23 @@ class :bb:form:confirm-password extends :bb:form:field {
 
 	protected string $type = 'password';
 
-	protected FrozenSet<string> $skipTransfer = Set {'name', 'label'};
+	protected FrozenSet<string> $skipTransfer = FrozenSet {
+		'name',
+		'label',
+		'firstLabel',
+		'secondLabel',
+	};
 
 	protected function buildField() : :div {
-		$first = <bb:form:password name={$this->getAttribute('name') . '[0]'} label={$this->getAttribute('firstLabel')} id={$this->getID()} class="first" />;
-		$second = <bb:form:password name={$this->getAttribute('name') . '[1]'} label={$this->getAttribute('secondLabel')} class="second" />;
+		$first = <bb:form:password
+			name={$this->getAttribute('name') . '[0]'}
+			label={$this->getAttribute('firstLabel')}
+			id={$this->getID()}
+			class="first" />;
+		$second = <bb:form:password
+			name={$this->getAttribute('name') . '[1]'}
+			label={$this->getAttribute('secondLabel')}
+			class="second" />;
 
 		$this->cascadeAttributes($first);
 		$this->cascadeAttributes($second);

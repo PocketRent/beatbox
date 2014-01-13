@@ -2,7 +2,7 @@
 
 namespace beatbox\orm;
 
-use HH\Vector, Map;
+use Map;
 
 abstract class Result {
 	protected \resource $result;
@@ -170,7 +170,8 @@ class ResultIterator implements \Iterator<array<string,string>> {
 	}
 
 	public function current() : array {
-		invariant($this->cur_idx != $this->num_rows, "Tried to iterate past the end of the iterator");
+		invariant($this->cur_idx != $this->num_rows,
+					"Tried to iterate past the end of the iterator");
 		if ($this->cur_idx == $this->rows->count()) {
 			// We've run out of rows from the given object, fetch them
 			$row = pg_fetch_assoc($this->result);

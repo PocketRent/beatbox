@@ -5,17 +5,18 @@ namespace beatbox;
 use Map, Pair;
 
 type HandlerTable = Map<\string,(function(array, ?\string, Map<\string, \mixed>):\mixed)>;
+type CheckerFunction = (function(\string, Map<\string,\mixed>):\bool);
 
 class Router {
 	protected static Map<\string, Pair<HandlerTable, Map<\string, \mixed>>> $routes = Map {};
 
 	protected static Map<\string, Pair<HandlerTable, Map<\string, \mixed>>> $regex_routes = Map {};
 
-	protected static Map<\string, (function(\string, Map<\string,\mixed>):\bool)> $checkers = Map {};
+	protected static Map<\string, CheckerFunction> $checkers = Map {};
 
 	protected static Map<\string, mixed> $last_md = Map {};
 
-	protected static Map<\string, (function(array, ?\string, Map<\string, \mixed>):\mixed)> $last_frags = Map {};
+	protected static HandlerTable $last_frags = Map {};
 
 	protected static array $last_url = [];
 
@@ -78,7 +79,8 @@ class Router {
 			// If there are multiple fragments, this is a get request and the pagelet server is
 			// enabled, process the fragments in parallel
 			if (count($fragments) > 1 && is_get() && pagelet_server_is_enabled() &&
-					!defined('RUNNING_TEST')) { // Because of the way the pagelets work, they don't play nice with the tests
+					!defined('RUNNING_TEST')) {
+				// Because of the way the pagelets work, they don't play nice with the tests
 				$res = self::process_pagelet_fragments($url, $fragments);
 			} else {
 				$res = [];
@@ -87,14 +89,16 @@ class Router {
 
 					$res[$frag] = self::render_fragment($frag, $available[$frag], $url, $ext, $md);
 					// This mostly handles XHP objects
-					if(is_object($res[$frag]) && !$res[$frag] instanceof \JsonSerializable && !$res[$frag] instanceof Collection) {
+					if(is_object($res[$frag]) && !$res[$frag] instanceof \JsonSerializable
+						&& !$res[$frag] instanceof Collection) {
 						$res[$frag] = (string)$res[$frag];
 					}
 				}
 			}
 
 			header("Content-type: application/json");
-			return json_encode($res, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE);
+			return json_encode($res, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS
+										| JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE);
 		} else {
 			if(count($fragments) > 1) {
 				http_error(400, 'Non-ajax request cannot request more than one fragment');
@@ -115,7 +119,8 @@ class Router {
 	 *
 	 * @returns an array of fragment-name => content
 	 */
-	public static function process_pagelet_fragments(array<string> $url, Vector<\string> $fragments) : array {
+	public static function process_pagelet_fragments(\array<\string> $url,
+														Vector<\string> $fragments) : \array {
 		assert(pagelet_server_is_enabled() && is_get());
 		$res = [];
 		$tasks = [];
@@ -213,9 +218,13 @@ class Router {
 				$md = null;
 			}
 			if($regex) {
-				$base = isset(self::$regex_routes[$path]) ? self::$regex_routes[$path] : Pair { new Map(), new Map() };
+				$base = isset(self::$regex_routes[$path]) ?
+					self::$regex_routes[$path] :
+					Pair { new Map(), new Map() };
 			} else {
-				$base = isset(self::$routes[$path]) ? self::$routes[$path] : Pair { new Map(), new Map() };
+				$base = isset(self::$routes[$path]) ?
+					self::$routes[$path] :
+					Pair { new Map(), new Map() };
 			}
 			if($fragments) {
 				invariant($fragments instanceof Map, "Fragments should be a map");
@@ -237,7 +246,8 @@ class Router {
 	/**
 	 * Gets the routes available for a given path
 	 */
-	public static function get_routes_for_path(\string $path) : Pair<HandlerTable, Map<\string, \mixed>> {
+	public static function get_routes_for_path(\string $path):
+		Pair<HandlerTable, Map<\string, \mixed>> {
 		$l = strlen($path);
 		$path = trim($path, '/');
 		if(!$path && $l) {
@@ -259,14 +269,14 @@ class Router {
 	/**
 	 * Add a checker for the given metadata key
 	 */
-	public static function add_checker(\string $key, (function(\string, \Map<\string,\mixed>):\bool) $callback) : \void {
+	public static function add_checker(\string $key, CheckerFunction $callback) : \void {
 		self::$checkers[strtolower($key)] = $callback;
 	}
 
 	/**
 	 * Return the checker for the given metadata key
 	 */
-	public static function get_checker(\string $key) : ?(function(\string, \Map<\string,\mixed>):\bool) {
+	public static function get_checker(\string $key) : ?CheckerFunction {
 		$key = strtolower($key);
 		return self::$checkers->get($key);
 	}
@@ -298,7 +308,9 @@ class Router {
 		}
 	}
 
-	protected static function render_fragment(\string $fragName, (function(array, ?\string, \Map<\string, \mixed>):\mixed) $frag, array $url, ?\string $extension, Map $md) : \mixed {
+	protected static function render_fragment(\string $fragName,
+								(function(array, ?\string, \Map<\string, \mixed>):\mixed) $frag,
+								\array $url, ?\string $extension, Map $md) : \mixed {
 		$val = $frag($url, $extension, $md);
 		// If the response from the fragment is awaitable, then block on it here. This is a nice
 		// convenience for fragment writers, meaning they can write fragments as async functions
@@ -306,7 +318,7 @@ class Router {
 		if ($val instanceof \Awaitable) {
 			$val = wait($val);
 		}
-		if($val && $val instanceof \beatbox\FragmentCallback) {
+		if($val && $val instanceof FragmentCallback) {
 			$val = $val->forFragment($url, $fragName);
 			if ($val instanceof \Awaitable) {
 				$val = wait($val);
@@ -317,7 +329,8 @@ class Router {
 
 	public static function response_for_fragment(\string $frag) : \mixed {
 		if(isset(self::$last_frags[$frag])) {
-			return self::render_fragment($frag, self::$last_frags[$frag], self::$last_url, self::$last_ext, self::$last_md);
+			return self::render_fragment($frag, self::$last_frags[$frag], self::$last_url,
+											self::$last_ext, self::$last_md);
 		}
 		return null;
 	}

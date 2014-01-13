@@ -18,13 +18,16 @@ class :bb:form:time extends :bb:form:field {
 		$max = $this->getAttribute('maxHour');
 
 		if($step > 60 || $step < 1) {
-			throw new InvalidArgumentException('minuteStep must be in the range [1, 60]. ' . $step . ' given.');
+			throw new InvalidArgumentException('minuteStep must be in the range [1, 60]. ' .
+				$step . ' given.');
 		}
 		if($min < 0 || $min > 23) {
-			throw new InvalidArgumentException('minHour must be in the range [0, 23]. ' . $min . ' given.');
+			throw new InvalidArgumentException('minHour must be in the range [0, 23]. ' .
+				$min . ' given.');
 		}
 		if($max < 0 || $max > 23) {
-			throw new InvalidArgumentException('maxHour must be in the range [0, 23]. ' . $max . ' given.');
+			throw new InvalidArgumentException('maxHour must be in the range [0, 23]. ' .
+				$max . ' given.');
 		}
 
 		if($min > $max) {
@@ -51,8 +54,17 @@ class :bb:form:time extends :bb:form:field {
 			$mV = '-1';
 		}
 
-		$hours = <bb:form:dropdown class="hours" items={$hours} name={$this->getAttribute('name') . '[Hour]'} id={$this->getID()} value={$hV} />;
-		$minutes = <bb:form:dropdown class="minutes" items={$minutes()} name={$this->getAttribute('name') . '[Minute]'} value={$mV} />;
+		$hours = <bb:form:dropdown
+			class="hours"
+			items={$hours}
+			name={$this->getAttribute('name') . '[Hour]'}
+			id={$this->getID()}
+			value={$hV} />;
+		$minutes = <bb:form:dropdown
+			class="minutes"
+			items={$minutes()}
+			name={$this->getAttribute('name') . '[Minute]'}
+			value={$mV} />;
 
 		$this->cascadeAttributes($hours);
 		$this->cascadeAttributes($minutes);

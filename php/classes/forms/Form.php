@@ -43,7 +43,8 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 			if(!$this->validate()) {
 				if(!is_ajax()) {
 					// Save session data
-					session_set('form.' . $this->getAttribute('action') . '.data', $_POST + $_FILES);
+					session_set('form.' . $this->getAttribute('action') . '.data',
+								$_POST + $_FILES);
 					// Redirect back
 					redirect_back($base);
 				} else {
@@ -52,7 +53,9 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 			} else {
 				$handler = $this->getAttribute('handler');
 				if(!$handler || !is_callable($handler)) {
-					throw new beatbox\errors\Exception('No handler provided or non-callable handler provided.');
+					throw new beatbox\errors\Exception(
+						'No handler provided or non-callable handler provided.'
+					);
 				}
 				return call_user_func($handler, $this, $this->getData());
 			}
@@ -74,7 +77,8 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		}
 	}
 
-	protected static function add_to_map(Map<string,mixed> $base, string $name, mixed $value) : void {
+	protected static function add_to_map(Map<string,mixed> $base, string $name,
+											mixed $value) : void {
 		$matches = [];
 		if(preg_match('#^(.+?)\[(.*?)\](.*)$#', $name, $matches)) {
 			if(!$matches[2]) {
@@ -112,13 +116,16 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 
 	protected static array $load_count = [];
 
-	protected static function get_value(array<string,mixed> $data, string $name, string $base) : mixed {
+	protected static function get_value(array<string,mixed> $data, string $name,
+										string $base) : mixed {
 		$matches = [];
 		if(!$name) {
 			return $data;
 		} else if(preg_match('#^(.+?)\[(.*?)\](.*)$#', $name, $matches)) {
 			if(!$matches[2]) {
-				$index = isset(self::$load_count[$base . $matches[1]]) ? self::$load_count[$base . $matches[1]] + 1 : 0;
+				$index = isset(self::$load_count[$base . $matches[1]]) ?
+					self::$load_count[$base . $matches[1]] + 1 :
+					0;
 				self::$load_count[$base . $matches[1]] = $index;
 
 				if (isset($data[$matches[1]])) {

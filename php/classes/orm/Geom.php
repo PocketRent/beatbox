@@ -6,9 +6,6 @@ use beatbox;
 use beatbox\orm\Connection;
 use beatbox\orm\TypeParseException;
 
-use HH\Vector, HH\FrozenVector;
-use Traversable;
-
 abstract class GeomType implements beatbox\orm\Type {
 	abstract static function fromString(\string $val) : GeomType;
 }

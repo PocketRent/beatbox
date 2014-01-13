@@ -3,7 +3,6 @@
 namespace beatbox\orm;
 
 use Awaitable;
-use HH\Set, HH\Vector;
 
 class ORM<T> implements \IteratorAggregate<T>, \Countable {
 	protected \string $data_class;

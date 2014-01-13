@@ -5,7 +5,7 @@ namespace beatbox\orm;
 use Awaitable,Indexish;
 
 abstract class DataTable {
-	abstract public function __construct(Indexish<string,string> $row);
+	public function __construct(?Indexish<string,string> $row) {}
 
 	/**
 	 * Updates the fields in the object from the data in the row.
@@ -52,12 +52,12 @@ abstract class DataTable {
 	/**
 	 * Returns a set of column names for this object
 	 */
-	abstract static function getColumnNames() : \Set<\string>;
+	abstract static function getColumnNames() : \ConstSet<\string>;
 
 	/**
 	 * Returns a set of column names that are primary keys
 	 */
-	abstract static function getPrimaryKeys() : \Set<\string>;
+	abstract static function getPrimaryKeys() : \ConstSet<\string>;
 
 	/**
 	 * ORM-getter for this class (uses LSB)
@@ -81,7 +81,7 @@ abstract class DataTable {
 	 *
 	 * Returns null if there is no matching object in the database
 	 */
-	public static async function get_by_pk(\mixed $id) : Awaitable<?DataTable> {
+	public static async function get_by_pk(\mixed $id) : Awaitable<?this> {
 		if(!$id) {
 			return null;
 		}
@@ -110,7 +110,7 @@ abstract class DataTable {
 	/**
 	 * Wrapper method for get_by_pk.
 	 */
-	public static function get_by_id(\mixed $id) : Awaitable<?DataTable> {
+	public static function get_by_id(\mixed $id) : Awaitable<?this> {
 		return static::get_by_pk($id);
 	}
 
@@ -119,7 +119,7 @@ abstract class DataTable {
 	 *
 	 * @return DataTable
 	 */
-	public static function load(Indexish<string,string> $row) : DataTable {
+	public static function load(Indexish<string,string> $row) : this {
 		$c = new static($row);
 		return $c;
 	}
@@ -228,7 +228,7 @@ abstract class DataTable {
 	}
 
 	/**
-	 * Deletes this object.
+	 * Deletes DataTable object.
 	 *
 	 * The object shouldn't be used after deletion and will cause exceptions
 	 * to be thrown if this happens.

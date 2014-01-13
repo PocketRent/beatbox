@@ -384,7 +384,6 @@ class PGType {
 
 			$file->startBlock('public static function fromString(\string $val): '.$this->name);
 
-			$file->writeLine('if ($val === null) return 0;');
 			$file->writeLine('$parts = db_parse_composite($val);');
 
 			$elem_count = $elements->count();
@@ -393,7 +392,7 @@ class PGType {
 			$file->endBlock();
 			$file->writeLine();
 
-			$file->writeLine("\$obj = new $this->name;");
+			$file->writeLine("\$obj = new $this->name();");
 
 			$i = 0;
 			foreach ($elements as $name => $type) {
@@ -1056,9 +1055,10 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 
 		$tbl_data->writeLine();
 		$tbl_data->blockComment("Constructor - Internal use only");
-		$tbl_data->startBlock("public function __construct(\$row = null)");
+		$tbl_data->startBlock("public function __construct(?Indexish<string,string> \$row = null)");
 		$tbl_data->writeLine("assert(is_null(\$row) || is_array(\$row) || "
 								. "\$row instanceof \ConstMapAccess);");
+		$tbl_data->writeLine('parent::__construct($row);');
 		$tbl_data->startBlock('if($row)', '');
 		$tbl_data->writeLine("\$this->updateFromRow(\$row);");
 		$tbl_data->endBlock();
@@ -1079,6 +1079,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 			$tbl_data->endBlock();
 
 			$def_val = $col->nullable ? ' = null' : '';
+			$prefix = $col->nullable ? '?' : '';
 
 			if ($col->updatable) {
 				if($isDateTime) {
@@ -1099,7 +1100,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 					$tbl_data->writeLine("\$this->_$col->name = \$val;");
 					$tbl_data->writeLine('return $this;');
 				} else if ($type->isSimple()) {
-					$tbl_data->startBlock("public function set$col->name($type_arg\$val$def_val)");
+					$tbl_data->startBlock("public function set$col->name($prefix$type_arg\$val$def_val)");
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
 					$tbl_data->writeLine("\$this->changed['$col->name'] = ".
 						"\$this->orig == null || (\$this->orig['$col->name'] !== \$val);");
@@ -1107,14 +1108,14 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 					$tbl_data->writeLine('return $this;');
 				} else if ($type->type_cat == PGType::TCAT_ARRAY) {
 					$name = $col->name;
-					$tbl_data->startBlock("public function set$name(Traversable \$val$def_val)");
+					$tbl_data->startBlock("public function set$name({$prefix}Traversable \$val$def_val)");
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
 					$tbl_data->writeLine("\$this->changed['$name'] = true;");
 					$tbl_data->writeLine("\$this->_$name = \HH\Vector {};");
 					$tbl_data->writeLine("\$this->_{$name}->addAll(\$val);");
 					$tbl_data->writeLine('return $this;');
 					$tbl_data->endBlock();
-					$tbl_data->startBlock("public function append$name(Traversable \$val$def_val)");
+					$tbl_data->startBlock("public function append$name({$prefix}Traversable \$val$def_val)");
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
 					$tbl_data->writeLine("\$this->changed['$name'] = true;");
 					$tbl_data->startBlock("if(\$this->_$name === null)");
@@ -1123,7 +1124,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 					$tbl_data->writeLine("\$this->_{$name}->addAll(\$val);");
 					$tbl_data->writeLine('return $this;');
 				} else {
-					$tbl_data->startBlock("public function set$col->name($type_arg\$val$def_val)");
+					$tbl_data->startBlock("public function set$col->name($prefix$type_arg\$val$def_val)");
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
 					$tbl_data->writeLine("\$this->changed['$col->name'] = true;");
 					$tbl_data->writeLine("\$this->_$col->name = \$val;");
@@ -1231,7 +1232,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 		foreach($table->columns as $col) {
 			$tbl_data->writeLine("\$values[] = \$this->_$col->name;");
 		}
-		$tbl_data->writeLine('$values = array_map([$con, \'escapeValue\'], $values);');
+		$tbl_data->writeLine('$values = array_map(inst_meth($con, \'escapeValue\'), $values);');
 		$tbl_data->writeLine('return \'ROW(\' . implode(\',\', $values) . \')\';');
 		$tbl_data->endBlock();
 		$tbl_data->writeLine();

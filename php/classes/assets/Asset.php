@@ -1,4 +1,4 @@
-<?hh // decl
+<?hh
 namespace beatbox;
 
 class Asset {
@@ -11,16 +11,16 @@ class Asset {
 	 * The name of this asset (normally the original
 	 * filename)
 	 */
-	private \string $name;
+	private ?\string $name;
 	/**
 	 * The mime type of this asset
 	 */
-	private \string $mime;
+	private ?\string $mime;
 
 	/**
 	 * The source path for this file
 	 */
-	private \string $source_path;
+	private ?\string $source_path;
 
 	/**
 	 * Store a file in the assets store
@@ -33,15 +33,15 @@ class Asset {
 	 * 'tmp_name' must be an uploaded file
 	 *
 	 */
-	public static async function store(\Indexish $file) : \Awaitable<Asset> {
+	public static async function store(\Indexish<\string, \mixed> $file) : \Awaitable<Asset> {
 		if (!isset($file['name']) || !isset($file['tmp_name'])) {
 			throw new \InvalidArgumentException("\$file must have 'name' and 'tmp_name' keys");
 		}
 
-		assert(!isset($file['error']) || $file['error'] == UPLOAD_ERR_OK);
+		assert(!isset($file['error']) || (int)$file['error'] == UPLOAD_ERR_OK);
 
-		$name = $file['name'];
-		$source = $file['tmp_name'];
+		$name = (string)$file['name'];
+		$source = (string)$file['tmp_name'];
 
 
 		if (!is_uploaded_file($source)) {
@@ -67,12 +67,13 @@ class Asset {
 	 *
 	 * @return Asset or null, if it doesn't exist
 	 */
-	public static async function load(\mixed $id) : \Awaitable<?self> {
+	public static async function load(\mixed $id) : \Awaitable<?Asset> {
 		$conn = orm\Connection::get();
 
 		$eid = $conn->escapeValue($id);
 		$query = "SELECT * FROM \"Asset\" WHERE \"ID\"=$eid LIMIT 1";
 		$res = await $conn->query($query);
+		assert($res instanceof orm\QueryResult);
 		if ($res->numRows() == 0) {
 			send_event("asset::db-miss", $id);
 			return null;
@@ -98,7 +99,8 @@ class Asset {
 	/**
 	 * Gets the name of the file
 	 */
-	public function getName() : \string {
+	public function getName() : ?\string {
+		invariant($this->name !== null, 'Name cannot be null');
 		return $this->name;
 	}
 
@@ -113,6 +115,7 @@ class Asset {
 	 * Gets the MIME type of the file
 	 */
 	public function getMIME() : \string {
+		invariant($this->mime !== null, 'Mime type cannot be null');
 		return $this->mime;
 	}
 
@@ -172,7 +175,7 @@ class Asset {
 				($name, $type, $source_path) RETURNING \"ID\"";
 
 			$res = await $conn->query($query);
-			assert($res->numRows() == 1);
+			assert($res instanceof orm\QueryResult && $res->numRows() == 1);
 			$this->id = $res->nthRow(0)['ID'];
 		} else {
 			$id = $conn->escapeValue($this->id);
@@ -211,7 +214,7 @@ class Asset {
 				return ASSET_DIR . '/'. $this->source_path;
 			} else {
 				send_event("asset::file-miss", $filepath);
-				$this->delete();
+				wait($this->delete());
 			}
 		}
 

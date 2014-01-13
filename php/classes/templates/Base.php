@@ -63,7 +63,8 @@ abstract class :bb:base extends :x:element {
 		// from compose()
 		$declared = $root->__xhpAttributeDeclaration();
 
-		$this->skipTransfer->addAll(array_keys($root->getAttributes()));
+		$skip = $this->skipTransfer->toSet();
+		$skip->addAll(array_keys($root->getAttributes()));
 
 		// Transfer any classes that were added inline over
 		// to the root node.
@@ -79,7 +80,7 @@ abstract class :bb:base extends :x:element {
 		foreach ($attributes as $attribute => $value) {
 			if (isset($declared[$attribute]) ||
 					isset($html5Attributes[substr($attribute, 0, 5)])) {
-				if($this->skipTransfer->contains($attribute)) {
+				if($skip->contains($attribute)) {
 					continue;
 				}
 				try {

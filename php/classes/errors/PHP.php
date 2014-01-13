@@ -141,22 +141,26 @@ class PHP {
 		assert(strlen($braces) == 2);
 		$items = [];
 		$expected = 0;
-		foreach($arg as $key => $val) {
-			if(is_int($key) && $key === $expected) {
-				$expected = (int)$expected;
-				$items[] = self::pretty_arg($val);
-				++$expected;
-			} else {
-				$items[] = self::pretty_arg($key) . ' => ' . self::pretty_arg($val);
-				if(is_int($key)) {
-					$expected = $key + 1;
+		if($arg instanceof Indexish) {
+			foreach($arg as $key => $val) {
+				if(is_int($key) && $key === $expected) {
+					$expected = (int)$expected;
+					$items[] = self::pretty_arg($val);
+					++$expected;
 				} else {
-					$expected = '';
+					$items[] = self::pretty_arg($key) . ' => ' . self::pretty_arg($val);
+					if(is_int($key)) {
+						$expected = $key + 1;
+					} else {
+						$expected = '';
+					}
 				}
 			}
+		} else {
+			$items = $arg;
 		}
 		assert(count($items) == count($arg));
-		return $braces[0] . implode(', ', $items) . $braces[1];
+		return $braces[0] . bb_join(', ', $items) . $braces[1];
 	}
 
 	/**

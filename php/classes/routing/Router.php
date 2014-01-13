@@ -119,8 +119,8 @@ class Router {
 	 *
 	 * @returns an array of fragment-name => content
 	 */
-	public static function process_pagelet_fragments(\array<\string> $url,
-														Vector<\string> $fragments) : \array {
+	public static function process_pagelet_fragments(array<\string> $url,
+														Vector<\string> $fragments) : array {
 		assert(pagelet_server_is_enabled() && is_get());
 		$res = [];
 		$tasks = [];
@@ -310,7 +310,7 @@ class Router {
 
 	protected static function render_fragment(\string $fragName,
 								(function(array, ?\string, \Map<\string, \mixed>):\mixed) $frag,
-								\array $url, ?\string $extension, Map $md) : \mixed {
+								array $url, ?\string $extension, Map $md) : \mixed {
 		$val = $frag($url, $extension, $md);
 		// If the response from the fragment is awaitable, then block on it here. This is a nice
 		// convenience for fragment writers, meaning they can write fragments as async functions

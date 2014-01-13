@@ -11,7 +11,7 @@ class Event {
 	protected static Map<\string, Vector<CallbackFunction>> $prefix_listeners = Map {};
 
 	protected \string $name;
-	protected \array<\mixed> $args;
+	protected array<\mixed> $args;
 
 	/**
 	 * Attach the given callback to the named events.

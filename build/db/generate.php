@@ -340,7 +340,7 @@ class PGType {
 
 			$f->writeLine("\$__tmpArr_$hash = \db_parse_array('$subtype->delim',"
 							. " substr($raw,1,-1));");
-			$f->writeLine("$dest = \HH\Vector {};");
+			$f->writeLine("$dest = Vector {};");
 			$f->writeLine("{$dest}->reserve(count(\$__tmpArr_$hash));");
 			$f->startBlock("foreach (\$__tmpArr_$hash as \$__elem_$hash)");
 			$subtype->convertCode($f, "\$__convElem_$hash", "\$__elem_$hash", true);
@@ -469,7 +469,7 @@ class PGType {
 	public function __toString(): string {
 		if ($this->type == PGType::T_BASE) {
 			if ($this->type_cat == PGType::TCAT_ARRAY) {
-				return '\HH\Vector';
+				return 'Vector';
 			} else if ($this->type_cat == PGType::TCAT_NUMERIC) {
 				if (substr($this->name, 0, 3) == 'int') {
 					return '\int';
@@ -1013,7 +1013,6 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 		$tbl_data->writeLine("namespace $ns;");
 		$tbl_data->writeLine();
 		$tbl_data->writeLine('use beatbox\\orm\\ORM, beatbox\\orm\\Connection;');
-		$tbl_data->writeLine('use HH\Traversable;');
 		$tbl_data->writeLine('use Indexish;');
 		$tbl_data->writeLine();
 
@@ -1111,7 +1110,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 					$tbl_data->startBlock("public function set$name({$prefix}Traversable \$val$def_val)");
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
 					$tbl_data->writeLine("\$this->changed['$name'] = true;");
-					$tbl_data->writeLine("\$this->_$name = \HH\Vector {};");
+					$tbl_data->writeLine("\$this->_$name = Vector {};");
 					$tbl_data->writeLine("\$this->_{$name}->addAll(\$val);");
 					$tbl_data->writeLine('return $this;');
 					$tbl_data->endBlock();
@@ -1119,7 +1118,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 					$tbl_data->writeLine('assert(func_num_args() > 0);');
 					$tbl_data->writeLine("\$this->changed['$name'] = true;");
 					$tbl_data->startBlock("if(\$this->_$name === null)");
-					$tbl_data->writeLine("\$this->_$name = \HH\Vector {};");
+					$tbl_data->writeLine("\$this->_$name = Vector {};");
 					$tbl_data->endBlock();
 					$tbl_data->writeLine("\$this->_{$name}->addAll(\$val);");
 					$tbl_data->writeLine('return $this;');
@@ -1238,9 +1237,9 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 		$tbl_data->writeLine();
 
 		$tbl_data->startBlock("public final static function getColumnNames(): "
-								. "\HH\FrozenSet<string>");
+								. "FrozenSet<string>");
 
-		$tbl_data->startBlock('return \HH\FrozenSet {', '');
+		$tbl_data->startBlock('return FrozenSet {', '');
 		foreach ($table->columns as $col) {
 			$tbl_data->writeLine("'$col->name',");
 		}
@@ -1257,9 +1256,9 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 			$final = '';
 		}
 		$tbl_data->startBlock("public$final static function getPrimaryKeys(): "
-								. "\HH\FrozenSet<string>");
+								. "FrozenSet<string>");
 
-		$tbl_data->startBlock('return \HH\FrozenSet {', '');
+		$tbl_data->startBlock('return FrozenSet {', '');
 		foreach ($table->primaryKeys() as $key) {
 			$tbl_data->writeLine("'$key->name',");
 		}

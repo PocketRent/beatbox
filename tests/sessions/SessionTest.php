@@ -2,7 +2,7 @@
 
 namespace beatbox\test;
 
-use beatbox, beatbox\Session, HH\Vector;
+use beatbox, beatbox\Session;
 
 class SessionTest extends beatbox\Test {
 	use beatbox\Test\Redis {

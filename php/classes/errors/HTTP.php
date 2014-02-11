@@ -2,8 +2,6 @@
 
 namespace beatbox\errors;
 
-use Pair;
-
 class HTTP {
 	/**
 	 * Throw a HTTP error

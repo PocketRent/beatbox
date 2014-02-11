@@ -2,8 +2,6 @@
 
 namespace beatbox;
 
-use Map, Pair;
-
 type Metadata = Map<\string, \mixed>;
 
 type HandlerCallback = (function(array, ?\string, Metadata):\mixed);

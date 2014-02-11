@@ -2,7 +2,7 @@
 
 namespace beatbox\test;
 
-use beatbox, beatbox\Cache, HH\Vector;
+use beatbox, beatbox\Cache;
 
 class CacheTest extends beatbox\Test {
 

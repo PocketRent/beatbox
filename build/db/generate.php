@@ -1024,7 +1024,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 
 		$tbl_data->writeLine();
 		$tbl_data->writeLine("// Map to track changes");
-		$tbl_data->writeLine("private \$changed = \Map {};");
+		$tbl_data->writeLine("private \$changed = Map {};");
 
 
 		$tbl_data->writeLine();
@@ -1175,8 +1175,8 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 
 		$tbl_data->startBlock("protected final function "
 								. "updateFromRow(Indexish<string,string> \$row)");
-		$tbl_data->writeLine('$this->orig = \Map {};');
-		$tbl_data->writeLine('$this->changed = \Map {};');
+		$tbl_data->writeLine('$this->orig = Map {};');
+		$tbl_data->writeLine('$this->changed = Map {};');
 
 		foreach ($table->columns as $col) {
 			$type = $col->getType($dict);
@@ -1193,9 +1193,9 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 		$tbl_data->endBlock();
 
 
-		$tbl_data->startBlock("public final function getUpdatedColumns(): \Map");
+		$tbl_data->startBlock("public final function getUpdatedColumns(): Map");
 
-		$tbl_data->writeLine('$changed = \Map {};');
+		$tbl_data->writeLine('$changed = Map {};');
 		foreach ($table->columns as $col) {
 			$tbl_data->startBlock("if (\$this->changed->get('$col->name'))", '');
 			$tbl_data->writeLine("\$changed['$col->name'] = \$this->_$col->name;");
@@ -1207,9 +1207,9 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 
 		$tbl_data->writeLine();
 
-		$tbl_data->startBlock("public final function toMap(): \Map");
+		$tbl_data->startBlock("public final function toMap(): Map");
 
-		$tbl_data->writeLine('$map = \Map {};');
+		$tbl_data->writeLine('$map = Map {};');
 		foreach ($table->columns as $col) {
 			$tbl_data->writeLine("\$map['$col->name'] = \$this->_$col->name;");
 		}
@@ -1219,7 +1219,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 
 		$tbl_data->writeLine();
 
-		$tbl_data->startBlock("protected final function originalValues(): \Map");
+		$tbl_data->startBlock("protected final function originalValues(): Map");
 		$tbl_data->writeLine('return clone $this->orig;');
 		$tbl_data->endBlock();
 

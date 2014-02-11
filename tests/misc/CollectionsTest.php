@@ -2,7 +2,7 @@
 
 namespace beatbox\test;
 
-use beatbox, Map, HH\Set, HH\Vector;
+use beatbox;
 
 class CollectionsText extends beatbox\Test {
 	/**

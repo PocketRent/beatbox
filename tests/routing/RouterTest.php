@@ -2,8 +2,7 @@
 
 namespace beatbox\test;
 
-use beatbox, Map, Pair, HH\Vector;
-use HH\Traversable;
+use beatbox;
 
 class RouterTest extends beatbox\Test {
 	// Wipe the existing routes for each test

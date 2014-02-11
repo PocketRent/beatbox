@@ -2,8 +2,6 @@
 
 namespace beatbox\orm;
 
-use Map;
-
 abstract class Result {
 	protected \resource $result;
 
@@ -87,7 +85,7 @@ class ModifyResult extends Result {
 
 }
 
-class QueryResult extends Result implements \Iterable<array<string,string>> {
+class QueryResult extends Result implements Iterable<array<string,string>> {
 	use \StrictIterable<array<string,string>>;
 
 	private \int $num_rows = -1;
@@ -142,7 +140,7 @@ class QueryResult extends Result implements \Iterable<array<string,string>> {
 	}
 }
 
-class ResultIterable implements \Iterable<array<string,string>> {
+class ResultIterable implements Iterable<array<string,string>> {
 	use \LazyIterable<array<string,string>>;
 
 	private QueryResult $result;
@@ -156,7 +154,7 @@ class ResultIterable implements \Iterable<array<string,string>> {
 	}
 }
 
-class ResultIterator implements \Iterator<array<string,string>> {
+class ResultIterator implements Iterator<array<string,string>> {
 	private \resource $result;
 	private Vector $rows;
 	private \int $num_rows;

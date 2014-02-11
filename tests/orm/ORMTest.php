@@ -125,10 +125,10 @@ class TestTable extends orm\DataTable {
 	public function __construct(\Indexish<string,string> $row) { }
 
 	protected function updateFromRow(\Indexish<string,string> $row) : \void { }
-	protected function getUpdatedColumns() : \Map<string,mixed> { return \Map {}; }
-	protected function originalValues() : \Map<string,mixed> { return \Map {}; }
+	protected function getUpdatedColumns() : Map<string,mixed> { return Map {}; }
+	protected function originalValues() : Map<string,mixed> { return Map {}; }
 
-	public function toMap() : \Map { return \Map {}; }
+	public function toMap() : Map { return Map {}; }
 	public function toRow() : \string { return ''; }
 	public function isNew() : \bool { return true; }
 
@@ -136,8 +136,8 @@ class TestTable extends orm\DataTable {
 		return 'TestTable';
 	}
 
-	public static function getColumnNames() : \Set<\string> {
-		return \Set {
+	public static function getColumnNames() : Set<\string> {
+		return Set {
 			'ID',
 			'AuxID',
 			'Col1',
@@ -145,8 +145,8 @@ class TestTable extends orm\DataTable {
 		};
 	}
 
-	public static function getPrimaryKeys() : \Set<\string> {
-		return \Set {
+	public static function getPrimaryKeys() : Set<\string> {
+		return Set {
 			'ID' => 'ID',
 			'AuxID' => 'AuxID'
 		};

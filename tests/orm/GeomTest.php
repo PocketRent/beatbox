@@ -5,8 +5,6 @@ namespace beatbox\test;
 use beatbox;
 use beatbox\orm\geom;
 
-use HH\FrozenVector;
-
 class GeomTest extends beatbox\Test {
 
 	/**

@@ -2,8 +2,6 @@
 
 namespace beatbox;
 
-use Map;
-
 type CallbackFunction = (function(...):\mixed);
 
 class Event {

@@ -20,17 +20,17 @@ abstract class DataTable {
 	 *
 	 * @return Map
 	 */
-	abstract protected function getUpdatedColumns() : \Map<string,mixed>;
+	abstract protected function getUpdatedColumns() : Map<string,mixed>;
 
 	/**
 	 * Get a map of the original values for this object
 	 */
-	abstract protected function originalValues(): \Map<string,mixed>;
+	abstract protected function originalValues(): Map<string,mixed>;
 
 	/**
 	 * Returns a map of column names to their current values
 	 */
-	abstract public function toMap(): \Map<string,mixed>;
+	abstract public function toMap(): Map<string,mixed>;
 
 	/**
 	 * Returns the fields in as a ROW constructor literal
@@ -200,7 +200,7 @@ abstract class DataTable {
 			$origVals = $this->originalValues();
 			$primaryKeys = static::getPrimaryKeys();
 
-			$pairs = $values->items()->map(function (\Pair<string,mixed> $pair) use ($conn) {
+			$pairs = $values->items()->map(function (Pair<string,mixed> $pair) use ($conn) {
 				$col = $conn->escapeIdentifier($pair[0]);
 				$val = $conn->escapeValue($pair[1]);
 				return "$col = $val";

@@ -2,8 +2,6 @@
 
 namespace beatbox;
 
-use Map;
-
 trait Settings {
 	use Redis;
 

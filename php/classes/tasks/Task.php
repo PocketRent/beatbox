@@ -3,7 +3,6 @@
 namespace beatbox;
 
 use \Redis as R;
-use HH\Set, Map;
 
 class Task implements \Serializable {
 	use redis;

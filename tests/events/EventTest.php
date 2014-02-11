@@ -2,7 +2,7 @@
 
 namespace beatbox\test;
 
-use beatbox, beatbox\Event, HH\Vector;
+use beatbox, beatbox\Event;
 
 class EventTest extends beatbox\Test {
 	use beatbox\Test\Redis;

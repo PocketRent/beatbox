@@ -213,7 +213,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 	/**
 	 * Returns a lazy iterator over the result set
 	 */
-	public function fetch() : \Iterable<T> {
+	public function fetch() : Iterable<T> {
 		$result = wait($this->getResult());
 		$cls = $this->data_class;
 		// Making the objects pretty much just consists of throwing
@@ -224,7 +224,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 		});
 	}
 
-	public function getIterator() : \Iterator {
+	public function getIterator() : Iterator {
 		return $this->fetch()->getIterator();
 	}
 
@@ -353,7 +353,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 	}
 }
 
-class AggregateORM extends ORM<\Map<string,string>> {
+class AggregateORM extends ORM<Map<string,string>> {
 
 	private Set<string> $extra_fields = Set {};
 	private Vector<string> $group_bys = Vector {};
@@ -520,7 +520,7 @@ class AggregateORM extends ORM<\Map<string,string>> {
 	 * Returns an iterable over the rows, the iterable returns
 	 * the rows as associative arrays, not objects.
 	 */
-	public function fetch() : \Iterable {
+	public function fetch() : Iterable {
 		return wait($this->getResult())->rows();
 	}
 
@@ -529,7 +529,7 @@ class AggregateORM extends ORM<\Map<string,string>> {
 	 * results, only use if you are sure the data will be valid
 	 * for the object
 	 */
-	public function fetchObjects<T as DataTable>() : \Iterable<T> {
+	public function fetchObjects<T as DataTable>() : Iterable<T> {
 		$result = $this->getResult();
 		$cls = $this->data_class;
 		return wait($result)->rows()->map(function ($row) use ($cls) {
@@ -540,7 +540,7 @@ class AggregateORM extends ORM<\Map<string,string>> {
 	/**
 	 * Returns the nth row or null
 	 */
-	public async function getNth(\int $n) : Awaitable<?\Map<\string,\string>> {
+	public async function getNth(\int $n) : Awaitable<?Map<\string,\string>> {
 		$result = await $this->getResult();
 		if ($n < $result->numRows()) {
 			return $result->nthRow($n);

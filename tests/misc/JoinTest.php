@@ -2,7 +2,7 @@
 
 namespace beatbox\test;
 
-use beatbox, HH\Vector;
+use beatbox;
 
 class JoinTest extends beatbox\Test {
 

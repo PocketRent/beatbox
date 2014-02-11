@@ -9,7 +9,7 @@ class Outbound {
 	protected \string $subject;
 	protected \string $content;
 	protected \string $from;
-	protected \Map<\string, \string> $attachments = \Map {};
+	protected Map<\string, \string> $attachments = Map {};
 
 	/**
 	 * Construct an outbound email
@@ -51,7 +51,7 @@ class Outbound {
 
 	// Don't call this directly
 	public static function real_send(\string $to, \string $subject, \string $content, \string $from,
-										\Map $attachments) : \void {
+										Map $attachments) : \void {
 		if(strpos($content, '<body') === false) {
 			$content = "<!doctype html><html><body>$content</body></html>";
 		} else if(strpos($content, '<html') === false) {

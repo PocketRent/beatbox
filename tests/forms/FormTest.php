@@ -2,7 +2,7 @@
 
 namespace beatbox\test;
 
-use beatbox, Map, HH\Vector;
+use beatbox;
 
 class FormTest extends beatbox\Test {
 	/**

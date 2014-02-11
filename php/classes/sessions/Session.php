@@ -2,8 +2,6 @@
 
 namespace beatbox;
 
-use Map;
-
 class Session {
 	use Settings;
 

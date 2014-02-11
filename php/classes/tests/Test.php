@@ -3,7 +3,6 @@
 namespace beatbox;
 
 use \beatbox\test;
-use Map;
 
 class Test extends \PHPUnit_Framework_TestCase {
 	public function assertMapsEqual(Map $expected, Map $actual, \string $message = '') : \void {

@@ -14,7 +14,18 @@ function bb_join<Tv>(string $delimiter, Traversable<Tv> $trav) : string {
 	foreach ($trav as $elem) {
 		if ($add_delim)
 			$str .= $delimiter;
-		$str .= (string)$elem;
+		if ($elem instanceof Awaitable)
+			$elem = wait($elem);
+
+		if (is_object($elem)) {
+			if (method_exists($elem, '__toString')) {
+				// UNSAFE
+				$elem = $elem->__toString();
+			} else {
+				throw new InvalidArgumentException('bb_join expects to be able to turn all elements into strings');
+			}
+		}
+		$str .= strval($elem);
 		$add_delim = true;
 	}
 
@@ -137,10 +148,6 @@ function base_url() : \string {
 		$uri = substr($uri, 0, -strlen($url) + 1);
 	}
 	return $uri;
-}
-
-function wait<T>(Awaitable<T> $handle) : T {
-	return $handle->getWaitHandle()->join();
 }
 
 function tuple(...) {

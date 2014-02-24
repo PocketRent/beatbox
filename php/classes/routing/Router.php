@@ -5,7 +5,7 @@ namespace beatbox;
 type Metadata = Map<\string, \mixed>;
 
 type HandlerCallback = (function(array, ?\string, Metadata):\mixed);
-type CheckerCallback = (function(\string, Map<\string,\mixed>):\bool);
+type CheckerCallback = (function(\string, Metadata):\bool);
 
 type HandlerTable = Map<\string, HandlerCallback>;
 
@@ -72,7 +72,7 @@ class Router {
 			$err = null;
 			foreach ($fragments as $frag) {
 				if (empty($available[$frag])) {
-					$err = $err ?: new errors\HTTP_Exception('Fragments not found', 404);
+					$err = $err ?: new errors\HTTP_Exception('Fragment not found: '.$frag, 404);
 					$err->setHeader("Fragment", $frag, false);
 				}
 			}
@@ -107,7 +107,7 @@ class Router {
 			}
 			$frag = $fragments[0];
 			if(empty($available[$frag])) {
-				http_error(404, 'Fragment not found');
+				http_error(404, 'Fragment not found: '.$frag);
 			}
 
 			self::check_frag($frag, $md);
@@ -247,7 +247,7 @@ class Router {
 	 * Gets the routes available for a given path
 	 */
 	public static function get_routes_for_path(\string $path):
-		Pair<HandlerTable, Map<\string, \mixed>> {
+		Pair<HandlerTable, Metadata> {
 		$l = strlen($path);
 		$path = trim($path, '/');
 		if(!$path && $l) {
@@ -302,7 +302,7 @@ class Router {
 					continue;
 				}
 			}
-			if(!$checker($frag, $md)) {
+			if(!$checker || !$checker($frag, $md)) {
 				http_error(403);
 			}
 		}

@@ -57,7 +57,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 						'No handler provided or non-callable handler provided.'
 					);
 				}
-				return call_user_func($handler, $this, $this->getData());
+				return $handler($this, $this->getData());
 			}
 		}
 		return $this;
@@ -103,7 +103,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		}
 	}
 
-	protected function getData() : Map {
+	protected function getData() : Map<string, mixed> {
 		$data = Map {};
 		foreach($this->getFields() as $field) {
 			if(!$field->getAttribute('name')) {
@@ -116,7 +116,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 
 	protected static array $load_count = [];
 
-	protected static function get_value(array<string,mixed> $data, string $name,
+	protected static function get_value(Indexish<string,mixed> $data, string $name,
 										string $base) : mixed {
 		$matches = [];
 		if(!$name) {
@@ -149,7 +149,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		return null;
 	}
 
-	public function loadData(array<string, mixed> $data, bool $empty = false) : :bb:form {
+	public function loadData(Indexish<string, mixed> $data, bool $empty = false) : :bb:form {
 		self::$load_count = [];
 		foreach($this->getFields() as $field) {
 			$name = $field->getAttribute('name');

@@ -160,7 +160,18 @@ class PHP {
 			$items = $arg;
 		}
 		assert(count($items) == count($arg));
-		return $braces[0] . bb_join(', ', $items) . $braces[1];
+		try {
+			return $braces[0] . bb_join(', ', $items) . $braces[1];
+		} catch (\InvalidArgumentException $e) {
+			$item = null;
+			foreach ($items as $i) {
+				$item = $i; break;
+			}
+			if ($item)
+				return $braces[0] . gettype($item) . $braces[1];
+			else
+				return $braces;
+		}
 	}
 
 	/**

@@ -129,7 +129,7 @@ abstract class DataTable {
 	 *
 	 * @return array
 	 */
-	public static function loadMany(Traversable $rows) : Vector {
+	public static function loadMany(Traversable<Indexish<string,string>> $rows) : Vector<DataTable> {
 		$v = Vector {};
 		foreach ($rows as $row) {
 			$v->add(static::load($row));

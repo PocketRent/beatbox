@@ -52,7 +52,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 	 * The new clause should be an escaped identifier and should return rows
 	 * that match the data class's.
 	 */
-	public function setFrom(\string $from) : ORM {
+	public function setFrom(\string $from) : ORM<T> {
 		$new = clone $this;
 		$new->from = $from;
 
@@ -74,7 +74,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 	 *
 	 * The field must be a field on the object being queried for.
 	 */
-	public function filter(\string $field, \mixed $value, \string $comp = '=') : ORM {
+	public function filter(\string $field, \mixed $value, \string $comp = '=') : ORM<T> {
 		$this->validateField($field);
 		$field = $this->conn->escapeIdentifier($field);
 		if(is_null($value)) {
@@ -95,7 +95,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 	 * The clause is the actual condition and is 'AND'-ed with the other conditions
 	 * provided. The contents is expected to already be escaped.
 	 */
-	public function where(\string $clause) : ORM {
+	public function where(\string $clause) : ORM<T> {
 		$new = clone $this;
 		$new->conds->add(trim($clause));
 		return $new;
@@ -104,7 +104,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 	/**
 	 * Add an ORDER BY clause for the given field in the given direction.
 	 */
-	public function sortBy(\string $field, \string $direction = 'ASC') : ORM {
+	public function sortBy(\string $field, \string $direction = 'ASC') : ORM<T> {
 		$direction = $direction == 'DESC' ? 'DESC' : 'ASC';
 		$this->validateField($field);
 		$field = $this->conn->escapeIdentifier($field);
@@ -118,7 +118,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 	 * This is the actual clause, so don't include the 'ORDER BY'.
 	 * The clause is expected to already be escaped
 	 */
-	public function sort(\string $clause) : ORM {
+	public function sort(\string $clause) : ORM<T> {
 		$new = clone $this;
 		$new->sorts->add(trim($clause));
 		return $new;
@@ -129,7 +129,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 	 *
 	 * This is the entire join clause, including the 'JOIN' keyword.
 	 */
-	public function join(\string $clause) : ORM {
+	public function join(\string $clause) : ORM<T> {
 		$new = clone $this;
 		$new->joins->add(trim($clause));
 		return $new;
@@ -140,7 +140,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 	 *
 	 * If $value is less than 0, then no LIMIT is added.
 	 */
-	public function limit(?\int $value, ?\int $offset = null) : ORM {
+	public function limit(?\int $value, ?\int $offset = null) : ORM<T> {
 		if ($value === null) $value = -1;
 		$new = clone $this;
 		$new->limit = (int)$value;
@@ -155,7 +155,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 	 *
 	 * If $value is less than 0, then no OFFSET is added.
 	 */
-	public function offset(?\int $value) : ORM {
+	public function offset(?\int $value) : ORM<T> {
 		if ($value === null) $value = -1;
 		$new = clone $this;
 		$new->offset = (int)$value;

@@ -348,7 +348,7 @@ class PGType {
 			$f->endBlock();
 		} else if ($this->type == PGType::T_COMPOSITE) {
 			$f->writeLine("$dest = {$this->name}::fromString($raw);");
-		} else if ($this->type_cat) {
+		} else if ($this->type_cat == PGType::TCAT_GEOM) {
 			$f->writeLine("$dest = $tstring::fromString($raw);");
 		} else if ($this->type_cat == PGType::TCAT_DATETIME) {
 			$f->writeLine("$dest = new \\beatbox\\orm\\DateTimeType($raw);");
@@ -488,7 +488,7 @@ class PGType {
 		} else if ($this->type == PGType::T_DOMAIN) {
 			return $this->type_dict->typeByOid($this->sub_type)->__toString();
 		} else if ($this->type == PGType::T_ENUM) {
-			return '';
+			return '\string';
 		}
 		return $this->name;
 	}
@@ -617,6 +617,8 @@ class Table {
 		$n = 0;
 		while ($row = pg_fetch_row($q)) {
 			list($idx, $desc) = $row;
+
+			$idx = (int)$idx;
 
 			if ($idx == 0) {
 				$this->description = $desc;

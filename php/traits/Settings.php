@@ -14,7 +14,7 @@ trait Settings {
 	 * Returns the ID for this object. This should be unique across objects that have the same
 	 * table name.
 	 */
-	abstract protected function getID() : \string;
+	abstract protected function getID() : \mixed;
 
 	private \bool $settings_loaded = false;
 	private Map<\string, \mixed> $settings_data = Map {};
@@ -30,7 +30,8 @@ trait Settings {
 	protected function loadSettings() : \void {
 		if($this->settings_loaded) return;
 		$this->settings_loaded = true;
-		$this->settings_key = self::getTableName() . ':' . $this->getID();
+		$id = (string)$this->getID();
+		$this->settings_key = self::getTableName() . ':' . $id;
 		$data = self::redis()->hgetall($this->settings_key);
 		if($data) {
 			$this->settings_data = Map::fromArray($data);
@@ -44,6 +45,10 @@ trait Settings {
 			return $this->settings_data[$key];
 		}
 		return null;
+	}
+
+	public function getSettingsData() : \ConstMap<\string, \mixed> {
+		return $this->settings_data;
 	}
 
 	public function hasSetting(\string $key) : \bool {

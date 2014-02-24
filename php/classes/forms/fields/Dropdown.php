@@ -7,7 +7,7 @@ class :bb:form:dropdown extends :bb:form:field {
 		:select,
 		string value,
 		string default,
-		Traversable items;
+		KeyedTraversable<XHPChild,XHPChild> items;
 
 	protected function buildField() : :select {
 		$base = <select class="dropdown" />;

@@ -34,6 +34,9 @@ class CacheTest extends beatbox\Test {
 
 		$val = Cache::get_or_set("key3", function () { return 3; });
 		$this->assertEquals(3, $val);
+
+		$val = Cache::get_or_set("key3", function () { return 4; });
+		$this->assertEquals(3, $val);
 	}
 
 	/**

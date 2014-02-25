@@ -47,8 +47,15 @@ class Cache {
 	public static function get_or_set(\string $key, (function(): \mixed) $fn,
 										\int $expire = Cache::DEFAULT_EXPIRE,
 										Traversable<\string> $tags = Vector {}) : \mixed {
-		if (self::test($key)) {
-			return self::get($key);
+		$key_name = self::key_name($key);
+
+		self::redis()->multi();
+		self::redis()->exists($key_name);
+		self::redis()->get($key_name);
+		$results = self::redis()->exec();
+
+		if ($results[0]) {
+			return $results[1];
 		} else {
 			$val = $fn();
 			self::set($key, $val, $expire, $tags);

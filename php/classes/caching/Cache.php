@@ -50,12 +50,12 @@ class Cache {
 		$key_name = self::key_name($key);
 
 		self::redis()->multi();
-		self::redis()->exists($key_name);
 		self::redis()->get($key_name);
+		self::redis()->exists($key_name);
 		$results = self::redis()->exec();
 
-		if ($results[0]) {
-			return $results[1];
+		if ($results[1]) {
+			return $results[0];
 		} else {
 			$val = $fn();
 			self::set($key, $val, $expire, $tags);

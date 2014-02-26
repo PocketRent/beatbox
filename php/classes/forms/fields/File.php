@@ -7,7 +7,7 @@ class :bb:form:file extends :bb:form:field {
 
 	protected string $type = 'file';
 
-	protected FrozenSet<string> $skipTransfer = FrozenSet { 'value' };
+	protected FixedSet<string> $skipTransfer = FixedSet { 'value' };
 
 	public function validate() : array {
 		$value = $this->getAttribute('value');

@@ -3,7 +3,7 @@
 class :bb:icon extends :bb:base {
 	attribute :img;
 
-	protected FrozenSet<string> $skipTransfer = FrozenSet {'src'};
+	protected FixedSet<string> $skipTransfer = FixedSet {'src'};
 
 	protected function compose() : :x:element {
 		$src = $this->getAttribute('src');

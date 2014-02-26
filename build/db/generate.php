@@ -1239,9 +1239,9 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 		$tbl_data->writeLine();
 
 		$tbl_data->startBlock("public final static function getColumnNames(): "
-								. "FrozenSet<string>");
+								. "FixedSet<string>");
 
-		$tbl_data->startBlock('return FrozenSet {', '');
+		$tbl_data->startBlock('return FixedSet {', '');
 		foreach ($table->columns as $col) {
 			$tbl_data->writeLine("'$col->name',");
 		}
@@ -1258,9 +1258,9 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 			$final = '';
 		}
 		$tbl_data->startBlock("public$final static function getPrimaryKeys(): "
-								. "FrozenSet<string>");
+								. "FixedSet<string>");
 
-		$tbl_data->startBlock('return FrozenSet {', '');
+		$tbl_data->startBlock('return FixedSet {', '');
 		foreach ($table->primaryKeys() as $key) {
 			$tbl_data->writeLine("'$key->name',");
 		}

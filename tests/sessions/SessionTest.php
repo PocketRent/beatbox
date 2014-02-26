@@ -85,3 +85,4 @@ class SessionTest extends beatbox\Test {
 		$this->assertFalse(Session::exists('o'));
 	}
 }
+

@@ -50,7 +50,7 @@ class :bb:tab extends :bb:base {
 		string title @required,
 		string icon;
 
-	protected FrozenSet<string> $skipTransfer = FrozenSet {'title'};
+	protected FixedSet<string> $skipTransfer = FixedSet {'title'};
 
 	protected function compose() : :div {
 		return <div class="tab hide" id={$this->getID()}>

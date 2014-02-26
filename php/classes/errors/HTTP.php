@@ -67,7 +67,7 @@ class HTTP {
 }
 
 class HTTP_Exception extends Exception {
-	protected static FrozenMap<\int, \string> $status_map = FrozenMap {
+	protected static FixedMap<\int, \string> $status_map = FixedMap {
 		100 => 'Continue',
 		101 => 'Switching Protocols',
 		102 => 'Processing',

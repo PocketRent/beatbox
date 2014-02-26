@@ -60,7 +60,7 @@ class GeomTest extends beatbox\Test {
 	 * @group sanity
 	 */
 	public function testParsePath() {
-		$expected_points = FrozenVector {
+		$expected_points = FixedVector {
 			new geom\point(1.0, 2.0),
 			new geom\point(2.0, 4.0),
 			new geom\point(3.0, 1.0)
@@ -88,14 +88,14 @@ class GeomTest extends beatbox\Test {
 
 		$path = geom\path::fromString("1,2");
 		$this->assertFalse($path->open);
-		$this->assertEquals(FrozenVector {new geom\point(1.0, 2.0)}, $path->points);
+		$this->assertEquals(FixedVector {new geom\point(1.0, 2.0)}, $path->points);
 	}
 
 	/**
 	 * @group sanity
 	 */
 	public function testParsePoly() {
-		$expected_points = FrozenVector {
+		$expected_points = FixedVector {
 			new geom\point(1.0, 2.0),
 			new geom\point(2.0, 4.0),
 			new geom\point(3.0, 1.0)
@@ -114,7 +114,7 @@ class GeomTest extends beatbox\Test {
 		$this->assertEquals($expected_points, $poly->points);
 
 		$poly = geom\polygon::fromString("1,2");
-		$this->assertEquals(FrozenVector {new geom\point(1.0, 2.0)}, $poly->points);
+		$this->assertEquals(FixedVector {new geom\point(1.0, 2.0)}, $poly->points);
 	}
 
 	/**

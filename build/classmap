@@ -38,7 +38,6 @@ PHP;
 
 function handleDir(string $dir) : Map<string, Map<string, string>> {
 	$dir = realpath($dir);
-	static $cR = '#^(?:(?:abstract|final) *)?(?:class|interface|trait) +(:?[a-z_][a-z0-9:_-]*)#mi';
 	if(!$dir) return Map<string, Map<string, string>> {};
 
 	$map = Map<string, Map<string, string>> {
@@ -59,39 +58,52 @@ function handleDir(string $dir) : Map<string, Map<string, string>> {
 			if (substr($filename, -4) != '.php') continue;
 
 			$contents = file_get_contents($file);
-			// Pull out namespace
-			if(preg_match('#^namespace +(\S+);#mi', $contents, $match)) {
-				$ns = $match[1] . '\\';
-			} else {
-				$ns = '';
-			}
 
-			if(preg_match_all($cR, $contents, $matches, PREG_SET_ORDER)) {
-				foreach($matches as $match) {
-					if($match[1][0] == ':') {
-						$match[1] = :x:base::element2class(substr($match[1], 1));
-					}
-					$name = strtolower($ns . $match[1]);
-					$map['class'][$name] = $filename;
-				}
-			}
+			$visitor = new MapVisitor($map, $filename);
+			$modelTxt = \HH\CodeModel\get_code_model_for($contents);
+			$model = unserialize($modelTxt);
 
-			if (preg_match_all('#^function\s+([\w_]+)#mi', $contents, $matches, PREG_SET_ORDER)) {
-				foreach($matches as $match) {
-					$map['function'][strtolower($match[1])] = $filename;
-				}
-			}
-
-			if (preg_match_all('#^\s*define\([\'"](\S+)[\'"]#mi', $contents, $matches,
-								PREG_SET_ORDER)) {
-				foreach ($matches as $match) {
-					$map['constant'][$match[1]] = $filename;
-				}
-			}
+			if ($model)
+				$model->accept($visitor);
 		}
 	}
 
 	return $map;
+}
+
+class MapVisitor {
+	private Map<string, Map<string, string>> $map;
+	private string $filename;
+
+	private bool $inType = false;
+
+	public function __construct(Map<string, Map<string, string>> $map, string $filename) {
+		$this->map = $map;
+		$this->filename = $filename;
+	}
+
+	public function visitTypeStatement($node) {
+		$this->map['class'][strtolower($node->getName())] = $this->filename;
+
+		$this->inType = true;
+		$this->visitNode($node);
+		$this->inType = false;
+	}
+
+	public function visitFunctionStatement($node) {
+		if (!$this->inType) {
+			if ($node->getName())
+				$this->map['function'][strtolower($node->getName())] = $this->filename;
+		}
+
+		$this->visitNode($node);
+	}
+
+	public function visitNode($node) {
+		foreach ($node->getChildren() as $child)
+			if (is_object($child) && method_exists($child, 'accept'))
+				$child->accept($this);
+	}
 }
 
 if (isset($argc)) {

@@ -71,12 +71,10 @@ class Cache {
 	public static function set(\string $key, \mixed $value, \int $expire = Cache::DEFAULT_EXPIRE,
 								Traversable<\string> $tags = Vector {}) : \void {
 		$key = self::key_name($key);
+		self::redis()->multi();
 		self::redis()->set($key, $value, $expire);
-		// If expire is already over (so < 1) then don't bother adding it to
-		// the tags
-		if (self::redis()->exists($key)) {
-			self::add_tags($key, $tags);
-		}
+		self::add_tags($key, $tags);
+		self::redis()->exec();
 	}
 
 	/**

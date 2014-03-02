@@ -152,11 +152,11 @@ class box extends GeomType {
 }
 
 class path extends GeomType {
-	public FixedVector<point> $points;
+	public ImmVector<point> $points;
 	public \bool $open;
 
 	public function __construct(?Traversable<point> $points = null, \bool $open=false) {
-		$this->points = new FixedVector($points);
+		$this->points = new ImmVector($points);
 		$this->open = $open;
 	}
 
@@ -214,10 +214,10 @@ class path extends GeomType {
 }
 
 class polygon extends GeomType {
-	public FixedVector<point> $points;
+	public ImmVector<point> $points;
 
 	public function __construct(?Traversable<point> $points = null) {
-		$this->points = new FixedVector($points);
+		$this->points = new ImmVector($points);
 	}
 
 	public function toDBString(Connection $_unused) : \string {

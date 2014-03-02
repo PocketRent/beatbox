@@ -3,7 +3,7 @@
 namespace beatbox\errors;
 
 class PHP {
-	private static FixedSet<\int> $fatal_errors = FixedSet {
+	private static ImmSet<\int> $fatal_errors = ImmSet {
 		E_ERROR,
 		E_PARSE,
 		E_CORE_ERROR,

@@ -7,7 +7,7 @@ abstract class :bb:base extends :x:element {
 
 	abstract protected function compose() : :x:element;
 
-	protected FixedSet<string> $skipTransfer = FixedSet {};
+	protected ImmSet<string> $skipTransfer = ImmSet {};
 
 	final public function addClass($class) : :bb:base {
 		$this->setAttribute(

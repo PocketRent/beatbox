@@ -228,21 +228,21 @@ spl_autoload_register(
 );
 
 if (stream_resolve_include_path('PHP/Invoker/Autoload.php')) {
-    require_once 'PHP/Invoker/Autoload.php';
+    include_once 'PHP/Invoker/Autoload.php';
 }
 
 if (stream_resolve_include_path('PHPUnit/Extensions/Database/Autoload.php')) {
-    require_once 'PHPUnit/Extensions/Database/Autoload.php';
+    include_once 'PHPUnit/Extensions/Database/Autoload.php';
 }
 
 if (stream_resolve_include_path('PHPUnit/Extensions/SeleniumCommon/Autoload.php')) {
-    require_once 'PHPUnit/Extensions/SeleniumCommon/Autoload.php';
+    include_once 'PHPUnit/Extensions/SeleniumCommon/Autoload.php';
 }
 
 else if (stream_resolve_include_path('PHPUnit/Extensions/SeleniumTestCase/Autoload.php')) {
-    require_once 'PHPUnit/Extensions/SeleniumTestCase/Autoload.php';
+    include_once 'PHPUnit/Extensions/SeleniumTestCase/Autoload.php';
 }
 
 if (stream_resolve_include_path('PHPUnit/Extensions/Story/Autoload.php')) {
-    require_once 'PHPUnit/Extensions/Story/Autoload.php';
+    include_once 'PHPUnit/Extensions/Story/Autoload.php';
 }

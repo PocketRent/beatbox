@@ -22,7 +22,8 @@ class SessionTest extends beatbox\Test {
 		Session::set('test', 'value');
 		$this->assertSame('value', session_get('test'));
 
-		session_set('test', $val = Vector {});
+		$val = \HH\Vector {};
+		session_set('test', $val);
 		$this->assertSame($val, Session::get('test'));
 	}
 

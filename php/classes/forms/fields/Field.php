@@ -7,11 +7,11 @@ abstract class :bb:form:field extends :bb:base {
 
 	protected ?string $type;
 
-	private static FixedSet<string> $rangeVal = FixedSet {'date', 'number'};
+	private static ImmSet<string> $rangeVal = ImmSet {'date', 'number'};
 
-	private static FixedSet<string> $lenVal = FixedSet {'text', 'email', 'password', 'textarea'};
+	private static ImmSet<string> $lenVal = ImmSet {'text', 'email', 'password', 'textarea'};
 
-	private static FixedSet<string> $patternVal = FixedSet {'text', 'email', 'password'};
+	private static ImmSet<string> $patternVal = ImmSet {'text', 'email', 'password'};
 
 	protected $valid = true;
 	protected $error;

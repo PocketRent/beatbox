@@ -61,10 +61,12 @@ function handleDir(string $dir) : Map<string, Map<string, string>> {
 
 			$visitor = new MapVisitor($map, $filename);
 			$modelTxt = \HH\CodeModel\get_code_model_for($contents);
-			$model = unserialize($modelTxt);
+			$model = @unserialize($modelTxt);
 
 			if ($model)
 				$model->accept($visitor);
+			else if (isset($GLOBALS['is_cli']))
+				echo "Couldn't unserialize code model for $filename\n";
 		}
 	}
 
@@ -107,5 +109,6 @@ class MapVisitor {
 }
 
 if (isset($argc)) {
+	$GLOBALS['is_cli'] = true;
 	makeMap();
 }

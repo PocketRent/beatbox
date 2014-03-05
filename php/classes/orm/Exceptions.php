@@ -61,7 +61,7 @@ class InvalidFieldException extends DatabaseException {
 			$trunc = $valid_fields->count() - self::$num_fields;
 			$valid_fields = Vector::slice(Vector::fromItems($valid_fields), 0, self::$num_fields);
 		}
-		$valid_fields = $valid_fields->map(function ($val) { return "'$val'"; });
+		$valid_fields = $valid_fields->map($val ==> "'$val'");
 		$message = "Invalid field '$field', expected one of [".bb_join(', ', $valid_fields);
 		if ($trunc > 0) {
 			$message .= ",.. and $trunc others]";

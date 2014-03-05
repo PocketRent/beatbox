@@ -219,9 +219,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 		// Making the objects pretty much just consists of throwing
 		// each row at the class' `load` static method, so there's no
 		// point creating an entire new iterator for it.
-		return $result->rows()->map(function ($row) use ($cls) {
-			return $cls::load($row);
-		});
+		return $result->rows()->map($row ==> $cls::load($row));
 	}
 
 	public function getIterator() : Iterator {
@@ -296,9 +294,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 	protected function getFieldList() : \string {
 		$conn = $this->conn;
 		$table = $this->conn->escapeIdentifier($this->table);
-		$fields = $this->valid_fields->map(function ($f) use ($conn, $table) {
-			return "$table.".$this->conn->escapeIdentifier($f);
-		});
+		$fields = $this->valid_fields->map($f ==> "$table.".$this->conn->escapeIdentifier($f));
 
 		return bb_join(', ', $fields);
 	}
@@ -307,9 +303,8 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 		$conn = $this->conn;
 		$table = $this->conn->escapeIdentifier($this->table);
 		$data_class = $this->data_class;
-		$fields = $data_class::getPrimaryKeys()->map(function ($f) use ($conn, $table) {
-			return "$table.".$this->conn->escapeIdentifier($f);
-		});
+		$fields = $data_class::getPrimaryKeys()
+			->map($f ==> "$table.".$this->conn->escapeIdentifier($f));
 
 		return bb_join(', ', $fields);
 	}
@@ -532,9 +527,7 @@ class AggregateORM extends ORM<Map<string,string>> {
 	public function fetchObjects<T as DataTable>() : Iterable<T> {
 		$result = $this->getResult();
 		$cls = $this->data_class;
-		return wait($result)->rows()->map(function ($row) use ($cls) {
-			return $cls::load($row);
-		});
+		return wait($result)->rows()->map($row ==> $cls::load($row));
 	}
 
 	/**

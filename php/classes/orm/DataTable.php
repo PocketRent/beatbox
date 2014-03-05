@@ -176,12 +176,8 @@ abstract class DataTable {
 
 		if ($this->isNew()) {
 
-			$columns = $values->keys()->map(function ($col) use ($conn) {
-				return $conn->escapeIdentifier($col);
-			});
-			$values = $values->values()->map(function ($val) use ($conn) {
-				return $conn->escapeValue($val);
-			});
+			$columns = $values->keys()->map($col ==> $conn->escapeIdentifier($col));
+			$values = $values->values()->map($val ==> $conn->escapeValue($val));
 
 			$primary_keys = static::getPrimaryKeys();
 			foreach(($primary_keys->count() ? $primary_keys : ['ID']) as $k) {

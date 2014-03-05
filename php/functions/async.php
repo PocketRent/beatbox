@@ -5,9 +5,7 @@ function wait<T>(Awaitable<T> $handle) : T {
 }
 
 function gena(array $a) : Awaitable<array> {
-	return GenArrayWaitHandle::create(array_map(function ($h) {
-		return $h->getWaitHandle();
-	}, $a));
+	return GenArrayWaitHandle::create(array_map($x ==> $x->getWaitHandle(), $a));
 }
 
 function genva(...) : Awaitable<array> {

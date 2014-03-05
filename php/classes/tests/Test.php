@@ -1,11 +1,11 @@
-<?hh
+<?php
 
 namespace beatbox;
 
 use \beatbox\test;
 
 class Test extends \PHPUnit_Framework_TestCase {
-	public function assertMapsEqual(Map $expected, Map $actual, \string $message = '') : \void {
+	public function assertMapsEqual(Map $expected, Map $actual, $message = '') {
 		$aa = $actual->toArray();
 		$ea = $expected->toArray();
 		ksort($aa);
@@ -14,7 +14,7 @@ class Test extends \PHPUnit_Framework_TestCase {
 		return $this->assertEquals($ea, $aa, $message);
 	}
 
-	public function assertEquals(\mixed $expected, \mixed $actual, \string $message='',
+	public static function assertEquals(\mixed $expected, \mixed $actual, \string $message='',
 										\int $delta=0, \int $maxDepth=10, \bool $canonicalize=FALSE,
 										\bool $ignoreCase=FALSE) : \void {
 		if ($expected instanceof Comparable) {

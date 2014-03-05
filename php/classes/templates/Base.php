@@ -61,7 +61,9 @@ abstract class :bb:base extends :x:element {
 		$attributes = $this->getAttributes();
 		// Get all allowed attributes on the node returned
 		// from compose()
-		$declared = $root->__xhpAttributeDeclaration();
+		{ // UNSAFE
+			$declared = $root->__xhpAttributeDeclaration();
+		}
 
 		$skip = $this->skipTransfer->toSet();
 		$skip->addAll(array_keys($root->getAttributes()));

@@ -3,12 +3,14 @@
 // Test defines
 define('RUNNING_TEST', true); // For code that needs to adjust for tests
 
-// Asset path should be a temp directory
-$assets = "/assets".(substr(md5(rand()),0,8));
-$dir = getenv("TMPDIR");
-if (!$dir) $dir = getenv("TMP");
-if (!$dir) $dir = '/tmp';
-define('ASSET_PATH', $dir.$assets);
+{
+	// Asset path should be a temp directory
+	$assets = "/assets".(substr(md5(rand()),0,8));
+	$dir = getenv("TMPDIR");
+	if (!$dir) $dir = getenv("TMP");
+	if (!$dir) $dir = '/tmp';
+	define('ASSET_PATH', $dir.$assets);
+}
 
 // Load the stuff
 require __DIR__ . '/../php/init.php';

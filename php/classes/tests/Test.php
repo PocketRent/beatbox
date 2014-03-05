@@ -14,7 +14,7 @@ class Test extends \PHPUnit_Framework_TestCase {
 		return $this->assertEquals($ea, $aa, $message);
 	}
 
-	public static function assertEquals(\mixed $expected, \mixed $actual, \string $message='',
+	public function assertEquals(\mixed $expected, \mixed $actual, \string $message='',
 										\int $delta=0, \int $maxDepth=10, \bool $canonicalize=FALSE,
 										\bool $ignoreCase=FALSE) : \void {
 		if ($expected instanceof Comparable) {
@@ -26,13 +26,13 @@ class Test extends \PHPUnit_Framework_TestCase {
 		}
 	}
 
-	public static function assertProduces(array $expected, \mixed $actual, \string $message='',
+	public function assertProduces(array $expected, \mixed $actual, \string $message='',
 											\bool $overrun=false, \bool $underrun=false) : \void {
 		$constraint = new test\constraint\Produce($expected, $overrun, $underrun);
 		self::assertThat($actual, $constraint, $message);
 	}
 
-	public static function assertSetsEquals(\mixed $expected, \mixed $actual, \string $message='',
+	public function assertSetsEquals(\mixed $expected, \mixed $actual, \string $message='',
 											\int $delta=0, \int $maxDepth=10,
 											\bool $canonicalize=FALSE,
 											\bool $ignoreCase=FALSE) : \void {
@@ -59,7 +59,7 @@ class Test extends \PHPUnit_Framework_TestCase {
 		sort($expected);
 		sort($actual);
 
-		self::assertEquals($expected, $actual, $message, $delta, $maxDepth, $canonicalize,
+		$this->assertEquals($expected, $actual, $message, $delta, $maxDepth, $canonicalize,
 							$ignoreCase);
 	}
 }

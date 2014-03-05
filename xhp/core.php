@@ -33,7 +33,7 @@ abstract class :x:base {
   abstract public function __toString();
   abstract protected function &__xhpCategoryDeclaration();
   abstract protected function &__xhpChildrenDeclaration();
-  protected static function &__xhpAttributeDeclaration() {}
+  protected function &__xhpAttributeDeclaration() {}
 
   /**
    * Enabling validation will give you stricter documents; you won't be able to
@@ -427,7 +427,7 @@ abstract class :x:composable-element extends :x:base {
    *
    * Attribute types are suggested by the TYPE_* constants.
    */
-  protected static function &__xhpAttributeDeclaration() {
+  protected function &__xhpAttributeDeclaration() {
     static $_ = array();
     return $_;
   }

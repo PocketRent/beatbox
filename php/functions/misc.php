@@ -119,6 +119,25 @@ function get_mime_type(string $filename) : string {
 }
 
 /**
+ * Takes a KeyedTraversable object and returns a URL query string
+ * like 'foo=bar&baz=bat'
+ *
+ * The data is url-encoded.
+ */
+function url_query_string(KeyedTraversable<string, string> $data) : string {
+	$parts = Vector {};
+
+	foreach ($data as $key => $val) {
+		$key = rawurlencode($key);
+		$val = rawurlencode($val);
+
+		$parts->add("$key=$val");
+	}
+
+	return bb_join('&', $parts);
+}
+
+/**
  * Gets the domain from the HTTP_HOST server variable
  */
 function host_domain() : ?string {

@@ -4,12 +4,12 @@ namespace beatbox\test;
 
 use beatbox;
 
-class CurlTest extends beatbox\Test {
+class RequestTest extends beatbox\Test {
 	/**
 	 *
 	 */
 	public function testSingleRequest() {
-		$req = beatbox\curl\Request::build()
+		$req = beatbox\net\Request::build()
 			->setURL("http://example.com")
 			->get();
 
@@ -22,11 +22,11 @@ class CurlTest extends beatbox\Test {
 	 *
 	 */
 	public function testMultipleRequest() {
-		$req1 = beatbox\curl\Request::build()
+		$req1 = beatbox\net\Request::build()
 			->setURL("http://example.com")
 			->get();
 
-		$req2 = beatbox\curl\Request::build()
+		$req2 = beatbox\net\Request::build()
 			->setURL("http://example.com")
 			->get();
 
@@ -43,10 +43,21 @@ class CurlTest extends beatbox\Test {
 	 *
 	 */
 	public function testPOSTRequest() {
-		$post = beatbox\curl\Request::build()
-			->setURL("http://example.com")
-			->setRequestMethod('POST')
-			->setStringOption(beatbox\curl\Options::POSTFIELDS, 'a=1')
+		$post = beatbox\net\Request::build("http://example.com")
+			->POST(['a' => '1'])
+			->get();
+
+		$post = wait($post->exec());
+
+		$this->assertEquals($post->getHTTPCode(), 200);
+	}
+
+	/**
+	 *
+	 */
+	public function testEmptyPOST() {
+		$post = beatbox\net\Request::build("http://example.com")
+			->POST([])
 			->get();
 
 		$post = wait($post->exec());

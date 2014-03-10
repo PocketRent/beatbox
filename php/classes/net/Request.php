@@ -1,6 +1,6 @@
 <?hh
 
-namespace beatbox\curl;
+namespace beatbox\net;
 
 newtype BoolOpt   = \int;
 newtype IntOpt    = \int;
@@ -9,62 +9,208 @@ newtype StringOpt = \int;
 final class RequestBuilder {
 	private ?\resource $handle;
 
+	private Map<\string, \string> $headers = Map {};
+	private Vector<\string> $extra_headers = Vector {};
+	private int $contentLength = 0;
+
 	private function __construct() {
 		$this->handle = curl_init();
+		$this->setStringOption(ReqOptions::ENCODING, "UTF-8");
 	}
 
+	/**
+	 * Create a new builder
+	 */
 	public static function create() {
 		return new RequestBuilder();
 	}
 
-	public function setBoolOption(BoolOpt $option, \bool $value) : this {
+	/**
+	 * Set the value of a boolean option, defaults to setting it to true
+	 */
+	public function setBoolOption(BoolOpt $option, \bool $value=true) : this {
 		$this->setopt($option, $value);
 		return $this;
 	}
 
-	public function setStringOption(StringOpt $option, \string $value) : this {
+	/**
+	 * Sets the given boolean option to false
+	 */
+	public function unsetBoolOption(BoolOpt $option) : this {
+		return $this->setBoolOption($option, false);
+	}
+
+	/**
+	 * Sets the value of the given string option
+	 */
+	public function setStringOption(StringOpt $option, ?\string $value) : this {
 		$this->setopt($option, $value);
 		return $this;
 	}
 
+	/**
+	 * Sets the value of the given integer option
+	 */
 	public function setIntOption(IntOpt $option, \int $value) : this {
 		$this->setopt($option, $value);
 		return $this;
 	}
 
+	/**
+	 * Sets the URL you intend to request
+	 */
 	public function setURL(\string $url) : this {
-		return $this->setStringOption(Options::URL, $url);
+		return $this->setStringOption(ReqOptions::URL, $url);
 	}
 
+	/**
+	 * Sets the request to be a POST request and sets the data to be sent to
+	 * the given data
+	 */
+	public function POST(KeyedTraversable<\string, \string> $data) : this {
+		$post_data = url_query_string($data);
+
+		return $this->setRequestMethod('POST')
+			->setStringOption(ReqOptions::POSTFIELDS, $post_data);
+	}
+
+	/**
+	 * Sets the request to be a PUT request and sets the given data to be uploaded
+	 */
+	public function PUT(\string $data) : this {
+		$file = fopen('php://memory', 'w+');
+		fwrite($file, $data);
+		rewind($file);
+		return $this->PUTFile($file, strlen($data));
+	}
+
+	/**
+	 * Sets the request to be PUT request and sets the given file to be uploaded.
+	 *
+	 * Pass along the optional $size parameter if it is not possible to get the size
+	 * from $file
+	 */
+	public function PUTFile(\resource $file, ?\int $size = null) : this {
+		if ($size == null) {
+			$stat = @fstat($file);
+			$size = $stat ? $stat['size'] : null;
+		}
+		if ($size == null) {
+			throw new beatbox\errors\Exception("Cannot find out size of given file".
+				" and none given");
+		}
+
+		$this->setRequestMethod('PUT');
+		$this->setopt(CURLOPT_INFILE, $file);
+		return $this->setIntOption(ReqOptions::INFILESIZE, $size);
+	}
+
+	/**
+	 * Sets the headers for the request to the given set.
+	 *
+	 * The keys are the header names, the values are the header values.
+	 */
+	public function setHeaders(KeyedTraversable<\string, \string> $headers) : this {
+		$this->headers = new Map($headers);
+		return $this;
+	}
+
+	/**
+	 * Adds all the given headers. Existing headers with the same name will be overwritten
+	 */
+	public function addHeaders(KeyedTraversable<\string, \string> $headers) : this {
+		$this->headers->setAll($headers);
+		return $this;
+	}
+
+	/**
+	 * Sets the value of the given header.
+	 *
+	 * $value should be a type that can be converted to a string
+	 */
+	public function setHeader(\string $header, \mixed $value) : this {
+		$this->headers[$header] = (string)$value;
+		return $this;
+	}
+
+	/**
+	 * Removes the given header
+	 */
+	public function removeHeader(\string $header) : this {
+		$this->headers->remove($header);
+		return $this;
+	}
+
+	/**
+	 * Adds a custom header.
+	 *
+	 * This allows you to add a custom header line, which can be useful for when
+	 * you need the same header name multiple times with different values
+	 */
+	public function addCustomHeader(\string $header) : this {
+		$this->extra_headers->add($header);
+		return $this;
+	}
+
+	/**
+	 * Sets the request method.
+	 *
+	 * This method can cause the built request to be invalid if you do not have
+	 * the appropriate options set
+	 */
 	public function setRequestMethod(\string $method) : this {
 		switch ($method) {
 		case 'GET':
-			return $this->setBoolOption(Options::HTTPGET, true);
+			return $this->setBoolOption(ReqOptions::HTTPGET, true);
 		case 'POST':
-			return $this->setBoolOption(Options::POST, true);
+			return $this->setBoolOption(ReqOptions::POST, true);
 		case 'PUT':
-			return $this->setBoolOption(Options::PUT, true);
+			return $this->setBoolOption(ReqOptions::PUT, true);
 		default:
-			return $this->setStringOption(Options::CUSTOMREQUEST, $method);
+			return $this->setStringOption(ReqOptions::CUSTOMREQUEST, $method);
 		}
 	}
 
+	/**
+	 * Builds the actual request.
+	 *
+	 * This makes a copy of the existing handle, leaving the builder available
+	 * for further changes without affecting the Request object
+	 */
 	public function get() : Request {
-		$new_handle = curl_copy_handle($this->handle);
+		$handle = nullthrows($this->handle);
+		$new_handle = curl_copy_handle($handle);
+
+		$headers = [];
+		foreach ($this->headers as $k => $v) {
+			$headers[] = trim("$k: $v");
+		}
+
+		foreach ($this->extra_headers as $v) {
+			$headers[] = trim($v);
+		}
+
+		if (!curl_setopt($new_handle, CURLOPT_HTTPHEADER, $headers))
+			throw new CurlHandleException($new_handle);
+
 		return new Request($new_handle);
 	}
 
-	private function setopt(\int $option, \mixed $value) : \void {
+	public function close() {
+		if (is_resource($this->handle)) {
+			curl_close($this->handle);
+			$this->handle = null;
+		}
+	}
+
+	private function setopt(\int $option, ?\mixed $value) : \void {
 		$handle = nullthrows($this->handle);
 		if (!curl_setopt($handle, $option, $value))
 			throw new CurlHandleException($handle);
 	}
 
 	public function __destruct() {
-		if (is_resource($this->handle)) {
-			curl_close($this->handle);
-			$this->handle = null;
-		}
+		$this->close();
 	}
 }
 
@@ -72,6 +218,9 @@ final class Request {
 	const int POLL_TIME = 50;//ms
 
 	private ?\resource $handle;
+
+	private ?resource $stderr;
+	private ?\string $stderrData;
 
 	private Map<\string, \string> $headers = Map {};
 	private ?\string $data = null;
@@ -96,16 +245,33 @@ final class Request {
 	private static Map<\string, Request> $requests = Map {};
 	private static ?\resource $multi_handle = null;
 
-	public static function build() {
-		return RequestBuilder::create();
+	/**
+	 * Returns a RequestBuilder object that can be used to build a Request.
+	 *
+	 * If $url is given, the request's url is set
+	 */
+	public static function build(?\string $url = null) : RequestBuilder {
+		$builder = RequestBuilder::create();
+		if ($url) $builder->setURL($url);
+		return $builder;
 	}
 
 	public function __construct(\resource $handle) {
 		$this->handle = $handle;
 
+		if (in_dev()) {
+			$this->stderr = fopen("php://memory", 'r+');
+			$this->setopt(CURLOPT_STDERR, $this->stderr);
+
+			$this->setopt(CURLOPT_VERBOSE, true);
+		} else {
+			$this->setopt(CURLOPT_VERBOSE, false);
+		}
+
 		$this->setopt(CURLOPT_RETURNTRANSFER, true);
-		$this->setopt(CURLOPT_HEADERFUNCTION, inst_meth($this, 'handleHeader'));
-		$this->setopt(CURLOPT_WRITEFUNCTION, inst_meth($this, 'handleData'));
+		$this->setopt(CURLOPT_HEADER, false);
+		$this->setopt(CURLOPT_HEADERFUNCTION, inst_meth($this, '_handleHeader'));
+		$this->setopt(CURLOPT_WRITEFUNCTION, inst_meth($this, '_handleData'));
 
 		$mh = self::getMultiHandle();
 		self::$requests[(string)$handle] = $this;
@@ -123,6 +289,12 @@ final class Request {
 		}
 	}
 
+	/**
+	 * Executes the request.
+	 *
+	 * This is asynchronous, so use `await` or `wait()` to wait for the
+	 * request to finish.
+	 */
 	public async function exec() : \Awaitable<this> {
 		if ($this->done) return $this;
 
@@ -160,37 +332,109 @@ final class Request {
 			$req = self::$requests->get((string)$ch);
 			if ($req) {
 				$req->done = true;
-				$req->effectiveURL		= curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-				$req->httpCode			= curl_getinfo($ch, CURLINFO_HTTP_CODE);
-				$req->filetime			= curl_getinfo($ch, CURLINFO_FILETIME);
-				$req->totalTime			= curl_getinfo($ch, CURLINFO_TOTAL_TIME);
-				$req->lookupTime		= curl_getinfo($ch, CURLINFO_NAMELOOKUP_TIME);
-				$req->connectTime		= curl_getinfo($ch, CURLINFO_CONNECT_TIME);
+				$req->effectiveURL		= (string)curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+				$req->httpCode			= ( int  )curl_getinfo($ch, CURLINFO_HTTP_CODE);
+				$req->filetime			= ( int  )curl_getinfo($ch, CURLINFO_FILETIME);
+
+				$req->totalTime			= (float )curl_getinfo($ch, CURLINFO_TOTAL_TIME);
+				$req->lookupTime		= (float )curl_getinfo($ch, CURLINFO_NAMELOOKUP_TIME);
+				$req->connectTime		= (float )curl_getinfo($ch, CURLINFO_CONNECT_TIME);
+				$req->pretransferTime	= (float )curl_getinfo($ch, CURLINFO_PRETRANSFER_TIME);
+				$req->startTransferTime	= (float )curl_getinfo($ch, CURLINFO_STARTTRANSFER_TIME);
+
+				$req->redirectCount		= ( int  )curl_getinfo($ch, CURLINFO_REDIRECT_COUNT);
+				$req->redirectTime		= (float )curl_getinfo($ch, CURLINFO_REDIRECT_TIME);
+
+				$req->sizeUpload		= ( int  )curl_getinfo($ch, CURLINFO_SIZE_UPLOAD);
+				$req->sizeDownload		= ( int  )curl_getinfo($ch, CURLINFO_SIZE_DOWNLOAD);
+				$req->speedUpload		= (float )curl_getinfo($ch, CURLINFO_SPEED_UPLOAD);
+				$req->speedDownload		= (float )curl_getinfo($ch, CURLINFO_SPEED_DOWNLOAD);
+
+				$req->requestSize		= ( int  )curl_getinfo($ch, CURLINFO_REQUEST_SIZE);
 			}
 		}
 	}
 
-	public function getHeader(\string $val) : ?\string {
+	/**
+	 * Gets the value of the given header, or null if it doesn't exist.
+	 * Returns null if the request has not been executed.
+	 *
+	 * $name is case-insensitive
+	 */
+	public function getHeader(\string $name) : ?\string {
 		if (!$this->done) return null;
-		return $this->headers->get($val);
+		$name = strtolower($name);
+		return $this->headers->get($name);
 	}
 
+	/**
+	 * Gets the returned body of the request, or null if there isn't one.
+	 * Returns null if the request has not been executed.
+	 */
 	public function getBody() : ?\string {
 		if (!$this->done) return null;
 		return $this->data;
 	}
 
+	/**
+	 * Gets the returned HTTP code, or 0 if the request has not been executed.
+	 */
 	public function getHTTPCode() : \int {
-		return nullthrows($this->httpCode);
+		return $this->httpCode ? $this->httpCode : 0;
 	}
 
-	public function handleHeader(\resource $ch, \string $header) {
+	/**
+	 * Gets the effective URL used for the request.
+	 *
+	 * Returns null if the request has not been executed.
+	 */
+	public function getEffectiveURL() : ?\string {
+		return $this->effectiveURL;
+	}
+
+	/**
+	 * Gets the remote time of the retrived document.
+	 *
+	 * Returns null if the time is not available.
+	 */
+	public function getFiletime() : ?\DateTime {
+		if ($this->filetime == null || $this->filetime == -1)
+			return null;
+		else
+			return new \DateTime('@'.$this->filetime);
+	}
+
+	/**
+	 * Gets the total time the request took, in seconds.
+	 *
+	 * Returns -0.0 if the request has not been executed.
+	 */
+	public function getTotalTime() : \float {
+		return $this->totalTime ? $this->totalTime : -0.0;
+	}
+
+	public function getVerboseOutput() : ?\string {
+		if ($this->stderrData == null && $this->stderr != null) {
+			rewind($this->stderr);
+			$this->stderrData = stream_get_contents($this->stderr);
+			fclose($this->stderr);
+			$this->stderr = null;
+		}
+
+		return $this->stderrData;
+	}
+
+	/**
+	 * INTERNAL FUNCTION
+	 * This function is public because it is used as a callback
+	 */
+	public function _handleHeader(\resource $ch, \string $header) {
 		$len = strlen($header);
 		$header = trim($header);
 
 		$colon = strpos($header, ':');
 		if ($colon > 0) {
-			$headerName = substr($header, 0, $colon);
+			$headerName = strtolower(substr($header, 0, $colon));
 			$headerValue = preg_replace('/^\W+/', '', substr($header, $colon));
 
 			$this->headers[$headerName] = $headerValue;
@@ -199,7 +443,11 @@ final class Request {
 		return $len;
 	}
 
-	public function handleData(\resource $ch, \string $data) {
+	/**
+	 * INTERNAL FUNCTION
+	 * This function is public because it is used as a callback
+	 */
+	public function _handleData(\resource $ch, \string $data) {
 		if ($this->data == null)
 			$this->data = $data;
 		else
@@ -238,7 +486,7 @@ final class Request {
 		return self::$multi_handle;
 	}
 
-	public function __destruct() {
+	public function close() {
 		if ($this->handle) {
 			if (self::$requests->containsKey((string)$this->handle)) {
 				curl_multi_remove_handle(self::getMultiHandle(), $this->handle);
@@ -246,12 +494,19 @@ final class Request {
 				$this->handle = null;
 			}
 		}
+		if ($this->stderr) {
+			if ($this->stderrData == null) $this->getVerboseOutput();
+			fclose($this->stderr);
+			$this->stderr = null;
+		}
 	}
 
+	public function __destruct() {
+		$this->close();
+	}
 }
 
-class Options {
-	// Boolean Options
+class ReqOptions {
 	const BoolOpt   AUTOREFERER                 = CURLOPT_AUTOREFERER;
 	const BoolOpt   BINARYTRANSFER				= CURLOPT_BINARYTRANSFER;
 	const IntOpt    BUFFERSIZE					= CURLOPT_BUFFERSIZE;

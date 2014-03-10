@@ -1,15 +1,15 @@
 <?hh
 
-namespace beatbox\curl;
+namespace beatbox\net;
 use \beatbox\errors\Exception;
 
-class CurlException extends Exception {
+class NetException extends Exception {
 	public function getEventPrefix() : \string {
-		return 'curl';
+		return 'net';
 	}
 }
 
-class CurlHandleException extends CurlException {
+class CurlHandleException extends NetException {
 	public function __construct(\resource $ch) {
 
 		$curl_message = curl_error($ch);
@@ -21,7 +21,7 @@ class CurlHandleException extends CurlException {
 	}
 }
 
-class CurlMultiException extends CurlException {
+class CurlMultiException extends NetException {
 
 	private static ImmMap<int, string> $errorMessage = ImmMap {
 		CURLM_OK => 'Ok',
@@ -29,7 +29,7 @@ class CurlMultiException extends CurlException {
 		CURLM_BAD_EASY_HANDLE => 'Passed-in handle was not valid',
 		CURLM_OUT_OF_MEMORY => 'Out of memory',
 		CURLM_INTERNAL_ERROR => 'Internal Error',
-		CURLM_BAD_SOCKET => 'Invalid Socked',
+		CURLM_BAD_SOCKET => 'Invalid Socket',
 		CURLM_UNKNOWN_OPTION => 'Unknown Option',
 		CURLM_ADDED_ALREADY => 'Handle already added'
 	};

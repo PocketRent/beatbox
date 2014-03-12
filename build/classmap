@@ -1,6 +1,5 @@
 #!/usr/bin/env hhvm
 <?hh
-
 require __DIR__ . '/../xhp/init.php';
 require __DIR__ . '/../php/functions/collections.php';
 require __DIR__ . '/../php/functions/invariant.php';
@@ -18,7 +17,7 @@ function makeMap() : Map<string, Map<string, string>> {
 
 	$export_map = var_export($map, true);
 
-	$date = date(DATE_ISO8601);
+	$date = @date(DATE_ISO8601);
 
 	$php = <<<PHP
 <?hh

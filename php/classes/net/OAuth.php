@@ -15,11 +15,11 @@ class OAuth {
 	private Map<\string, \string> $oauthParameters = Map {};
 	private ?\string $realm = null;
 
-	private \string $scheme;
-	private \string $host;
+	private ?\string $scheme;
+	private ?\string $host;
 	private ?\int $port;
 	private \string $path = '/';
-	private Map<\string, \string> $queryParameters;
+	private Map<\string, \string> $queryParameters = Map {};
 
 	private \bool $requestIsForm = false;
 	private ?Map<\string, \string> $requestForm;
@@ -29,7 +29,13 @@ class OAuth {
 	private \string $consumerSecret = '';
 	private ?\string $tokenSecret;
 
-	public function __construct(\string $url) {
+	public function __construct(?\string $url = null) {
+		if ($url) {
+			$this->setURL($url);
+		}
+	}
+
+	public function setURL(\string $url) {
 		$url_params = parse_url($url);
 		invariant(is_array($url_params), '$url is not a valid url');
 
@@ -285,6 +291,10 @@ class OAuth {
 			}
 		}
 
-		return sprintf('%s://%s%s%s', $this->scheme, $this->host, $port, $this->path);
+		return sprintf('%s://%s%s%s',
+			nullthrows($this->scheme),
+			nullthrows($this->host),
+			$port,
+			$this->path);
 	}
 }

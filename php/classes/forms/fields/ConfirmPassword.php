@@ -21,7 +21,6 @@ class :bb:form:confirm-password extends :bb:form:field {
 		$first = <bb:form:password
 			name={$this->getAttribute('name') . '[0]'}
 			label={$this->getAttribute('firstLabel')}
-			id={$this->getID()}
 			class="first" />;
 		$second = <bb:form:password
 			name={$this->getAttribute('name') . '[1]'}

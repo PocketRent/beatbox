@@ -496,7 +496,8 @@ final class Request {
 		}
 		if ($this->stderr) {
 			if ($this->stderrData == null) $this->getVerboseOutput();
-			fclose($this->stderr);
+			if ($this->stderr)
+				fclose($this->stderr);
 			$this->stderr = null;
 		}
 	}

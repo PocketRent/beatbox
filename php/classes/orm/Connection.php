@@ -24,6 +24,7 @@ final class Connection {
 
 	private Vector<resource> $connection_pool = Vector {};
 	private \string $connection_string;
+	private ?\resource $transactionConn = null;
 
 	/**
 	 * Returns the singleton instance of Connection, creating it if necessary.
@@ -86,16 +87,30 @@ final class Connection {
 	}
 
 	public async function withRawConn<T>((function (\resource) : Awaitable<T>) $fn) : Awaitable<T> {
-		if ($this->connection_pool->count() == 0) {
-			$conn = $this->newConnection();
-			$this->connection_pool->add($conn);
-		}
+		$conn = null;
+		if ($this->in_transaction) {
+			if ($this->transactionConn == null) {
+				if ($this->connection_pool->count() == 0) {
+					$this->transactionConn = $this->newConnection();
+				} else {
+					$this->transactionConn = $this->connection_pool->pop();
+				}
+			}
+			$conn = $this->transactionConn;
+		} else {
+			if ($this->connection_pool->count() == 0) {
+				$conn = $this->newConnection();
+				$this->connection_pool->add($conn);
+			}
 
-		$conn = $this->connection_pool->pop();
+			$conn = $this->connection_pool->pop();
+		}
 
 		$val = await $fn($conn);
 
-		$this->connection_pool->add($conn);
+		if (!$this->in_transaction) {
+			$this->connection_pool->add($conn);
+		}
 
 		return $val;
 	}
@@ -136,8 +151,8 @@ final class Connection {
 			$sp = $this->escapeIdentifier($savepoint);
 			wait($this->query('SAVEPOINT '.$sp));
 		} else {
-			wait($this->query('BEGIN'));
 			$this->in_transaction = true;
+			wait($this->query('BEGIN'));
 		}
 	}
 
@@ -169,6 +184,8 @@ final class Connection {
 			} else {
 				wait($this->query('COMMIT'));
 				$this->in_transaction = false;
+				$this->connection_pool->add(nullthrows($this->transactionConn));
+				$this->transactionConn = null;
 			}
 		}
 	}
@@ -187,6 +204,8 @@ final class Connection {
 			} else {
 				wait($this->query('ROLLBACK'));
 				$this->in_transaction = false;
+				$this->connection_pool->add(nullthrows($this->transactionConn));
+				$this->transactionConn = null;
 			}
 		}
 	}
@@ -233,8 +252,10 @@ final class Connection {
 
 			send_event("db::query", $query, $params);
 
-			while (pg_connection_busy($conn)) {
-				await \SleepWaitHandle::create(self::CONNECTION_POLL_TIME);
+			if (!$this->in_transaction) {
+				while (pg_connection_busy($conn)) {
+					await \SleepWaitHandle::create(self::CONNECTION_POLL_TIME);
+				}
 			}
 
 			$result = null;
@@ -269,9 +290,10 @@ final class Connection {
 
 			send_event("db::query", $query, $params);
 
-
-			while (pg_connection_busy($conn)) {
-				await \SleepWaitHandle::create(self::CONNECTION_POLL_TIME);
+			if (!$this->in_transaction) {
+				while (pg_connection_busy($conn)) {
+					await \SleepWaitHandle::create(self::CONNECTION_POLL_TIME);
+				}
 			}
 
 			$results = Vector {};

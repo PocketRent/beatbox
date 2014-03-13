@@ -312,6 +312,10 @@ final class Connection {
 		return $this->queue->add($query);
 	}
 
+	public function clearQueue() {
+		$this->queue = null;
+	}
+
 	/**
 	 * Escapes the given identifier according to postgres rules.
 	 */
@@ -386,6 +390,7 @@ class QueryQueue {
 		if ($this->results == null) {
 			$query = bb_join(';', $this->queries);
 			$this->results = await $this->conn->multiQuery($query);
+			$this->conn->clearQueue();
 		}
 
 		$results = nullthrows($this->results);

@@ -1,7 +1,5 @@
 <?hh
 
-/** TODO: Fix tests to cope with unstable order of fields
-
 namespace beatbox\test;
 
 use beatbox, beatbox\orm;
@@ -11,33 +9,35 @@ class ORMTest extends beatbox\Test {
 	/**
 	 * @group sanity
 	 *
+	 */
 	public function testBasicQuery() {
 		$q = TestTable::get()->getQueryString();
-		$this->assertEquals('SELECT DISTINCT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"', $q);
+		$this->assertEquals('SELECT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"', $q);
 	}
 
 	/**
 	 * @group fast
 	 * @depends testBasicQuery
 	 *
+	 */
 	public function testConditions() {
 		$q = TestTable::get()
 			->filter('ID', 1);
 
 		$str = $q->getQueryString();
-		$this->assertEquals('SELECT DISTINCT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
+		$this->assertEquals('SELECT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
 WHERE ("TestTable"."ID"=\'1\')', $str);
 
 		$q = $q->filter('AuxID', 5, '>');
 
 		$str = $q->getQueryString();
-		$this->assertEquals('SELECT DISTINCT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
+		$this->assertEquals('SELECT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
 WHERE ("TestTable"."ID"=\'1\') AND ("TestTable"."AuxID">\'5\')', $str);
 
 		$q = $q->where('trim(both from "TestTable"."Col2") = \'Thing\'');
 
 		$str = $q->getQueryString();
-		$this->assertEquals('SELECT DISTINCT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
+		$this->assertEquals('SELECT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
 WHERE ("TestTable"."ID"=\'1\') AND ("TestTable"."AuxID">\'5\') AND (trim(both from "TestTable"."Col2") = \'Thing\')', $str);
 	}
 
@@ -45,24 +45,25 @@ WHERE ("TestTable"."ID"=\'1\') AND ("TestTable"."AuxID">\'5\') AND (trim(both fr
 	 * @group fast
 	 * @depends testBasicQuery
 	 *
+	 */
 	public function testSort() {
 		$q = TestTable::get()
 			->sortBy('ID');
 
 		$str = $q->getQueryString();
-		$this->assertEquals('SELECT DISTINCT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
+		$this->assertEquals('SELECT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
 ORDER BY "TestTable"."ID" ASC', $str);
 
 		$q1 = $q->sortBy('AuxID', 'DESC');
 
 		$str = $q1->getQueryString();
-		$this->assertEquals('SELECT DISTINCT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
+		$this->assertEquals('SELECT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
 ORDER BY "TestTable"."ID" ASC, "TestTable"."AuxID" DESC', $str);
 
 		$q2 = $q->sortBy('AuxID', 'Magic'); // This should change it to ASC
 
 		$str = $q2->getQueryString();
-		$this->assertEquals('SELECT DISTINCT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
+		$this->assertEquals('SELECT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
 ORDER BY "TestTable"."ID" ASC, "TestTable"."AuxID" ASC', $str);
 
 	}
@@ -70,6 +71,7 @@ ORDER BY "TestTable"."ID" ASC, "TestTable"."AuxID" ASC', $str);
 	/**
 	 * @group fast
 	 *
+	 */
 	public function testValidation() {
 		$q = TestTable::get();
 		try {
@@ -95,20 +97,22 @@ ORDER BY "TestTable"."ID" ASC, "TestTable"."AuxID" ASC', $str);
 	/**
 	 * @group fast
 	 *
+	 */
 	public function testNullFilter() {
 		$q = TestTable::get();
 		$str = $q->filter('ID', null)->getQueryString();
-		$this->assertEquals('SELECT DISTINCT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
+		$this->assertEquals('SELECT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
 WHERE ("TestTable"."ID" IS NULL)', $str);
 
 		$str = $q->filter('ID', null, '!=')->getQueryString();
-		$this->assertEquals('SELECT DISTINCT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
+		$this->assertEquals('SELECT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2" FROM "TestTable"
 WHERE ("TestTable"."ID" IS NOT NULL)', $str);
 	}
 
 	/**
 	 * @group fast
 	 *
+	 */
 	public function testFromClause() {
 		$q = TestTable::get();
 		$this->assertEquals('"TestTable"', $q->getFrom());
@@ -122,8 +126,6 @@ WHERE ("TestTable"."ID" IS NOT NULL)', $str);
 // we can test the SQL query generation without having
 // to generate code or rely on it already existing
 class TestTable extends orm\DataTable {
-	public function __construct(\Indexish<string,string> $row) { }
-
 	protected function updateFromRow(\Indexish<string,string> $row) : \void { }
 	protected function getUpdatedColumns() : Map<string,mixed> { return Map {}; }
 	protected function originalValues() : Map<string,mixed> { return Map {}; }
@@ -136,8 +138,8 @@ class TestTable extends orm\DataTable {
 		return 'TestTable';
 	}
 
-	public static function getColumnNames() : Set<\string> {
-		return Set {
+	public static function getColumnNames() : \ConstSet<\string> {
+		return ImmSet {
 			'ID',
 			'AuxID',
 			'Col1',
@@ -145,11 +147,10 @@ class TestTable extends orm\DataTable {
 		};
 	}
 
-	public static function getPrimaryKeys() : Set<\string> {
-		return Set {
-			'ID' => 'ID',
-			'AuxID' => 'AuxID'
+	public static function getPrimaryKeys() : \ConstSet<\string> {
+		return ImmSet {
+			'ID',
+			'AuxID'
 		};
 	}
 }
- */

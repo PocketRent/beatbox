@@ -54,7 +54,7 @@ class DateTimeTest extends beatbox\Test {
 		$this->assertEquals("2000-01-01 13:00:00 Pacific/Auckland", $date->__toString());
 
 		$date = new DateTimeType("2000-01-01 00:00:00+12");
-		$this->assertEquals("2000-01-01 00:00:00 UTC", $date->__toString());
+		$this->assertEquals("2000-01-01 00:00:00 +12:00", $date->__toString());
 	}
 
 	/**

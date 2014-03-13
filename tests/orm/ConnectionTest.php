@@ -63,4 +63,25 @@ class ConnectionTest extends beatbox\Test {
 		$this->assertEquals(2, $r2->nthRow(0)['N']);
 		$this->assertEquals(3, $r3->nthRow(0)['N']);
 	}
+
+	/**
+	 * @group fast
+	 */
+	public function testAddQuery() {
+		$conn = Connection::get();
+
+		$r1 = $conn->queueQuery('SELECT 1 as "N"');
+		$r2 = $conn->queueQuery('SELECT 2 as "N";');
+		$r3 = $conn->queueQuery('SELECT 3 as "N"');
+
+		list($r1, $r2, $r3) = wait(genva($r1, $r2, $r3));
+
+		invariant($r1 instanceof QueryResult, '$r1 should be a QueryResult');
+		invariant($r2 instanceof QueryResult, '$r2 should be a QueryResult');
+		invariant($r3 instanceof QueryResult, '$r3 should be a QueryResult');
+
+		$this->assertEquals(1, $r1->nthRow(0)['N']);
+		$this->assertEquals(2, $r2->nthRow(0)['N']);
+		$this->assertEquals(3, $r3->nthRow(0)['N']);
+	}
 }

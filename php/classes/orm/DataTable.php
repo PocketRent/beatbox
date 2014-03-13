@@ -164,13 +164,28 @@ abstract class DataTable {
 		if ($this->deleted)
 			throw new \DeletedObjectException('write', get_called_class());
 
+		$query = $this->getWriteQuery($conn, $force);
+		if (!$query) return false;
+
+		$result = await $conn->query($query);
+		assert($result instanceof QueryResult && "Object write should always return rows");
+		assert($result->numRows() == 1 || (var_dump($query) && false));
+
+		$row = $result->nthRow(0);
+
+		$this->updateFromRow($row);
+
+		return true;
+	}
+
+	private function getWriteQuery(Connection $conn, \bool $force) : ?\string {
 		if ($force) {
 			$values = $this->toMap();
 		} else {
 			$values = $this->getUpdatedColumns();
 		}
 
-		if ($values->count() == 0 && !$this->isNew()) return false;
+		if ($values->count() == 0 && !$this->isNew()) return null;
 
 		$table = $conn->escapeIdentifier(static::getTableName());
 
@@ -188,7 +203,7 @@ abstract class DataTable {
 				}
 			}
 
-			$query = "INSERT INTO $table (".bb_join(',', $columns).') '.
+			return "INSERT INTO $table (".bb_join(',', $columns).') '.
 				'VALUES ('.bb_join(',',$values).') '.
 				'RETURNING *;';
 		} else {
@@ -208,19 +223,9 @@ abstract class DataTable {
 				return "$col=$val";
 			});
 
-			$query = "UPDATE $table SET ".bb_join(', ', $pairs)." WHERE ".
+			return "UPDATE $table SET ".bb_join(', ', $pairs)." WHERE ".
 				bb_join(' AND ', $pks).'RETURNING *;';
 		}
-
-		$result = await $conn->query($query);
-		assert($result instanceof QueryResult && "Object write should always return rows");
-		assert($result->numRows() == 1 || (var_dump($query) && false));
-
-		$row = $result->nthRow(0);
-
-		$this->updateFromRow($row);
-
-		return true;
 	}
 
 	/**

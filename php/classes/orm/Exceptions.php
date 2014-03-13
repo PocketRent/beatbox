@@ -54,7 +54,7 @@ class ResultException extends DatabaseException {
 class InvalidFieldException extends DatabaseException {
 	private static int $num_fields = 4; // number of valid fields to show in the error message
 
-	public function __construct(\string $field, Set<string> $valid_fields,
+	public function __construct(\string $field, \ConstSet<string> $valid_fields,
 								?\Exception $previous=null) {
 		$trunc = 0;
 		if ($valid_fields->count() > self::$num_fields) {

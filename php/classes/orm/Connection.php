@@ -228,7 +228,6 @@ final class Connection {
 		return $ret;
 	}
 
-	private \bool $_sentRequest = false;
 	/**
 	 * Send a single parameterized query to the database.
 	 *
@@ -305,6 +304,14 @@ final class Connection {
 		});
 	}
 
+	private ?QueryQueue $queue = null;
+	public function queueQuery(\string $query) : Awaitable<Result> {
+		if ($this->queue == null) {
+			$this->queue = new QueryQueue($this);
+		}
+		return $this->queue->add($query);
+	}
+
 	/**
 	 * Escapes the given identifier according to postgres rules.
 	 */
@@ -357,5 +364,49 @@ final class Connection {
 			pg_close($conn);
 		}
 		$this->connection_pool = Vector {};
+	}
+}
+
+class QueryQueue {
+	private Vector<\string> $queries = Vector {};
+	private Connection $conn;
+	private ?Vector<Result> $results = null;
+
+	public function __construct(Connection $conn) {
+		$this->conn = $conn;
+	}
+
+	public function add(\string $query) : Awaitable<Result> {
+		$queryNum = $this->queries->count();
+		$this->queries->add($query);
+		return new QueuedQuery($this, $queryNum);
+	}
+
+	public async function getResult(\int $num) : Awaitable<Result> {
+		if ($this->results == null) {
+			$query = bb_join(';', $this->queries);
+			$this->results = await $this->conn->multiQuery($query);
+		}
+
+		$results = nullthrows($this->results);
+		return $results[$num];
+	}
+}
+
+class QueuedQuery implements Awaitable<Result> {
+	private QueryQueue $queue;
+	private \int $queryNum;
+
+	public function __construct(QueryQueue $queue, \int $queryNum) {
+		$this->queue = $queue;
+		$this->queryNum = $queryNum;
+	}
+
+	public function getWaitHandle() : \WaitHandle<Result> {
+		$do = async function (QueryQueue $queue, \int $num) : Awaitable<Result> {
+			return await $queue->getResult($num);
+		};
+
+		return $do($this->queue, $this->queryNum)->getWaitHandle();
 	}
 }

@@ -167,7 +167,12 @@ abstract class DataTable {
 		$query = $this->getWriteQuery($conn, $force);
 		if (!$query) return false;
 
-		$result = await $conn->query($query);
+		// We use queueQuery here because inserting a single row is fairly fast, and
+		// this allows code writing many objects at once to just do a gena on all of
+		// them at the end instead of opening multiple connections.
+		// This also makes it faster when running inside a transaction, as transactions
+		// cause queries to run immediately, instead of asynchronously.
+		$result = await $conn->queueQuery($query);
 		assert($result instanceof QueryResult && "Object write should always return rows");
 		assert($result->numRows() == 1 || (var_dump($query) && false));
 

@@ -167,7 +167,11 @@ class Router {
 				// the name of the fragment.
 				// We need to do this to ensure that processing the fragments using
 				// pagelets has the same result as processing them serially
-				$obj = json_decode($result, true);
+				if ($result[0] == '{') {
+					$obj = json_decode($result, true);
+				} else {
+					$obj = json_decode(gzdecode($result), true);
+				}
 				assert(is_array($obj));
 				assert(count($obj) == 1);
 

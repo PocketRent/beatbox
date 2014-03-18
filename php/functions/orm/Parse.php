@@ -109,3 +109,45 @@ function db_parse_string(string $val) : string {
 		return $val;
 	}
 }
+
+function db_parse_hstore(string $val) : Map<string, string> {
+	$map = Map {};
+	$val = trim($val);
+	while (strlen($val) > 0) {
+		// Parse out the key
+		$cur_pos = 0;
+		while ($cur_pos < strlen($val)) {
+			$cur_pos++;
+			if ($val[$cur_pos] == '"')
+				break;
+			if ($val[$cur_pos] == '\\')
+				$cur_pos++;
+		}
+		$cur_pos++;
+
+		$key = substr($val, 0, $cur_pos);
+		$key = db_parse_string($key);
+		// Skip over the arrow
+		assert($val[$cur_pos++] == '=' && $val[$cur_pos++] == '>');
+		assert($val[$cur_pos] == '"');
+
+		// Parse out the value
+		$val_start = $cur_pos;
+		while ($cur_pos < strlen($val)) {
+			$cur_pos++;
+			if ($val[$cur_pos] == '"')
+				break;
+			if ($val[$cur_pos] == '\\')
+				$cur_pos++;
+		}
+		$cur_pos++;
+
+		$value = substr($val, $val_start, $cur_pos-$val_start);
+		$value = db_parse_string($value);
+
+		$map[$key] = $value;
+		$val = trim(substr($val, $cur_pos+1));
+	}
+
+	return $map;
+}

@@ -128,7 +128,7 @@ WHERE ("TestTable"."ID" IS NOT NULL)', $str);
 class TestTable extends orm\DataTable {
 	protected function updateFromRow(\Indexish<string,string> $row) : \void { }
 	protected function getUpdatedColumns() : Map<string,mixed> { return Map {}; }
-	protected function originalValues() : Map<string,mixed> { return Map {}; }
+	protected function originalValues() : ImmMap<string,mixed> { return ImmMap {}; }
 
 	public function toMap() : Map { return Map {}; }
 	public function toRow() : \string { return ''; }

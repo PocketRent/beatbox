@@ -25,7 +25,7 @@ abstract class DataTable {
 	/**
 	 * Get a map of the original values for this object
 	 */
-	abstract protected function originalValues(): Map<string,mixed>;
+	abstract protected function originalValues(): ImmMap<string,mixed>;
 
 	/**
 	 * Returns a map of column names to their current values
@@ -196,20 +196,19 @@ abstract class DataTable {
 
 		if ($this->isNew()) {
 
-			$columns = $values->keys()->map($col ==> $conn->escapeIdentifier($col));
-			$values = $values->values()->map($val ==> $conn->escapeValue($val));
+			$columns  = $values->keys()->map($col ==> $conn->escapeIdentifier($col));
+			$obj_vals = $values->values()->map($val ==> $conn->escapeValue($val));
 
 			$primary_keys = static::getPrimaryKeys();
-			foreach(($primary_keys->count() ? $primary_keys : ['ID']) as $k) {
-				$func = "get$k";
-				if($this->$func() === null) {
+			foreach($primary_keys as $k) {
+				if($values->get($k) == null) {
 					$columns[] = $conn->escapeIdentifier($k);
-					$values[] = 'DEFAULT';
+					$obj_vals[] = 'DEFAULT';
 				}
 			}
 
 			return "INSERT INTO $table (".bb_join(',', $columns).') '.
-				'VALUES ('.bb_join(',',$values).') '.
+				'VALUES ('.bb_join(',',$obj_vals).') '.
 				'RETURNING *;';
 		} else {
 			$allVals = $this->toMap();

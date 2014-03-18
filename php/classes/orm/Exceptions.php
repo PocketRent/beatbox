@@ -89,3 +89,10 @@ class TypeParseException extends DatabaseException {
 		parent::__construct($message, 5, $previous);
 	}
 }
+
+class InvalidValueException extends DatabaseException {
+	public function __construct(\string $val, ?\Exception $previous = null) {
+		$message = "Invalid database value: '$val'";
+		parent::__construct($message, 6, $previous);
+	}
+}

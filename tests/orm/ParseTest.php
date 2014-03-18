@@ -140,4 +140,19 @@ class ParseTest extends beatbox\Test {
 	public function testCompositeFromArray() {
 		$this->assertEquals(Vector { "abc" }, db_parse_composite('"(abc)"'));
 	}
+
+	/**
+	 * @group fast
+	 */
+	public function testHstoreSimple() {
+		$this->assertEquals(Map { "abc" => "def" }, db_parse_hstore('"abc"=>"def"'));
+	}
+
+	/**
+	 * @group fast
+	 */
+	public function testHstoreMulti() {
+		$this->assertEquals(Map { "abc" => "def",
+			"ghi" => "jkl" }, db_parse_hstore('"abc"=>"def","ghi"=>"jkl"'));
+	}
 }

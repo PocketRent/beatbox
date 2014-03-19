@@ -5,7 +5,7 @@ namespace beatbox\orm;
 use Awaitable,Indexish;
 
 abstract class DataTable {
-	public function __construct(?Indexish<string,string> $row) {}
+	public function __construct(?Indexish<string,string> $row = null) {}
 
 	/**
 	 * Updates the fields in the object from the data in the row.

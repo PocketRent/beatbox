@@ -222,7 +222,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 		return $result->rows()->map($row ==> $cls::load($row));
 	}
 
-	public function getIterator() : Iterator {
+	public function getIterator() : Iterator<T> {
 		return $this->fetch()->getIterator();
 	}
 

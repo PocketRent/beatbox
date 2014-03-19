@@ -98,10 +98,85 @@ function is_patch() : bool {
 	return request_method() == 'PATCH';
 }
 
+/**
+ * Does the browser support SVG?
+ */
 function have_svg() : bool {
 	return Browser::svg();
 }
 
+/**
+ * Does the browser support inline SVG?
+ */
 function have_inline_svg() : bool {
 	return Browser::inline_svg();
 }
+
+/**
+ * Get the value of a cookie
+ */
+function get_cookie(string $name): ?string {
+	if (isset($_COOKIE[$name])) {
+		return $_COOKIE[$name];
+	}
+	return null;
+}
+
+/**
+ * Set a cookie's value.
+ *
+ * Has the same signature as setcookie() and updates the $_COOKIE super global
+ */
+function set_cookie(string $name, ?string $value = '', int $expire = 0, string $path = '',
+					?string $domain = null, bool $secure = false, bool $httponly = false): bool {
+	if (setcookie($name, $value, $expire, $path, $domain, $secure, $httponly)) {
+		if ($expire > 0 && $expire < time()) {
+			unset($_COOKIE[$name]);
+		} else {
+			$_COOKIE[$name] = $value;
+		}
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Get a value from the REQUEST superglobal
+ */
+function request_var(string $name): mixed {
+	if (isset($_REQUEST[$name])) {
+		return $_REQUEST[$name];
+	}
+	return null;
+}
+
+/**
+ * Get a value from the GET superglobal
+ */
+function get_var(string $name): mixed {
+	if (isset($_GET[$name])) {
+		return $_GET[$name];
+	}
+	return null;
+}
+
+/**
+ * Get a value from the POST superglobal
+ */
+function post_var(string $name): mixed {
+	if (isset($_POST[$name])) {
+		return $_POST[$name];
+	}
+	return null;
+}
+
+/**
+ * Get a value from the FILES superglobal
+ */
+function files_var(string $name): ?array<string, mixed> {
+	if (isset($_FILES[$name])) {
+		return $_FILES[$name];
+	}
+	return null;
+}
+

@@ -133,6 +133,55 @@ class EnvTest extends beatbox\Test {
 		$this->assertFalse(is_put());
 		$this->assertFalse(is_delete());
 		$this->assertFalse(is_patch());
+	}
 
+	/**
+	 * @group sanity
+	 */
+	public function testGetCookie() {
+		$this->assertNull(get_cookie('testValue'));
+
+		$_COOKIE['testValue'] = 3;
+		$this->assertEquals(3, get_cookie('testValue'));
+	}
+
+	/**
+	 * @group sanity
+	 */
+	public function testRequestVar() {
+		$this->assertNull(request_var('testValue'));
+
+		$_REQUEST['testValue'] = 3;
+		$this->assertEquals(3, request_var('testValue'));
+	}
+
+	/**
+	 * @group sanity
+	 */
+	public function testPostVar() {
+		$this->assertNull(post_var('testValue'));
+
+		$_POST['testValue'] = 3;
+		$this->assertEquals(3, post_var('testValue'));
+	}
+
+	/**
+	 * @group sanity
+	 */
+	public function testGetVar() {
+		$this->assertNull(get_var('testValue'));
+
+		$_GET['testValue'] = 3;
+		$this->assertEquals(3, get_var('testValue'));
+	}
+
+	/**
+	 * @group sanity
+	 */
+	public function testFilesVar() {
+		$this->assertNull(files_var('testValue'));
+
+		$_FILES['testValue'] = array('tmp_name' => '/tmp/test.txt');
+		$this->assertEquals(array('tmp_name' => '/tmp/test.txt'), files_var('testValue'));
 	}
 }

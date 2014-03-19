@@ -301,7 +301,7 @@ class Router {
 				if(!in_array($frag, $val)) {
 					continue;
 				}
-			} else if($val instanceof Vector) {
+			} else if($val instanceof \ConstVector) {
 				if($val->linearSearch($frag) == -1) {
 					continue;
 				}

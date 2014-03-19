@@ -7,6 +7,7 @@
  * @param string $status The status description
  * @uses beatbox\errors\HTTP::error()
  */
+<<NoReturn>>
 function http_error(int $code, ?\string $status = null) : void {
 	return beatbox\errors\HTTP::error($code, $status);
 }
@@ -21,6 +22,7 @@ function http_error(int $code, ?\string $status = null) : void {
  * @param string $fallback the URL to fallback to
  * @uses beatbox\errors\HTTP::redirect()
  */
+<<NoReturn>>
 function redirect(string $to, ?string $fallback=null, int $code = 302) : void {
 	return beatbox\errors\HTTP::redirect($to, $fallback, $code);
 }
@@ -34,6 +36,7 @@ function redirect(string $to, ?string $fallback=null, int $code = 302) : void {
  * @param string $fallback the URL to fallback to
  * @uses beatbox\errors\HTTP::redirect_back()
  */
+<<NoReturn>>
 function redirect_back(?string $fallback = null) : void {
 	return beatbox\errors\HTTP::redirect_back($fallback);
 }

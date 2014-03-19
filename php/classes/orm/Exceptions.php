@@ -21,7 +21,7 @@ class ConnectionException extends DatabaseException {
 	protected \string $dbError;
 
 	public function __construct(\resource $conn, \string $message, ?\Exception $previous=null) {
-		$this->dbError = pg_last_error($conn);
+		$this->dbError = pg_last_error($conn) ?: "unknown error";
 		$message = $message . ": '" . $this->dbError . "'";
 		parent::__construct($message, 1, $previous);
 	}
@@ -39,9 +39,9 @@ class ResultException extends DatabaseException {
 								?\Exception $previous=null) {
 		$err = pg_result_error($result);
 		if ($message != "") {
-			$message = $message . ": '" . $err . "'";
+			$message = $message . ": '" . ($err ?: "unknown error") . "'";
 		} else {
-			$message = $err;
+			$message = $err ?: "unknown error";
 		}
 
 		parent::__construct($message, 2, $previous);

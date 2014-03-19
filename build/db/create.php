@@ -427,7 +427,7 @@ function alter_and_migrate(resource $conn, string $buildfile_dir, Vector<DBFile>
 
 				$res = @pg_query($conn, $sql);
 				if (!$res) {
-					fwrite(STDERR, "	SQL Query Failed (".pg_last_error($conn)
+					fwrite(STDERR, "	SQL Query Failed (".(string)pg_last_error($conn)
 						.") Skipping rest of files for {$script->name}\n");
 					$errors->add($script->name);
 				} else if (pg_result_status($res) == PGSQL_FATAL_ERROR) {

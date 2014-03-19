@@ -106,7 +106,7 @@ function do_connect(Map<string,mixed> $info) : resource {
 	if (isset($info['create_db']) && $info['create_db']) {
 		($conn = pg_connect($conn_string . ' dbname=postgres')) ||
 					command_fail("Unable to connect to postgres");
-		@pg_query($conn, "CREATE DATABASE ".pg_escape_identifier($conn, $info['database']));
+		@pg_query($conn, "CREATE DATABASE ".pg_escape_identifier($conn, (string)$info['database']));
 		pg_close($conn);
 	}
 
@@ -134,6 +134,7 @@ class CommandException extends Exception {
 	}
 }
 
+<<NoReturn>>
 function command_fail(string $msg, int $code=1) : void {
 	throw new CommandException($msg, $code);
 }

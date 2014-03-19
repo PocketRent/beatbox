@@ -288,16 +288,17 @@ class PGType {
 					WHERE attisdropped=FALSE AND attrelid=\$1 ORDER BY attnum ASC",
 					[$this->rel_id]);
 				if (!$q) {
-					command_fail(pg_last_error($conn));
+					command_fail((string)pg_last_error($conn));
 				}
 				$elements = StableMap {};
 				while($row = pg_fetch_assoc($q)) {
+					$attname = (string)$row['attname'];
 					$attr_type = $this->type_dict->typeByOid((int)$row['atttypid']);
 					if ($attr_type === null) {
 						command_fail("Could not find entry for composite type field "
-										.$row['attname']);
+										.$attname);
 					}
-					$elements[$row['attname']] = $attr_type;
+					$elements[$attname] = $attr_type;
 				}
 				$this->elements = $elements;
 				break;
@@ -306,7 +307,7 @@ class PGType {
 					FROM pg_enum WHERE enumtypid=\$1 ORDER BY enumsortorder ASC",
 					[$this->oid]);
 				if (!$q) {
-					command_fail(pg_last_error($conn));
+					command_fail((string)pg_last_error($conn));
 				}
 				$elements = Vector {};
 				while($row = pg_fetch_assoc($q)) {
@@ -569,8 +570,10 @@ class TypeDict {
 			pg_description d ON (t.oid = d.objoid)
 			WHERE typcategory != 'X';");
 
-		if (pg_result_status($q) != PGSQL_TUPLES_OK) {
-			command_fail(pg_result_error($q));
+		if (!$q) {
+			command_fail("Unknown error");
+		} else if (pg_result_status($q) != PGSQL_TUPLES_OK) {
+			command_fail((string)pg_result_error($q));
 		}
 
 		$needs_els = Vector {};
@@ -635,14 +638,13 @@ class Table {
 		$q = pg_query_params($conn,
 			"SELECT objsubid, description FROM pg_description WHERE objoid=\$1", [$this->oid]);
 		if (!$q) {
-			command_fail(pg_last_error($conn));
+			command_fail((string)pg_last_error($conn));
 		}
 
 		$n = 0;
 		while ($row = pg_fetch_row($q)) {
-			list($idx, $desc) = $row;
-
-			$idx = (int)$idx;
+			$idx = (int)$row[0];
+			$desc = (string)$row[1];
 
 			if ($idx == 0) {
 				$this->description = $desc;
@@ -854,7 +856,7 @@ function load_tables(resource $conn, string $ns,
 	", [$ns]);
 
 	if (!$cols) {
-		command_fail(pg_last_error($conn));
+		command_fail((string)pg_last_error($conn));
 	}
 
 	$tables = Map {};
@@ -864,9 +866,11 @@ function load_tables(resource $conn, string $ns,
 		if (isset($tables[$row['table_name']])) {
 			$table = $tables[$row['table_name']];
 		} else {
-			vprint("  Found table \"{$row['table_name']}\"");
-			$table = new Table($row['table_name'], (int)$row['table_oid']);
-			$tables[$row['table_name']] = $table;
+			$name = (string)$row['table_name'];
+			$oid = (int)$row['table_oid'];
+			vprint("  Found table \"$name\"");
+			$table = new Table($name, $oid);
+			$tables[$name] = $table;
 		}
 
 		$table->addColumn($row);
@@ -899,18 +903,19 @@ function load_constraints(resource $conn): Vector<Constraint> {
 		ORDER BY c.constraint_name ASC", []);
 
 	if (!$fkc) {
-		command_fail(pg_last_error($conn));
+		$err = pg_last_error($conn);
+		command_fail((string)$err);
 	}
 
 	$constraints = Map{};
 
 	while ($row = pg_fetch_assoc($fkc)) {
-		$name = $row['constraint_name'];
-		$on_table = $row['on_table'];
-		$to_table = $row['to_table'];
-		$local_col = $row['local_column'];
-		$foreign_col = $row['foreign_column'];
-		$type = $row['constraint_type'];
+		$name			= (string)$row['constraint_name'];
+		$on_table		= (string)$row['on_table'];
+		$to_table		= (string)$row['to_table'];
+		$local_col		= (string)$row['local_column'];
+		$foreign_col	= (string)$row['foreign_column'];
+		$type			= (string)$row['constraint_type'];
 
 		if (!isset($constraints[$name])) {
 			$constraints[$name] = new Constraint($type, $name, $on_table, $to_table);

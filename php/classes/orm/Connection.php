@@ -1,4 +1,4 @@
-<?hh
+<?hh 
 
 namespace beatbox\orm;
 
@@ -357,7 +357,7 @@ final class Connection {
 			return $val ? 'true' : 'false';
 		} else {
 			return wait($this->withRawConn(async function ($conn) : Awaitable<\string> use ($val) {
-				return pg_escape_literal($conn, $val);
+				return pg_escape_literal($conn, (string)$val);
 			}));
 		}
 	}

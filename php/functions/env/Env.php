@@ -180,3 +180,13 @@ function files_var(string $name): ?array<string, mixed> {
 	return null;
 }
 
+/**
+ * Get a value from the SERVER superglobal
+ */
+function server_var(string $name): mixed {
+	if (isset($_SERVER[$name])) {
+		return $_SERVER[$name];
+	}
+	return null;
+}
+

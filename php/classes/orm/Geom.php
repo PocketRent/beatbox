@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 
 namespace beatbox\orm\geom;
 
@@ -36,11 +36,13 @@ class point extends GeomType {
 		$x = 0.0; $y = 0.0;
 		$end_delim = false;
 		if ($parser->eatChar('(')) $end_delim = true;
-		if (!$parser->getFloat($x))
+		list($worked, $x) = $parser->getFloat();
+		if (!$worked)
 			throw new TypeParseException('point', 'expected a float');
 		if (!$parser->eatChar(','))
 			throw new TypeParseException('point', 'expected a \',\'');
-		if (!$parser->getFloat($y))
+		list($worked, $y) = $parser->getFloat();
+		if (!$worked)
 			throw new TypeParseException('point', 'expected a float');
 		if ($end_delim) {
 			if (!$parser->eatChar(')'))
@@ -302,8 +304,8 @@ class circle extends GeomType {
 		if (!$parser->eatChar(','))
 			throw new TypeParseException('circle', 'expected a \',\'');
 
-		$radius = 0.0;
-		if (!$parser->getFloat($radius))
+		list($worked, $radius) = $parser->getFloat();
+		if (!$worked)
 			throw new TypeParseException('circle', 'expected a float');
 
 		if ($delim) {
@@ -332,7 +334,7 @@ class _GeomParser {
 		}
 	}
 
-	public function goBack(\int $n=1) {
+	public function goBack(\int $n=1):\void {
 		if ($n < 1) return;
 		if ($n > $this->pos) $n = $this->pos;
 
@@ -354,7 +356,7 @@ class _GeomParser {
 		}
 	}
 
-	public function getFloat(\float &$num) : \bool {
+	public function getFloat() : (\bool, \float) {
 		$this->skipWhitespace();
 		$start = $this->pos;
 		$seen_point = false;
@@ -371,15 +373,15 @@ class _GeomParser {
 			}
 		}
 
-		if ($start == $this->pos) return false;
+		if ($start == $this->pos) return tuple(false, 0.0);
 
 		$str = substr($this->str, $start, $this->pos-$start);
 
 		$num = (float)$str;
-		return true;
+		return tuple(true, $num);
 	}
 
-	public function skipWhitespace() {
+	public function skipWhitespace():\void {
 		$len = strlen($this->str);
 		while ($this->pos < $len && ctype_space($this->str[$this->pos]))
 			$this->pos++;

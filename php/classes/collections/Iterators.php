@@ -30,7 +30,6 @@ class UnzipIterator<Tk,Tv> implements KeyedIterator<Tk,Tv> {
 	}
 }
 
-/*
 class UnzipIterable<Tk, Tv> implements \KeyedIterable<Tk, Tv> {
 	use \LazyKeyedIterable<Tk, Tv>;
 
@@ -44,4 +43,4 @@ class UnzipIterable<Tk, Tv> implements \KeyedIterable<Tk, Tv> {
 		return new UnzipIterator($this->iterable->getIterator());
 	}
 }
- */
+

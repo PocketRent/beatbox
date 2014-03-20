@@ -31,6 +31,9 @@ function http_build_url(mixed $url = null, mixed $parts = null, int $flags = HTT
 		$parts = parse_url($parts);
 	}
 
+	assert(is_array($url));
+	assert(is_array($parts));
+
 	$new_url = array();
 	if(!($flags & HTTP_URL_STRIP_PORT)) {
 		$new_url['port'] = array_key_exists('port', $parts) ?

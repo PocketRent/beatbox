@@ -37,8 +37,8 @@ class ConnectionException extends DatabaseException {
 class ResultException extends DatabaseException {
 	public function __construct(\resource $result, \string $message="",
 								?\Exception $previous=null) {
-		$err = pg_result_error($result);
-		if ($message != "") {
+		$err = pg_result_error($result) ?: '';
+		if ($message) {
 			$message = $message . ": '" . ($err ?: "unknown error") . "'";
 		} else {
 			$message = $err ?: "unknown error";

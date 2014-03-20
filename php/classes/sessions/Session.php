@@ -26,17 +26,13 @@ class Session {
 	 */
 	protected static function start(\bool $force = false) : ?Session {
 		if(!self::$inst) {
-			if($force || !empty($_COOKIE[self::NAME])) {
+			if($force || get_cookie(self::NAME)) {
 				self::$inst = new self();
-				self::$id = !empty($_COOKIE[self::NAME]) ?
-					$_COOKIE[self::NAME] :
+				self::$id = get_cookie(self::NAME) ?:
 					generate_random_token();
-				$_COOKIE[self::NAME] = self::$id;
-				if(!is_cli()) {
-					$host = in_dev() ? null : host_domain();
-					setcookie(self::NAME, self::$id, time() + self::EXPIRE, '/',
-								$host, false, true);
-				}
+				$host = in_dev() ? null : host_domain();
+				set_cookie(self::NAME, self::$id, time() + self::EXPIRE, '/',
+							$host, false, true);
 				register_shutdown_function([__CLASS__, 'end']);
 				self::init();
 			}
@@ -110,6 +106,6 @@ class Session {
 	public static function reset() : \void {
 		self::end();
 		self::$inst = null;
-		$_COOKIE[self::NAME] = null;
+		set_cookie(self::NAME, null);
 	}
 }

@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 
 /**
  * Check if the provided token matches the expected one

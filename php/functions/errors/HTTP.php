@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 
 /**
  * Throw a HTTP error

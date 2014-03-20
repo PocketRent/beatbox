@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 
 namespace beatbox\errors;
 
@@ -29,7 +29,9 @@ class HTTP {
 			$uri = base_url();
 			if(strpos($to, $uri) !== 0) {
 				$parts = parse_url($to);
-				if($parts && !isset($parts['scheme']) && !isset($parts['host'])) {
+				assert(is_array($parts));
+				$parts = new Map($parts);
+				if($parts && !$parts->contains('scheme') && !$parts->contains('host')) {
 					$to = rtrim($uri, '/') . '/' . ltrim($to, '/');
 				} else {
 					$to = null;
@@ -61,7 +63,7 @@ class HTTP {
 	 * @param string $fallback the URL to fallback to
 	 */
 	public static function redirect_back(?\string $fallback = null) : \void {
-		$referer = empty($_SERVER['HTTP_REFERER']) ? '' : $_SERVER['HTTP_REFERER'];
+		$referer = (string)server_var('HTTP_REFERER');
 		self::redirect($referer, $fallback);
 	}
 }
@@ -147,12 +149,12 @@ class HTTP_Exception extends Exception {
 
 	public function __construct(?\string $message = null, \int $code=0,
 								?\Exception $previous=null) {
-		if(!$message && isset(self::$status_map[$code])) {
+		if(!$message && self::$status_map->contains($code)) {
 			$message = self::$status_map[$code];
-		} else
-		if (!$message){
+		} else if ($message == false){
 			$message = "There was an error";
 		}
+		assert(is_string($message));
 		parent::__construct($message, $code, $previous);
 	}
 
@@ -169,7 +171,7 @@ class HTTP_Exception extends Exception {
 
 	public function sendToBrowser() : \void {
 		$line = 'HTTP/1.1 ' . $this->getBaseCode();
-		if(isset(static::$status_map[$this->getBaseCode()])) {
+		if(static::$status_map->contains($this->getBaseCode())) {
 			$line .= ' ' . static::$status_map[$this->getBaseCode()];
 		}
 		if(is_ajax()) {

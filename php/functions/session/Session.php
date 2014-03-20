@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 
 /**
  * Get the item out of the session for the given key

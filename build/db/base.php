@@ -105,7 +105,8 @@ function do_connect(Map<string,mixed> $info) : resource {
 
 	if (isset($info['create_db']) && $info['create_db']) {
 		($conn = pg_connect($conn_string . ' dbname=postgres')) ||
-					command_fail("Unable to connect to postgres");
+					command_fail("Unable to connect to postgres") &&
+					invariant_violation("Can't get here, just for hack");;
 		@pg_query($conn, "CREATE DATABASE ".pg_escape_identifier($conn, (string)$info['database']));
 		pg_close($conn);
 	}
@@ -129,13 +130,13 @@ function format_desc(string $desc): string {
 }
 
 class CommandException extends Exception {
-	public function __construct(string $msg, int $code = 0) {
-		parent::__construct($msg, $code);
+	public function __construct(?string $msg, int $code = 0) {
+		parent::__construct($msg ?: 'Unknown error', $code);
 	}
 }
 
 <<NoReturn>>
-function command_fail(string $msg, int $code=1) : void {
+function command_fail(?string $msg, int $code=1) : void {
 	throw new CommandException($msg, $code);
 }
 

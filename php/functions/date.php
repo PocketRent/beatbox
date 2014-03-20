@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 
 /**
  * Returns the weekday name from the ISO-8601 week day number,
@@ -30,22 +30,4 @@ function weekday_name(int $daynum, bool $long = false) : string {
 		case 7: return 'Sun';
 		}
 	}
-}
-
-/**
- * Workaround function for bug in HipHop DateTime::modify function
- * https://github.com/facebook/hiphop-php/issues/958
- *
- * Used for when a modify is of the format '<ordinal> <dayname> of this month'
- *
- * $format is the '<ordinal> <dayname>' of the modification string
- */
-function date_modify_this_month(DateTime &$date, string $format) : DateTime {
-	$desc = sprintf("%s of %s %d", $format, $date->format('M'), $date->format('Y'));
-	// So the DateTime class is super odd and if it's constructed with something like
-	// 'first day of june 2012' then you can't change the day (but only the day)
-	$d = new \DateTime($desc);
-	$d->setTimezone($date->getTimezone());
-	$date = \beatbox\orm\DateTimeType::fromDateTime($d);
-	return nullthrows($date);
 }

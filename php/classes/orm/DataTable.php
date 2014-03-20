@@ -86,10 +86,10 @@ abstract class DataTable {
 			return null;
 		}
 		$pks = static::getPrimaryKeys();
-		if ($pks->count() == 1 && !(is_array($id) || $id instanceof ConstMapAccess)) {
+		if ($pks->count() == 1 && !($id instanceof Indexish)) {
 			$id = [array_values($pks->toArray())[0] => $id];
 		} else {
-			if (!(is_array($id) || $id instanceof ConstMapAccess)) {
+			if (!($id instanceof Indexish)) {
 				throw new \InvalidArgumentException(
 					"Object has multi-column primary key, `get_by_id` expects an array or map"
 				);
@@ -162,7 +162,7 @@ abstract class DataTable {
 		if ($conn == null)
 			throw new \InvalidArgumentException("Connection object is null");
 		if ($this->deleted)
-			throw new \DeletedObjectException('write', get_called_class());
+			throw new DeletedObjectException('write', get_called_class());
 
 		$query = $this->getWriteQuery($conn, $force);
 		if (!$query) return false;
@@ -240,13 +240,13 @@ abstract class DataTable {
 	 */
 	public async function delete() : Awaitable<\void> {
 		if ($this->deleted)
-			throw new \DeletedObjectException('delete', get_called_class());
+			throw new DeletedObjectException('delete', get_called_class());
 		return await $this->deleteWithConn(Connection::get());
 	}
 
 	public async function deleteWithConn(Connection $conn) : Awaitable<\void> {
 		if ($this->deleted)
-			throw new \DeletedObjectException('delete', get_called_class());
+			throw new DeletedObjectException('delete', get_called_class());
 		$this->deleted = true;
 
 		// This object was never written, save us some work by not even

@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 
 // Load all defined functions, since we can't autoload them
 require __DIR__ . '/async.php';

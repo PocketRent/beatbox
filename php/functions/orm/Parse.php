@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 
 function db_parse_array(string $delimiter, string $val): Vector<string> {
 	$generator = function () : \Continuation<string> use ($delimiter, $val) {

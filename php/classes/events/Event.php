@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 
 namespace beatbox;
 
@@ -20,13 +20,13 @@ class Event {
 	public static function attach_listener(CallbackFunction $callback, \string $name,
 											\bool $prefix = false): \void {
 		if($prefix) {
-			if(!isset(self::$prefix_listeners[$name])) {
+			if(!self::$prefix_listeners->contains($name)) {
 				self::$prefix_listeners[$name] = Vector {$callback};
 			} else {
 				self::$prefix_listeners[$name]->add($callback);
 			}
 		} else {
-			if(!isset(self::$exact_listeners[$name])) {
+			if(!self::$exact_listeners->contains($name)) {
 				self::$exact_listeners[$name] = Vector {$callback};
 			} else {
 				self::$exact_listeners[$name]->add($callback);
@@ -84,7 +84,7 @@ class Event {
 		return $vals;
 	}
 
-	public static function reset() {
+	public static function reset(): \void {
 		self::$exact_listeners = Map {};
 		self::$prefix_listeners = Map {};
 	}

@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 
 namespace beatbox;
 
@@ -6,14 +6,14 @@ interface Comparable {
 	// Returns a value that is less than, equal to or greater than
 	// zero if $this is less than, equal to or greater than $other,
 	// respectively
-	public function cmp($other) : \int;
+	public function cmp(\mixed $other) : \int;
 
-	public function eq($other) : \bool;
-	public function ne($other) : \bool;
+	public function eq(\mixed $other) : \bool;
+	public function ne(\mixed $other) : \bool;
 
-	public function lt($other) : \bool;
-	public function le($other) : \bool;
+	public function lt(\mixed $other) : \bool;
+	public function le(\mixed $other) : \bool;
 
-	public function gt($other) : \bool;
-	public function ge($other) : \bool;
+	public function gt(\mixed $other) : \bool;
+	public function ge(\mixed $other) : \bool;
 }

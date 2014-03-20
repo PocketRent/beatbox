@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 
 /**
  * Recursively merge one or more maps.
@@ -15,10 +15,9 @@ function map_merge_recursive<Tk>(ConstMap<Tk,mixed> $base, ...) : Map<Tk,mixed> 
 
 	foreach($args as $extra) {
 		invariant($extra instanceof ConstMap,
-					__FUNCTION__ . ' passed an argument that does not implement ConstMapAccess',
-					E_USER_ERROR);
+					__FUNCTION__ . ' passed an argument that does not implement ConstMapAccess');
 		foreach($extra as $k => $v) {
-			if(isset($ret[$k])) {
+			if($ret->contains($k)) {
 				$merge_val = $ret[$k];
 				// Recurse if both sides are maps
 				if($merge_val instanceof ConstMap && $v instanceof ConstMap) {

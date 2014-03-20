@@ -289,6 +289,7 @@ class PGType {
 					[$this->rel_id]);
 				if (!$q) {
 					command_fail((string)pg_last_error($conn));
+					invariant_violation("Can't get here, just for hack");
 				}
 				$elements = StableMap {};
 				while($row = pg_fetch_assoc($q)) {
@@ -308,6 +309,7 @@ class PGType {
 					[$this->oid]);
 				if (!$q) {
 					command_fail((string)pg_last_error($conn));
+					invariant_violation("Can't get here, just for hack");
 				}
 				$elements = Vector {};
 				while($row = pg_fetch_assoc($q)) {
@@ -571,9 +573,13 @@ class TypeDict {
 			WHERE typcategory != 'X';");
 
 		if (!$q) {
-			command_fail("Unknown error");
-		} else if (pg_result_status($q) != PGSQL_TUPLES_OK) {
-			command_fail((string)pg_result_error($q));
+			command_fail(pg_last_error($conn));
+			invariant_violation("Can't get here, just for hack");
+		}
+
+		if (pg_result_status($q) != PGSQL_TUPLES_OK) {
+			command_fail(pg_result_error($q));
+			invariant_violation("Can't get here, just for hack");
 		}
 
 		$needs_els = Vector {};
@@ -639,12 +645,13 @@ class Table {
 			"SELECT objsubid, description FROM pg_description WHERE objoid=\$1", [$this->oid]);
 		if (!$q) {
 			command_fail((string)pg_last_error($conn));
+			invariant_violation("Can't get here, just for hack");
 		}
 
 		$n = 0;
 		while ($row = pg_fetch_row($q)) {
 			$idx = (int)$row[0];
-			$desc = (string)$row[1];
+			$desc = $row[1];
 
 			if ($idx == 0) {
 				$this->description = $desc;
@@ -857,6 +864,7 @@ function load_tables(resource $conn, string $ns,
 
 	if (!$cols) {
 		command_fail((string)pg_last_error($conn));
+		invariant_violation("Can't get here, just for hack");
 	}
 
 	$tables = Map {};
@@ -866,11 +874,9 @@ function load_tables(resource $conn, string $ns,
 		if (isset($tables[$row['table_name']])) {
 			$table = $tables[$row['table_name']];
 		} else {
-			$name = (string)$row['table_name'];
-			$oid = (int)$row['table_oid'];
-			vprint("  Found table \"$name\"");
-			$table = new Table($name, $oid);
-			$tables[$name] = $table;
+			vprint("  Found table \"{$row['table_name']}\"");
+			$table = new Table($row['table_name'] ?: '', (int)$row['table_oid']);
+			$tables[$row['table_name']] = $table;
 		}
 
 		$table->addColumn($row);
@@ -905,17 +911,18 @@ function load_constraints(resource $conn): Vector<Constraint> {
 	if (!$fkc) {
 		$err = pg_last_error($conn);
 		command_fail((string)$err);
+		invariant_violation("Can't get here, just for hack");
 	}
 
 	$constraints = Map{};
 
 	while ($row = pg_fetch_assoc($fkc)) {
-		$name			= (string)$row['constraint_name'];
-		$on_table		= (string)$row['on_table'];
-		$to_table		= (string)$row['to_table'];
-		$local_col		= (string)$row['local_column'];
-		$foreign_col	= (string)$row['foreign_column'];
-		$type			= (string)$row['constraint_type'];
+		$name = $row['constraint_name'] ?: '';
+		$on_table = $row['on_table'] ?: '';
+		$to_table = $row['to_table'] ?: '';
+		$local_col = $row['local_column'] ?: '';
+		$foreign_col = $row['foreign_column'] ?: '';
+		$type = $row['constraint_type'] ?: '';
 
 		if (!isset($constraints[$name])) {
 			$constraints[$name] = new Constraint($type, $name, $on_table, $to_table);

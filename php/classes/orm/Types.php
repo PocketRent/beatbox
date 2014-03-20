@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 
 namespace beatbox\orm;
 
@@ -11,7 +11,7 @@ abstract class CompositeType implements Type {
 class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 	use beatbox\Compare;
 
-	public final static function fromDateTime(\DateTime $date) : ?DateTimeType {
+	public final static function fromDateTime(\DateTimeInterface $date) : ?DateTimeType {
 		if ($date instanceof DateTimeType) return clone $date;
 		$date_type = new static($date->format('@U')); // The unix epoch is always UTC
 		return $date_type->setTimezone($date->getTimezone());
@@ -21,7 +21,7 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 		return new static($val);
 	}
 
-	private \int $infinity = 0;
+	private \int $_infinity = 0;
 
 	/**
 	 * Construct a new DateTimeType, doesn't take a timezone like
@@ -30,10 +30,10 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 	 */
 	public function __construct(\mixed $date) {
 		if ($date == 'infinity' || $date == '+infinity') {
-			$this->infinity = 1;
+			$this->_infinity = 1;
 			parent::__construct('9999-12-31 23:59:59');
 		} else if ($date == '-infinity') {
-			$this->infinity = -1;
+			$this->_infinity = -1;
 			parent::__construct('-9999-01-01 00:00:00');
 		} else {
 			parent::__construct($date);
@@ -73,32 +73,32 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 	}
 
 	public function setTime(\int $hour, \int $minute, \int $second=0) : ?DateTimeType {
-		$this->infinity = 0;
+		$this->_infinity = 0;
 		return parent::setTime($hour, $minute, $second);
 	}
 
 	public function setDate(\int $year, \int $month, \int $day) : ?DateTimeType {
-		$this->infinity = 0;
+		$this->_infinity = 0;
 		return parent::setDate($year, $month, $day);
 	}
 
 	////// Predicates
 
-	public function isPositiveInfinity() : \bool { return $this->infinity == 1; }
-	public function isNegativeInfinity() : \bool { return $this->infinity == 1; }
-	public function isInfinite() : \bool { return $this->infinity != 0; }
+	public function isPositiveInfinity() : \bool { return $this->_infinity == 1; }
+	public function isNegativeInfinity() : \bool { return $this->_infinity == 1; }
+	public function isInfinite() : \bool { return $this->_infinity != 0; }
 
 	public function setPositiveInfinity() : \void {
 		// Set the date to something way in the future, to make it easier
 		// to spot bad code
 		$this->setDate(9999, 12, 31); $this->setTime(23,59,59);
-		$this->infinity = 1;
+		$this->_infinity = 1;
 	}
 	public function setNegativeInfinity() : \void {
 		// Set the date to something way in the past, to make it easier to
 		// spot bad code
 		$this->setDate(-9999, 1, 1); $this->setTime(0,0,0);
-		$this->infinity = -1;
+		$this->_infinity = -1;
 	}
 
 	/**
@@ -112,9 +112,9 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 	}
 
 	public function __toString() : \string {
-		if ($this->infinity == 1) {
+		if ($this->_infinity == 1) {
 			return 'infinity';
-		} else if ($this->infinity == -1) {
+		} else if ($this->_infinity == -1) {
 			return '-infinity';
 		} else {
 			return $this->format('Y-m-d H:i:s e');
@@ -122,16 +122,18 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 	}
 
 	// Compare trait cmp function
-	public function cmp($other) : \int {
+	public function cmp(\mixed $other) : \int {
+		invariant($other instanceof \DateTimeInterface,
+					'Can only compare a datetime against a datetime');
 		if ($other instanceof DateTimeType) {
 			// other is a DateTimeType, check for infinities
 			if ($this->isInfinite() || $other->isInfinite()) {
-				return $this->infinity - $other->infinity;
+				return $this->_infinity - $other->_infinity;
 			}
 		}
 		if ($this->isInfinite()) {
 			// This is infinity, so just return which infinity it is
-			return $this->infinity;
+			return $this->_infinity;
 		}
 
 		$this_ts = $this->getTimestamp();

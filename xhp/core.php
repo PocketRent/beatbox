@@ -15,7 +15,7 @@
   +----------------------------------------------------------------------+
 */
 
-abstract class :xhp {
+abstract class :xhp implements XHPChild {
   public function __construct(KeyedTraversable<string, mixed> $attributes,
                               Traversable<XHPChild> $children) {}
   abstract public function appendChild(mixed $child): this;
@@ -37,6 +37,8 @@ abstract class :xhp {
   protected static function &__xhpAttributeDeclaration(): array<string, array<int, mixed>> {
     return array();
   }
+
+  public ?string $source;
 
   /**
    * Enabling validation will give you stricter documents; you won't be able to
@@ -532,7 +534,7 @@ abstract class :x:composable-element extends :x:base {
       case self::TYPE_ENUM:
         foreach ((array)$decl[$attr][1] as $enum) {
           if ($enum === $val) {
-            break;
+            break 2;
           }
         }
         $enums = 'enum("' . implode('","', (array)$decl[$attr][1]) . '")';

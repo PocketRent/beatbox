@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 
 abstract class :bb:base extends :x:element {
 	attribute
@@ -9,10 +9,10 @@ abstract class :bb:base extends :x:element {
 
 	protected ImmSet<string> $skipTransfer = ImmSet {};
 
-	final public function addClass($class) : :bb:base {
+	final public function addClass(string $class) : :bb:base {
 		$this->setAttribute(
 			'class',
-			trim($this->getAttribute('class').' '.$class)
+			trim((string)$this->getAttribute('class').' '.$class)
 		);
 		return $this;
 	}
@@ -22,14 +22,14 @@ abstract class :bb:base extends :x:element {
 	}
 
 	public function requireUniqueID() : string {
-		if(!($id = $this->getAttribute('id'))) {
+		if(!($id = (string)$this->getAttribute('id'))) {
 			$this->setAttribute('id', $id = 'bb_' . (<div />)->getID());
 		}
 		return $id;
 	}
 
 	final protected function render() : :x:element {
-		$allowed = $this->getAttribute('devices');
+		$allowed = (int)$this->getAttribute('devices');
 		if(!($allowed & device_type())) {
 			return <x:frag />;
 		}

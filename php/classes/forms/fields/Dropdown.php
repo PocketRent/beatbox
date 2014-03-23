@@ -18,6 +18,7 @@ class :bb:form:dropdown extends :bb:form:field {
 		if($items instanceof Continuation) {
 			$items = clone $items;
 		}
+		assert($items instanceof KeyedTraversable);
 		foreach($items as $key=>$item) {
 			if(is_object($item)) {
 				$base->appendChild($item);
@@ -29,7 +30,8 @@ class :bb:form:dropdown extends :bb:form:field {
 		return $base;
 	}
 
-	protected function childValueFields(?:x:base $base = null) : Continuation {
+	protected function childValueFields(?:x:base $base = null) : Continuation<:xhp> {
+		// UNSAFE - yield isn't handled by Hack yet
 		if(!$base) {
 			$base = $this;
 		}
@@ -37,7 +39,12 @@ class :bb:form:dropdown extends :bb:form:field {
 			if(!is_object($child)) {
 				continue;
 			}
-			if(isset($child->__xhpAttributeDeclaration()['value'])) {
+			assert($child instanceof :xhp);
+			{
+				// UNSAFE - static method call
+				$attribues = $child->__xhpAttributeDeclaration();
+			}
+			if(isset($attribues['value'])) {
 				yield $child;
 			} else {
 				foreach($this->childValueFields($child) as $f) yield $f;
@@ -61,6 +68,7 @@ class :bb:form:dropdown extends :bb:form:field {
 		if($items instanceof Continuation) {
 			$items = clone $items;
 		}
+		assert($items instanceof KeyedTraversable);
 		foreach($items as $key=>$item) {
 			if(is_object($item)) {
 				foreach($this->childValueFields(<x:frag>{$item}</x:frag>) as $i) {

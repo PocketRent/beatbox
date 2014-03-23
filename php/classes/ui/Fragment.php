@@ -8,7 +8,7 @@ final class :bb:fragment extends :bb:base {
 	protected ImmSet<string> $skipTransfer = ImmSet {'name'};
 
 	protected function compose() : :div {
-		$name = $this->getAttribute('name');
+		$name = (string)$this->getAttribute('name');
 		$fragment = beatbox\Router::response_for_fragment($name);
 
 		return <div class="fragment" data-fragment-name={$name}>{$fragment}</div>;

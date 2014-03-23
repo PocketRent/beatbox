@@ -53,7 +53,7 @@ abstract class :bb:form:field extends :bb:base {
 
 		if (!$this->valid) {
 			$root->setAttribute('aria-invalid', 'true');
-			$field->setAttribute('class', $field->getAttribute('class') . ' error');
+			$field->setAttribute('class', (string)$field->getAttribute('class') . ' error');
 		}
 
 		if ($this->isAttributeSet('required') && $this->getAttribute('required') == 'true') {
@@ -86,7 +86,7 @@ abstract class :bb:form:field extends :bb:base {
 
 	public function validate() : array {
 		$value = $this->getValue();
-		$displayName = $this->getAttribute('label') ?: $this->getAttribute('name');
+		$displayName = (string)($this->getAttribute('label') ?: $this->getAttribute('name'));
 		// required
 		if($this->valid && $this->getAttribute('required')) {
 			if(!$value) {
@@ -119,7 +119,7 @@ abstract class :bb:form:field extends :bb:base {
 						if(!preg_match($regex, $value)) {
 							$this->valid = false;
 							$this->error = $value . ' does not match allowed format for ' .
-								$this->getAttribute('name');
+								(string)$this->getAttribute('name');
 						}
 					}
 				} else if(!preg_match($regex, (string)$value)) {

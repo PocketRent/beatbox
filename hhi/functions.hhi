@@ -29,7 +29,7 @@ function fb_bspatch(
   string $extra,
 ): string;
 function func_get_args(): array;
-function implode(string $glue, array $pieces): string;
+function implode<Tv>(string $glue, Traversable<Tv> $pieces): string;
 function is_array(mixed $arg): bool;
 function isset(ArrayAccess $x): bool;
 function ord(string $string): int;

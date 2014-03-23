@@ -17,10 +17,11 @@ class :bb:listbox extends :bb:base {
 
 	protected function compose() : :ul {
 		$list = <ul class="listbox" role="listbox" />;
-		$list->addClass($this->getAttribute('size'));
+		$list->addClass((string)$this->getAttribute('size'));
 
 		$first = true;
 		foreach ($this->getChildren() as $item) {
+			assert($item instanceof :bb:list-item);
 			$list->appendChild($item);
 			if (device_type() == DEVICE_DESKTOP) {
 				if ($first) {

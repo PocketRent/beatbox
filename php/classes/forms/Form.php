@@ -31,19 +31,19 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 			$this->setAttribute('action', $action);
 		}
 		if(is_get()) {
-			$data = session_get('form.' . $this->getAttribute('action') . '.data');
+			$data = session_get('form.' . (string)$this->getAttribute('action') . '.data');
 			if($data && $data instanceof \Indexish) {
 				// UNSAFE
 				$this->loadData($data);
 				$this->validate();
-				session_clear('form.' . $this->getAttribute('action') . '.data');
+				session_clear('form.' . (string)$this->getAttribute('action') . '.data');
 			}
 		} else {
 			$this->loadData($_POST + $_FILES, true);
 			if(!$this->validate()) {
 				if(!is_ajax()) {
 					// Save session data
-					session_set('form.' . $this->getAttribute('action') . '.data',
+					session_set('form.' . (string)$this->getAttribute('action') . '.data',
 								$_POST + $_FILES);
 					// Redirect back
 					redirect_back($base);
@@ -57,7 +57,10 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 						'No handler provided or non-callable handler provided.'
 					);
 				}
-				return $handler($this, $this->getData());
+				{
+					// UNSAFE - This is callable though rather difficult to typecheck
+					return $handler($this, $this->getData());
+				}
 			}
 		}
 		return $this;
@@ -183,6 +186,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		$valid = $errors->count() == 0;
 		$validator = $this->getAttribute('validator');
 		if(is_callable($validator)) {
+			// UNSAFE - This is callable though rather difficult to typecheck
 			$valid = call_user_func($validator, $fields, $errors) && $valid;
 		}
 		return $valid;

@@ -19,11 +19,11 @@ class :bb:form:confirm-password extends :bb:form:field {
 
 	protected function buildField() : :div {
 		$first = <bb:form:password
-			name={$this->getAttribute('name') . '[0]'}
+			name={(string)$this->getAttribute('name') . '[0]'}
 			label={$this->getAttribute('firstLabel')}
 			class="first" />;
 		$second = <bb:form:password
-			name={$this->getAttribute('name') . '[1]'}
+			name={(string)$this->getAttribute('name') . '[1]'}
 			label={$this->getAttribute('secondLabel')}
 			class="second" />;
 

@@ -6,7 +6,9 @@ class :bb:form:label extends :bb:form:field {
 		:bb:form:field for @required;
 
 	protected function buildField() : :label {
-		$root = <label for={$this->getAttribute('for')->getID()} />;
+		$for = $this->getAttribute('for');
+		assert($for instanceof :bb:form:field);
+		$root = <label for={$for->getID()} />;
 		$root->appendChild($this->getChildren());
 		return $root;
 	}

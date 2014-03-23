@@ -8,18 +8,18 @@ final class :bb:css extends :bb:base {
 
 	public function compose() : :link {
 		if(in_dev()) {
-			$path = $this->getAttribute('dev');
+			$path = (string)$this->getAttribute('dev');
 			$base = BASE_DIR;
 		} else {
-			$path = $this->getAttribute('live');
+			$path = (string)$this->getAttribute('live');
 			$base = BASE_DOC_DIR;
 			if(!$path) {
-				$path = $this->getAttribute('dev');
+				$path = (string)$this->getAttribute('dev');
 				$base = BASE_DIR;
 			} else {
 				$check = BASE_DOC_DIR . '/' . $path;
 				if(!realpath($check)) {
-					$copyFrom = $this->getAttribute('dev');
+					$copyFrom = (string)$this->getAttribute('dev');
 					// Dev is relative to BASE_DIR, rather than BASE_DOC_DIR
 					copy(BASE_DIR . '/'. $copyFrom, $check);
 				}

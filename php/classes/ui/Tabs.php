@@ -16,6 +16,7 @@ class :bb:tabs extends :bb:base {
 
 		$first = true;
 		foreach($this->getChildren() as $tab) {
+			assert($tab instanceof :bb:tab);
 			$title = $tab->getAttribute('title');
 			$id = $tab->getID();
 			$tabs->appendChild($tab);

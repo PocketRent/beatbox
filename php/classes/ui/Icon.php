@@ -6,7 +6,7 @@ class :bb:icon extends :bb:base {
 	protected ImmSet<string> $skipTransfer = ImmSet {'src'};
 
 	protected function compose() : :x:element {
-		$src = $this->getAttribute('src');
+		$src = (string)$this->getAttribute('src');
 
 		$base = BASE_DOC_DIR . '/';
 
@@ -32,7 +32,8 @@ class :bb:icon extends :bb:base {
 					continue;
 				}
 				if($name == 'class') {
-					$value = $svg->getAttribute('class') . ' ' . $value;
+					assert(is_string($value));
+					$value = (string)$svg->getAttribute('class') . ' ' . $value;
 				}
 				$svg->setAttribute($name, $value);
 			}

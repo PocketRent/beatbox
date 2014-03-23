@@ -11,7 +11,7 @@ class :bb:form:file extends :bb:form:field {
 
 	public function validate() : array {
 		$value = $this->getAttribute('value');
-		if($this->valid && $value) {
+		if($this->valid && is_array($value) && $value) {
 			if(is_array($value['error'])) {
 				$keys = array_keys($value);
 				foreach(array_keys($value['error']) as $k) {
@@ -80,7 +80,7 @@ class :bb:form:file extends :bb:form:field {
 
 	public function getValue() : ?array {
 		$value = $this->getAttribute('value');
-		if($value) {
+		if(is_array($value) && $value) {
 			if(is_array($value['error'])) {
 				$values = array_filter($value['error'], function($v) {
 					return $v != UPLOAD_ERR_OK;
@@ -91,7 +91,8 @@ class :bb:form:file extends :bb:form:field {
 			} else if($value['error'] != UPLOAD_ERR_OK) {
 				return null;
 			}
+			return $value;
 		}
-		return $value;
+		return [];
 	}
 }

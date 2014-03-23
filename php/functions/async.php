@@ -1,4 +1,4 @@
-<?hh // strict
+<?hh
 
 function wait<T>(Awaitable<T> $handle) : T {
 	return $handle->getWaitHandle()->join();

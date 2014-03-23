@@ -12,18 +12,18 @@ class :bb:button extends :bb:base {
 		string href;
 
 	protected function compose() : :button {
-		$kind = $this->getAttribute('kind');
+		$kind = (string)$this->getAttribute('kind');
 
 		$button = <button />;
 		$button->addClass($kind)
-				->addClass($this->getAttribute('size'))
-				->addClass($this->getAttribute('colour'))
-				->addClass($this->getAttribute('position'))
-				->addClass($this->getAttribute('confirm') ? 'confirm' : '')
+				->addClass((string)$this->getAttribute('size'))
+				->addClass((string)$this->getAttribute('colour'))
+				->addClass((string)$this->getAttribute('position'))
+				->addClass((string)$this->getAttribute('confirm') ? 'confirm' : '')
 				->appendChild($this->getChildren());
 
 		if ($this->getAttribute('href'))
-			$button->setAttribute('data-href', $this->getAttribute('href'));
+			$button->setAttribute('data-href', (string)$this->getAttribute('href'));
 
 		switch ($kind) {
 		case 'link':
@@ -32,7 +32,7 @@ class :bb:button extends :bb:base {
 			break;
 		case 'modal':
 			if ($this->getAttribute('fragment'))
-				$button->setAttribute('data-fragment', $this->getAttribute('fragment'));
+				$button->setAttribute('data-fragment', (string)$this->getAttribute('fragment'));
 			break;
 		}
 

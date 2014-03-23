@@ -7,7 +7,7 @@ final class :bb:js extends :bb:base {
 		string live;
 
 	public function compose() : :x:element {
-		if(in_live() && ($path = $this->getAttribute('live'))) {
+		if(in_live() && ($path = (string)$this->getAttribute('live'))) {
 			if(file_exists(BASE_DOC_DIR . '/' . $path)) {
 				$path .= '?m=' . filemtime(BASE_DOC_DIR . '/'. $path);
 			}
@@ -18,8 +18,10 @@ final class :bb:js extends :bb:base {
 		} else {
 			$root = <x:frag />;
 			$base = in_dev() ? BASE_DIR : BASE_DOC_DIR;
-			$dv = $this->getAttribute('dev_path') . '/';
-			foreach($this->getAttribute('dev') as $path) {
+			$dv = (string)$this->getAttribute('dev_path') . '/';
+			$dev = $this->getAttribute('dev');
+			assert($dev instanceof ConstVector);
+			foreach($dev as $path) {
 				$path = $dv . $path;
 				if(file_exists($base . '/' . $path)) {
 					$path .= '?m=' . filemtime($base . '/'. $path);

@@ -8,9 +8,9 @@ class :bb:form:date extends :bb:form:field {
 		:bb:form:number,
 		:div,
 		bool withDay = true,
-		DateTime value,
-		DateTime min,
-		DateTime max;
+		DateTimeInterface value,
+		DateTimeInterface min,
+		DateTimeInterface max;
 
 	protected string $type = 'date';
 
@@ -21,6 +21,7 @@ class :bb:form:date extends :bb:form:field {
 		$value = $this->getAttribute('value');
 
 		if($value) {
+			assert($value instanceof DateTimeInterface);
 			$mV = $value->format('n');
 			$yV = $value->format('Y');
 			$dV = $value->format('j');
@@ -50,7 +51,7 @@ class :bb:form:date extends :bb:form:field {
 			$days = <bb:form:dropdown
 				class="days"
 				items={$days}
-				name={$this->getAttribute('name') . '[Day]'}
+				name={(string)$this->getAttribute('name') . '[Day]'}
 				id={$this->getID()}
 				value={$dV} />;
 		} else {
@@ -60,7 +61,7 @@ class :bb:form:date extends :bb:form:field {
 		$months = <bb:form:dropdown
 			class="months"
 			items={$months}
-			name={$this->getAttribute('name') . '[Month]'}
+			name={(string)$this->getAttribute('name') . '[Month]'}
 			value={$mV} />;
 		if(!$withDay) {
 			$months->setAttribute('id', $this->getID());
@@ -69,7 +70,7 @@ class :bb:form:date extends :bb:form:field {
 		$years = <bb:form:number
 			placeholder="YYYY"
 			class="year"
-			name={$this->getAttribute('name') . '[Year]'}
+			name={(string)$this->getAttribute('name') . '[Year]'}
 			value={$yV} />;
 
 		$this->cascadeAttributes($days);

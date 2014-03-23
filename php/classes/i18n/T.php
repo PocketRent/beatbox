@@ -10,6 +10,7 @@ class :bb:t extends :bb:base {
 	protected function compose() : :x:frag {
 		$message = (string)((<bb:raw />)->appendChild($this->getChildren()));
 		if(($args = $this->getAttribute('args'))) {
+			assert($args instanceof Traversable);
 			// $args is a Traversable, so we should turn it into an array
 			// before handing it to vsprintf
 			$newArgs = [];

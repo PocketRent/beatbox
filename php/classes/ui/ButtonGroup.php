@@ -13,20 +13,27 @@ class :bb:button-group extends :bb:base {
 	protected function compose() : :x:frag {
 		$children = $this->getChildren();
 
+		$firstChild = $children[0];
+		$lastChild = $children[count($children)-1];
+		assert($firstChild instanceof :bb:button);
+		assert($lastChild instanceof :bb:button);
+
 		if (count($children) == 1) {
-			return $children[0];
+			return $firstChild;
 		}
 
 		if ($this->getAttribute('reversed')) {
-			$children[0]->addClass('right');
-			$children[count($children)-1]->addClass('left');
+			$firstChild->addClass('right');
+			$lastChild->addClass('left');
 		} else {
-			$children[0]->addClass('left');
-			$children[count($children)-1]->addClass('right');
+			$firstChild->addClass('left');
+			$lastChild->addClass('right');
 		}
 
 		for($i=1; $i < (count($children)-1); $i++) {
-			$children[$i]->addClass('middle');
+			$child = $children[$i];
+			assert($child instanceof :bb:button);
+			$child->addClass('middle');
 		}
 
 		return <x:frag>{$children}</x:frag>;

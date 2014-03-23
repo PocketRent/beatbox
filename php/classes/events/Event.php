@@ -76,7 +76,7 @@ class Event {
 	/**
 	 * Async endpoint
 	 */
-	public static function async_run(\string $name, array $args) : Vector<\mixed> {
+	public static function async_run(\string $name, array<mixed> $args) : Vector<\mixed> {
 		$vals = Vector {};
 		foreach(self::listeners_for($name) as $cb) {
 			$vals->add(call_user_func_array($cb, $args));

@@ -16,8 +16,8 @@
 */
 
 abstract class :xhp {
-  abstract public function __construct(KeyedTraversable<string, mixed> $attributes,
-                                       Traversable<XHPChild> $children);
+  public function __construct(KeyedTraversable<string, mixed> $attributes,
+                              Traversable<XHPChild> $children) {}
   abstract public function appendChild(mixed $child): this;
   abstract public function prependChild(mixed $child): this;
   abstract public function replaceChildren(...): this;

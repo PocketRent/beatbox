@@ -4,7 +4,7 @@
 chdir(__DIR__);
 $base = dirname(__DIR__);
 
-set_include_path(__DIR__. ':' . $base . '/pear');
+set_include_path(__DIR__. ':' . $base . '/lib/pear');
 
 define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
 

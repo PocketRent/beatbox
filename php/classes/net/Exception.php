@@ -4,13 +4,13 @@ namespace beatbox\net;
 use \beatbox\errors\Exception;
 
 class NetException extends Exception {
-	public function getEventPrefix() : \string {
+	public function getEventPrefix() : string {
 		return 'net';
 	}
 }
 
 class CurlHandleException extends NetException {
-	public function __construct(\resource $ch) {
+	public function __construct(resource $ch) {
 
 		$curl_message = curl_error($ch);
 		$curl_errno = curl_errno($ch);

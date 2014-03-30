@@ -8,7 +8,7 @@ use beatbox\errors\Exception;
  * Common exception for database-related errors
  */
 class DatabaseException extends Exception {
-	public final function getEventPrefix() : \string {
+	public final function getEventPrefix() : string {
 		return "db";
 	}
 }
@@ -18,15 +18,15 @@ class DatabaseException extends Exception {
  * being unable to connect
  */
 class ConnectionException extends DatabaseException {
-	protected \string $dbError;
+	protected string $dbError;
 
-	public function __construct(\resource $conn, \string $message, ?\Exception $previous=null) {
+	public function __construct(resource $conn, string $message, ?\Exception $previous=null) {
 		$this->dbError = pg_last_error($conn) ?: "unknown error";
 		$message = $message . ": '" . $this->dbError . "'";
 		parent::__construct($message, 1, $previous);
 	}
 
-	public function dbError() : \string {
+	public function dbError() : string {
 		return $this->dbError;
 	}
 }
@@ -35,7 +35,7 @@ class ConnectionException extends DatabaseException {
  * Exception for errors that occur with results and result sets.
  */
 class ResultException extends DatabaseException {
-	public function __construct(\resource $result, \string $message="",
+	public function __construct(resource $result, string $message="",
 								?\Exception $previous=null) {
 		$err = pg_result_error($result) ?: '';
 		if ($message) {
@@ -54,7 +54,7 @@ class ResultException extends DatabaseException {
 class InvalidFieldException extends DatabaseException {
 	private static int $num_fields = 4; // number of valid fields to show in the error message
 
-	public function __construct(\string $field, \ConstSet<string> $valid_fields,
+	public function __construct(string $field, \ConstSet<string> $valid_fields,
 								?\Exception $previous=null) {
 		$trunc = 0;
 		if ($valid_fields->count() > self::$num_fields) {
@@ -77,21 +77,21 @@ class InvalidFieldException extends DatabaseException {
  * Exception thrown when trying to perform an action on a deleted object.
  */
 class DeletedObjectException extends DatabaseException {
-	public function __construct(\string $action, \string $object, ?\Exception $previous = null) {
+	public function __construct(string $action, string $object, ?\Exception $previous = null) {
 		$message = "Tried to $action a deleted object '$object'";
 		parent::__construct($message, 4, $previous);
 	}
 }
 
 class TypeParseException extends DatabaseException {
-	public function __construct(\string $type, \string $message, ?\Exception $previous = null) {
+	public function __construct(string $type, string $message, ?\Exception $previous = null) {
 		$message = "Failed while parsing $type: '$message'";
 		parent::__construct($message, 5, $previous);
 	}
 }
 
 class InvalidValueException extends DatabaseException {
-	public function __construct(\string $val, ?\Exception $previous = null) {
+	public function __construct(string $val, ?\Exception $previous = null) {
 		$message = "Invalid database value: '$val'";
 		parent::__construct($message, 6, $previous);
 	}

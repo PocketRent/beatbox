@@ -1,5 +1,11 @@
 <?hh // strict
 
+const int DEVICE_DESKTOP = 1;
+const int DEVICE_TABLET  = 2;
+const int DEVICE_MOBILE  = 4;
+
+const int DEVICE_ALL     = 7;
+
 abstract class :bb:base extends :x:element {
 	attribute
 		int devices = DEVICE_ALL,

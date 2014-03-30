@@ -23,8 +23,8 @@ final class Connection {
 	private static ?Connection $connection=null;
 
 	private Vector<resource> $connection_pool = Vector {};
-	private \string $connection_string;
-	private ?\resource $transactionConn = null;
+	private string $connection_string;
+	private ?resource $transactionConn = null;
 
 	/**
 	 * Returns the singleton instance of Connection, creating it if necessary.
@@ -82,11 +82,11 @@ final class Connection {
 	/**
 	 * This sets the default connection that would be returned by Connection::get()
 	 */
-	public static function setDefault(Connection $conn) : \void {
+	public static function setDefault(Connection $conn) : void {
 		self::$connection = $conn;
 	}
 
-	public async function withRawConn<T>((function (\resource) : Awaitable<T>) $fn) : Awaitable<T> {
+	public async function withRawConn<T>((function (resource) : Awaitable<T>) $fn) : Awaitable<T> {
 		$conn = null;
 		if ($this->in_transaction) {
 			if ($this->transactionConn == null) {
@@ -115,7 +115,7 @@ final class Connection {
 		return $val;
 	}
 
-	private function newConnection() : \resource {
+	private function newConnection() : resource {
 		assert($this->connection_pool->count() == 0);
 		$conn = @pg_connect($this->connection_string);
 
@@ -137,14 +137,14 @@ final class Connection {
 		return $conn;
 	}
 
-	private \bool $in_transaction = false;
+	private bool $in_transaction = false;
 	private Vector $savepoints = Vector {};
 	/**
 	 * Starts an SQL transaction. If there is already a transaction in
 	 * progress, this creates a savepoint instead that can be rolled back
 	 * to.
 	 */
-	public function begin() : \void {
+	public function begin() : void {
 		if ($this->in_transaction) {
 			$savepoint = "__savepoint_".($this->savepoints->count()+1);
 			$this->savepoints->add($savepoint);
@@ -160,7 +160,7 @@ final class Connection {
 	 * Sets the transaction mode as described at:
 	 *     http://www.postgresql.org/docs/9.1/static/sql-set-transaction.html
 	 */
-	public function setTransactionMode(\string $mode) : \void {
+	public function setTransactionMode(string $mode) : void {
 		if ($this->in_transaction) {
 			wait($this->query('SET TRANSACTION '.$mode));
 		}
@@ -175,7 +175,7 @@ final class Connection {
 	 *
 	 * If the connection is not in a transaction, nothing happens.
 	 */
-	public function commit() : \void {
+	public function commit() : void {
 		if ($this->in_transaction) {
 			if ($this->savepoints->count() > 0) {
 				$savepoint = $this->savepoints->pop();
@@ -195,7 +195,7 @@ final class Connection {
 	 *
 	 * If the connection is not in a transaction, nothing happens.
 	 */
-	public function rollback() : \void {
+	public function rollback() : void {
 		if ($this->in_transaction) {
 			if ($this->savepoints->count() > 0) {
 				$savepoint = $this->savepoints->pop();
@@ -237,7 +237,7 @@ final class Connection {
 	 *
 	 * To send multiple queries use the multiQuery method
 	 */
-	public async function query(\string $query, array $params=[]) : Awaitable<Result> {
+	public async function query(string $query, array $params=[]) : Awaitable<Result> {
 		return await $this->withRawConn(async function ($conn) use ($query, $params) {
 			if (count($params) == 0) {
 				if (!pg_send_query($conn, $query)) {
@@ -274,7 +274,7 @@ final class Connection {
 	 *
 	 * The handle will return a vector of Results when joined.
 	 */
-	public async function multiQuery(\string $query, array $params=[]) : Awaitable<Vector<Result>> {
+	public async function multiQuery(string $query, array $params=[]) : Awaitable<Vector<Result>> {
 
 		return await $this->withRawConn(async function ($conn) use ($query, $params) {
 			if (count($params) == 0) {
@@ -305,7 +305,7 @@ final class Connection {
 	}
 
 	private ?QueryQueue $queue = null;
-	public function queueQuery(\string $query) : Awaitable<Result> {
+	public function queueQuery(string $query) : Awaitable<Result> {
 		if ($this->queue == null) {
 			$this->queue = new QueryQueue($this);
 		}
@@ -319,8 +319,8 @@ final class Connection {
 	/**
 	 * Escapes the given identifier according to postgres rules.
 	 */
-	public function escapeIdentifier(\string $id) : \string {
-		return wait($this->withRawConn(async function ($conn) : Awaitable<\string> use ($id) {
+	public function escapeIdentifier(string $id) : string {
+		return wait($this->withRawConn(async function ($conn) : Awaitable<string> use ($id) {
 			return pg_escape_identifier($conn, $id);
 		}));
 	}
@@ -334,7 +334,7 @@ final class Connection {
 	 * Everything else is escaped using the low-level pg_escape_literal
 	 * function.
 	 */
-	public function escapeValue(\mixed $val, \bool $sub = false) : \string {
+	public function escapeValue(mixed $val, bool $sub = false) : string {
 		if ($val instanceof Type) {
 			return $val->toDBString($this);
 		} else if ($val instanceof Traversable) {
@@ -356,7 +356,7 @@ final class Connection {
 		} else if(is_bool($val)) {
 			return $val ? 'true' : 'false';
 		} else {
-			return wait($this->withRawConn(async function ($conn) : Awaitable<\string> use ($val) {
+			return wait($this->withRawConn(async function ($conn) : Awaitable<string> use ($val) {
 				return pg_escape_literal($conn, (string)$val);
 			}));
 		}
@@ -372,7 +372,7 @@ final class Connection {
 }
 
 class QueryQueue {
-	private Vector<\string> $queries = Vector {};
+	private Vector<string> $queries = Vector {};
 	private Connection $conn;
 	private ?Vector<Result> $results = null;
 
@@ -380,13 +380,13 @@ class QueryQueue {
 		$this->conn = $conn;
 	}
 
-	public function add(\string $query) : Awaitable<Result> {
+	public function add(string $query) : Awaitable<Result> {
 		$queryNum = $this->queries->count();
 		$this->queries->add($query);
 		return new QueuedQuery($this, $queryNum);
 	}
 
-	public async function getResult(\int $num) : Awaitable<Result> {
+	public async function getResult(int $num) : Awaitable<Result> {
 		if ($this->results == null) {
 			$query = bb_join(';', $this->queries);
 			$this->results = await $this->conn->multiQuery($query);
@@ -400,15 +400,15 @@ class QueryQueue {
 
 class QueuedQuery implements Awaitable<Result> {
 	private QueryQueue $queue;
-	private \int $queryNum;
+	private int $queryNum;
 
-	public function __construct(QueryQueue $queue, \int $queryNum) {
+	public function __construct(QueryQueue $queue, int $queryNum) {
 		$this->queue = $queue;
 		$this->queryNum = $queryNum;
 	}
 
 	public function getWaitHandle() : \WaitHandle<Result> {
-		$do = async function (QueryQueue $queue, \int $num) : Awaitable<Result> {
+		$do = async function (QueryQueue $queue, int $num) : Awaitable<Result> {
 			return await $queue->getResult($num);
 		};
 

@@ -23,14 +23,14 @@ function parse_common_args(Vector<string> &$args): Map<string,mixed> {
 
 	$info = Map { };
 
-	$conf_dir = getcwd().'/conf';
+	$conf_file = getcwd().'/conf.php';
 
 	while ($iter->valid()) {
 		$arg = $iter->current();
 		switch ($arg) {
 		case "-C":
-		case "--conf-dir":
-			$conf_dir = $getNext("conf-dir");
+		case "--conf-file":
+			$conf_file = $getNext("conf-file");
 			break;
 		case "-d":
 		case "--database":
@@ -66,11 +66,10 @@ function parse_common_args(Vector<string> &$args): Map<string,mixed> {
 	// Check to see if we need to include 'db.php'
 	if (!($info->get('database') && $info->get('host')
 			&& $info->get('user') && $info->get('pass'))) {
-		$db_conf = $conf_dir . '/db.php';
-		if (!file_exists($db_conf)) {
-			command_fail("Cannot find database configuration file to include");
+		if (!file_exists($conf_file)) {
+			command_fail("Cannot include configuration file: '$conf_file'");
 		}
-		require_once $db_conf;
+		require_once $conf_file;
 
 		if (!$info->get('database')) {
 			if (!defined('DATABASE_NAME')) command_fail("No database name value available");

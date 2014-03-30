@@ -9,8 +9,8 @@ namespace beatbox\test\constraint;
 class Produce extends \PHPUnit_Framework_Constraint {
 
 	private array $expected;
-	private \bool $overrun = false;
-	private \bool $underrun = false;
+	private bool $overrun = false;
+	private bool $underrun = false;
 
 	/**
 	 * $expected is an array of the expected values from
@@ -20,14 +20,14 @@ class Produce extends \PHPUnit_Framework_Constraint {
 	 * $underrun control whether the tested iterator is allowed to
 	 * stop before all elements in the expected array have been checked
 	 */
-	public function __construct(array $expected, \bool $overrun=false, \bool $underrun=false) {
+	public function __construct(array $expected, bool $overrun=false, bool $underrun=false) {
 		$this->expected = $expected;
 		$this->overrun = $overrun;
 		$this->underrun = $underrun;
 	}
 
-	public function evaluate(Traversable $other, \string $description = '',
-			\bool $returnResult = false) : \bool {
+	public function evaluate(Traversable $other, string $description = '',
+			bool $returnResult = false) : bool {
 		$success = false;
 
 		$comp_factory = \PHPUnit_Framework_ComparatorFactory::getDefaultInstance();
@@ -72,11 +72,11 @@ class Produce extends \PHPUnit_Framework_Constraint {
 
 	}
 
-	protected function failureDescription(\mixed $other) : \string {
+	protected function failureDescription(mixed $other) : string {
 		return 'traversable produces expected values';
 	}
 
-	public function toString() : \string {
+	public function toString() : string {
 		return 'traversable produces expected values';
 	}
 }

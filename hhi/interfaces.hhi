@@ -156,6 +156,7 @@ interface ConstVector<Tv> extends ConstCollection<Tv>,
   public function filterWithKey((function(int, Tv): bool) $callback):
     ConstVector<Tv>;
   public function zip<Tu>(Traversable<Tu> $iterable): ConstVector<Pair<Tv, Tu>>;
+  public function linearSearch(Tv $val): int;
 }
 
 interface MutableVector<Tv> extends ConstVector<Tv>,
@@ -240,3 +241,11 @@ interface JsonSerializable {
  * subinterface.
  */
 interface XHPChild {}
+
+/**
+ * Stringish is a type that matches strings as well as string-convertible
+ * objects: that is, objects that provide the __toString method
+ */
+interface Stringish {
+  public function __toString();
+}

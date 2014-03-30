@@ -6,21 +6,21 @@ class Asset {
 	/**
 	 * The unique ID for this asset
 	 */
-	private ?\mixed $id = null;
+	private ?mixed $id = null;
 	/**
 	 * The name of this asset (normally the original
 	 * filename)
 	 */
-	private ?\string $name;
+	private ?string $name;
 	/**
 	 * The mime type of this asset
 	 */
-	private ?\string $mime;
+	private ?string $mime;
 
 	/**
 	 * The source path for this file
 	 */
-	private ?\string $source_path;
+	private ?string $source_path;
 
 	/**
 	 * Store a file in the assets store
@@ -33,7 +33,7 @@ class Asset {
 	 * 'tmp_name' must be an uploaded file
 	 *
 	 */
-	public static async function store(\Indexish<\string, \mixed> $file) : \Awaitable<Asset> {
+	public static async function store(\Indexish<string, mixed> $file) : \Awaitable<Asset> {
 		if (!isset($file['name']) || !isset($file['tmp_name'])) {
 			throw new \InvalidArgumentException("\$file must have 'name' and 'tmp_name' keys");
 		}
@@ -67,7 +67,7 @@ class Asset {
 	 *
 	 * @return Asset or null, if it doesn't exist
 	 */
-	public static async function load(\mixed $id) : \Awaitable<?Asset> {
+	public static async function load(mixed $id) : \Awaitable<?Asset> {
 		$conn = orm\Connection::get();
 
 		$eid = $conn->escapeValue($id);
@@ -92,14 +92,14 @@ class Asset {
 	/**
 	 * Sets the name of the file
 	 */
-	public function setName(\string $name) : \void {
+	public function setName(string $name) : void {
 		$this->name = $name;
 	}
 
 	/**
 	 * Gets the name of the file
 	 */
-	public function getName() : ?\string {
+	public function getName() : ?string {
 		invariant($this->name !== null, 'Name cannot be null');
 		return $this->name;
 	}
@@ -107,14 +107,14 @@ class Asset {
 	/**
 	 * Sets the MIME type of the file
 	 */
-	public function setMIME(\string $mime) : \void {
+	public function setMIME(string $mime) : void {
 		$this->mime = $mime;
 	}
 
 	/**
 	 * Gets the MIME type of the file
 	 */
-	public function getMIME() : \string {
+	public function getMIME() : string {
 		invariant($this->mime !== null, 'Mime type cannot be null');
 		return $this->mime;
 	}
@@ -123,7 +123,7 @@ class Asset {
 	 * Returns the unique ID for the Asset.
 	 * If there is no ID, this returns null.
 	 */
-	public function id() : \mixed {
+	public function id() : mixed {
 		return $this->id;
 	}
 
@@ -131,7 +131,7 @@ class Asset {
 	 * Loads a file from the given source path, moving it from
 	 * the original location.
 	 */
-	public function loadSourceFile(\string $source) : \void {
+	public function loadSourceFile(string $source) : void {
 		if (!is_file($source)) {
 			throw new \InvalidArgumentException("'$source' is a not a file");
 		}
@@ -161,7 +161,7 @@ class Asset {
 	/**
 	 * Writes the Asset information to the database
 	 */
-	public async function write() : \Awaitable<\void> {
+	public async function write() : \Awaitable<void> {
 		$conn = orm\Connection::get();
 
 		$name = $conn->escapeValue($this->name);
@@ -186,7 +186,7 @@ class Asset {
 		}
 	}
 
-	public async function delete() : \Awaitable<\void> {
+	public async function delete() : \Awaitable<void> {
 		$conn = orm\Connection::get();
 
 		if ($this->id !== null) {
@@ -206,7 +206,7 @@ class Asset {
 	/**
 	 * Returns a URI for accessing the file, or the fallback URI if one cannot be provided
 	 */
-	public function getURI(\string $fallback = '') : \string {
+	public function getURI(string $fallback = '') : string {
 		if ($this->source_path) {
 			$filepath = ASSET_PATH .'/'.$this->source_path;
 			if (file_exists($filepath) && is_file($filepath)) {
@@ -225,7 +225,7 @@ class Asset {
 	 * Returns an access path for the file so operations that need a physical
 	 * file locally can work.
 	 */
-	public function getAccessPath() : \string {
+	public function getAccessPath() : string {
 		return ASSET_PATH.'/'.$this->source_path;
 	}
 
@@ -236,7 +236,7 @@ class Asset {
 	 * the asset can be thumbnailed
 	 *
 	 */
-	public function icon(\bool $thumbnail = true) : :bb:icon {
+	public function icon(bool $thumbnail = true) : :bb:icon {
 		if ($thumbnail && $this->thumbnailable()) {
 			$icon = <bb:thumbnail />;
 			$icon->setAsset($this);
@@ -251,14 +251,14 @@ class Asset {
 	/**
 	 * Returns whether or not this asset is an image
 	 */
-	public function isImage() : \bool {
+	public function isImage() : bool {
 		return substr($this->getMIME(), 0, 5) == 'image';
 	}
 
 	/**
 	 * Returns whether or not this asset can be turned into a thumbnail.
 	 */
-	public function thumbnailable() : \bool {
+	public function thumbnailable() : bool {
 		// TODO: Thumbnail generation when we have Imagick
 		return false;
 	}
@@ -266,7 +266,7 @@ class Asset {
 	/**
 	 * Returns the appropriate icon name for this asset
 	 */
-	public function iconName() : \string {
+	public function iconName() : string {
 		$mime = $this->getMIME();
 		if (substr($mime, 0, 5) == 'image') {
 			return 'image';
@@ -277,7 +277,7 @@ class Asset {
 		}
 	}
 
-	public function __clone() : \void {
+	public function __clone() : void {
 		$this->id = null;
 	}
 

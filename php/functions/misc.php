@@ -8,7 +8,7 @@
  * A variant of the standard `join`/`implode` function that works
  * for any traversable, not just arrays
  */
-function bb_join<Tv>(string $delimiter, Traversable<Tv> $trav) : string {
+function bb_join<Tv as Stringish>(string $delimiter, Traversable<Tv> $trav) : string {
 	$add_delim = false;
 	$str = "";
 	foreach ($trav as $elem) {
@@ -154,7 +154,7 @@ function host_domain() : ?string {
 /**
  * Gets the base URL
  */
-function base_url() : \string {
+function base_url() : string {
 	if(!isset($_SERVER['SCRIPT_URI'])) {
 		return '';
 	}
@@ -169,6 +169,7 @@ function base_url() : \string {
 	return $uri;
 }
 
+/*
 function tuple(...) {
 	invariant(func_num_args() > 1, 'Tuples of one element are not allowed');
 	return func_get_args();
@@ -188,3 +189,4 @@ function class_meth(string $class, string $meth) {
 	assert(method_exists($class, $meth) || method_exists($class, '__callStatic'));
 	return [$class, $meth];
 }
+ */

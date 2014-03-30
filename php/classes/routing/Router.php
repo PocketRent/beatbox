@@ -2,32 +2,32 @@
 
 namespace beatbox;
 
-type Metadata = Map<\string, \mixed>;
+type Metadata = Map<string, mixed>;
 
-type HandlerCallback = (function(array, ?\string, Metadata):\mixed);
-type CheckerCallback = (function(\string, Metadata):\bool);
+type HandlerCallback = (function(array, ?string, Metadata):mixed);
+type CheckerCallback = (function(string, Metadata):bool);
 
-type HandlerTable = Map<\string, HandlerCallback>;
+type HandlerTable = Map<string, HandlerCallback>;
 
 class Router {
-	protected static Map<\string, Pair<HandlerTable, Metadata>> $routes = Map {};
+	protected static Map<string, Pair<HandlerTable, Metadata>> $routes = Map {};
 
-	protected static Map<\string, Pair<HandlerTable, Metadata>> $regex_routes = Map {};
+	protected static Map<string, Pair<HandlerTable, Metadata>> $regex_routes = Map {};
 
-	protected static Map<\string, CheckerCallback> $checkers = Map {};
+	protected static Map<string, CheckerCallback> $checkers = Map {};
 
-	protected static Map<\string, mixed> $last_md = Map {};
+	protected static Map<string, mixed> $last_md = Map {};
 
 	protected static HandlerTable $last_frags = Map {};
 
 	protected static array $last_url = [];
 
-	protected static ?\string $last_ext = null;
+	protected static ?string $last_ext = null;
 
 	/**
 	 * Route the url, generating the fragments
 	 */
-	public static function route(\string $url, Vector<\string> $fragments = Vector {}) : \mixed {
+	public static function route(string $url, Vector<string> $fragments = Vector {}) : mixed {
 		if(!count($fragments)) {
 			$fragments = Vector {'page'};
 		}
@@ -121,8 +121,8 @@ class Router {
 	 *
 	 * @returns an array of fragment-name => content
 	 */
-	public static function process_pagelet_fragments(array<\string> $url,
-														Vector<\string> $fragments) : array {
+	public static function process_pagelet_fragments(array<string> $url,
+														Vector<string> $fragments) : array {
 		assert(pagelet_server_is_enabled() && is_get());
 		$res = [];
 		$tasks = [];
@@ -197,7 +197,7 @@ class Router {
 	/**
 	 * Clear all the known routes and checkers
 	 */
-	public static function reset() : \void {
+	public static function reset() : void {
 		self::$routes = Map {};
 		self::$regex_routes = Map {};
 		self::$checkers = Map {};
@@ -210,7 +210,7 @@ class Router {
 	/**
 	 * Add routes
 	 */
-	public static function add_routes(Map<\string,mixed> $routes, \bool $regex = false) : \void {
+	public static function add_routes(Map<string,mixed> $routes, bool $regex = false) : void {
 		foreach($routes as $path => $route) {
 			$l = strlen($path);
 			$path = trim($path, '/');
@@ -250,7 +250,7 @@ class Router {
 	/**
 	 * Gets the routes available for a given path
 	 */
-	public static function get_routes_for_path(\string $path):
+	public static function get_routes_for_path(string $path):
 		Pair<HandlerTable, Metadata> {
 		$l = strlen($path);
 		$path = trim($path, '/');
@@ -273,14 +273,14 @@ class Router {
 	/**
 	 * Add a checker for the given metadata key
 	 */
-	public static function add_checker(\string $key, CheckerCallback $callback) : \void {
+	public static function add_checker(string $key, CheckerCallback $callback) : void {
 		self::$checkers[strtolower($key)] = $callback;
 	}
 
 	/**
 	 * Return the checker for the given metadata key
 	 */
-	public static function get_checker(\string $key) : ?CheckerCallback {
+	public static function get_checker(string $key) : ?CheckerCallback {
 		$key = strtolower($key);
 		return self::$checkers->get($key);
 	}
@@ -288,7 +288,7 @@ class Router {
 	/**
 	 * Check if we're allowed to access the current fragment based on the metadata
 	 */
-	protected static function check_frag(\string $frag, Map<\string,\mixed> $md) : \void {
+	protected static function check_frag(string $frag, Map<string,mixed> $md) : void {
 		foreach($md as $key => $val) {
 			if(!$val) {
 				continue;
@@ -316,9 +316,9 @@ class Router {
 		}
 	}
 
-	protected static function render_fragment(\string $fragName,
+	protected static function render_fragment(string $fragName,
 								HandlerCallback $frag,
-								array $url, ?\string $extension, Map $md) : \mixed {
+								array $url, ?string $extension, Map $md) : mixed {
 		$val = $frag($url, $extension, $md);
 		// If the response from the fragment is awaitable, then block on it here. This is a nice
 		// convenience for fragment writers, meaning they can write fragments as async functions
@@ -335,7 +335,7 @@ class Router {
 		return $val;
 	}
 
-	public static function response_for_fragment(\string $frag) : \mixed {
+	public static function response_for_fragment(string $frag) : mixed {
 		if(isset(self::$last_frags[$frag])) {
 			return self::render_fragment($frag, self::$last_frags[$frag], self::$last_url,
 											self::$last_ext, self::$last_md);
@@ -347,7 +347,7 @@ class Router {
 		return self::$last_url;
 	}
 
-	protected static function fragment_timeout() : \int {
+	protected static function fragment_timeout() : int {
 		if (defined('FRAGMENT_TIMEOUT')) {
 			// UNSAFE
 			return FRAGMENT_TIMEOUT;

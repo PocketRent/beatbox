@@ -1,11 +1,11 @@
-<?hh // strict
+<?hh
 
 namespace beatbox\orm;
 
 use \beatbox;
 
 abstract class CompositeType implements Type {
-	abstract static function fromString(\string $val) : CompositeType;
+	abstract static function fromString(string $val) : CompositeType;
 }
 
 class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
@@ -17,18 +17,18 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 		return $date_type->setTimezone($date->getTimezone());
 	}
 
-	public final static function fromString(\string $val) : DateTimeType {
+	public final static function fromString(string $val) : DateTimeType {
 		return new static($val);
 	}
 
-	private \int $_infinity = 0;
+	private int $_infinity = 0;
 
 	/**
 	 * Construct a new DateTimeType, doesn't take a timezone like
 	 * DateTime, because timestamps from the database have the same
 	 * timezone as the local PHP default timezone
 	 */
-	public function __construct(\mixed $date) {
+	public function __construct(mixed $date) {
 		if ($date == 'infinity' || $date == '+infinity') {
 			$this->_infinity = 1;
 			parent::__construct('9999-12-31 23:59:59');
@@ -47,7 +47,7 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 	 *
 	 * Set to null to clear the timezone (Actually just resets it back to default)
 	 */
-	public function setTimezone(\mixed $timezone) : ?DateTimeType {
+	public function setTimezone(mixed $timezone) : ?DateTimeType {
 		if ($timezone === null) {
 			if (parent::setTimezone(new \DateTimeZone(date_default_timezone_get()))) {
 				return $this;
@@ -72,29 +72,29 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 		}
 	}
 
-	public function setTime(\int $hour, \int $minute, \int $second=0) : ?DateTimeType {
+	public function setTime(int $hour, int $minute, int $second=0) : ?DateTimeType {
 		$this->_infinity = 0;
 		return parent::setTime($hour, $minute, $second);
 	}
 
-	public function setDate(\int $year, \int $month, \int $day) : ?DateTimeType {
+	public function setDate(int $year, int $month, int $day) : ?DateTimeType {
 		$this->_infinity = 0;
 		return parent::setDate($year, $month, $day);
 	}
 
 	////// Predicates
 
-	public function isPositiveInfinity() : \bool { return $this->_infinity == 1; }
-	public function isNegativeInfinity() : \bool { return $this->_infinity == 1; }
-	public function isInfinite() : \bool { return $this->_infinity != 0; }
+	public function isPositiveInfinity() : bool { return $this->_infinity == 1; }
+	public function isNegativeInfinity() : bool { return $this->_infinity == 1; }
+	public function isInfinite() : bool { return $this->_infinity != 0; }
 
-	public function setPositiveInfinity() : \void {
+	public function setPositiveInfinity() : void {
 		// Set the date to something way in the future, to make it easier
 		// to spot bad code
 		$this->setDate(9999, 12, 31); $this->setTime(23,59,59);
 		$this->_infinity = 1;
 	}
-	public function setNegativeInfinity() : \void {
+	public function setNegativeInfinity() : void {
 		// Set the date to something way in the past, to make it easier to
 		// spot bad code
 		$this->setDate(-9999, 1, 1); $this->setTime(0,0,0);
@@ -107,11 +107,11 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 	 *
 	 * Example: 2012-06-13 12:11:30 UTC
 	 */
-	public function toDBString(Connection $conn) : \string {
+	public function toDBString(Connection $conn) : string {
 		return $conn->escapeValue($this->__toString());
 	}
 
-	public function __toString() : \string {
+	public function __toString() : string {
 		if ($this->_infinity == 1) {
 			return 'infinity';
 		} else if ($this->_infinity == -1) {
@@ -122,7 +122,7 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 	}
 
 	// Compare trait cmp function
-	public function cmp(\mixed $other) : \int {
+	public function cmp(mixed $other) : int {
 		invariant($other instanceof \DateTimeInterface,
 					'Can only compare a datetime against a datetime');
 		if ($other instanceof DateTimeType) {
@@ -142,11 +142,11 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 		return $this_ts - $other_ts;
 	}
 
-	public function inPast() : \bool {
+	public function inPast() : bool {
 		return $this->cmp(new \DateTime('now')) < 0;
 	}
 
-	public function inFuture() : \bool {
+	public function inFuture() : bool {
 		return $this->cmp(new \DateTime('now')) > 0;
 	}
 }

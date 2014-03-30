@@ -11,20 +11,20 @@ class Session {
 
 	private static ?Session $inst = null;
 
-	private static ?\string $id=null;
+	private static ?string $id=null;
 
-	protected static function getTableName() : \string {
+	protected static function getTableName() : string {
 		return 'session';
 	}
 
-	protected function getID() : \string {
+	protected function getID() : string {
 		return nullthrows(self::$id);
 	}
 
 	/**
 	 * Start the session if needed
 	 */
-	protected static function start(\bool $force = false) : ?Session {
+	protected static function start(bool $force = false) : ?Session {
 		if(!self::$inst) {
 			if($force || get_cookie(self::NAME)) {
 				self::$inst = new self();
@@ -50,7 +50,7 @@ class Session {
 	/**
 	 * Initialise a session
 	 */
-	protected static function init() : \void {
+	protected static function init() : void {
 		if(!self::inst()->hasSetting('CSRF')) {
 			self::inst()->setSetting('CSRF', generate_random_token());
 		}
@@ -59,7 +59,7 @@ class Session {
 	/**
 	 * Get the item out of the session for the given key
 	 */
-	public static function get(\string $key) : \mixed {
+	public static function get(string $key) : mixed {
 		if(self::start($key === 'CSRF') && self::exists($key)) {
 			return self::inst()->getSetting($key);
 		}
@@ -69,14 +69,14 @@ class Session {
 	/**
 	 * Check if there is a value set for the key in the session
 	 */
-	public static function exists(\string $key) : \bool {
+	public static function exists(string $key) : bool {
 		return self::start(false) && self::inst()->hasSetting($key);
 	}
 
 	/**
 	 * Set the session value for the given key
 	 */
-	public static function set(\string $key, \mixed $value) : \void {
+	public static function set(string $key, mixed $value) : void {
 		if($key === 'CSRF') {
 			throw new \InvalidArgumentException('Unable to set CSRF key.');
 		}
@@ -86,14 +86,14 @@ class Session {
 	/**
 	 * Clear the value from the session for the given key
 	 */
-	public static function clear(\string $key) : \void {
+	public static function clear(string $key) : void {
 		self::start(false) && self::inst()->clearSetting($key);
 	}
 
 	/**
 	 * Close and write the session
 	 */
-	public static function end() : \void {
+	public static function end() : void {
 		if(self::$inst) {
 			self::$inst->endSettings();
 			self::redis()->expire('session:' . self::$id, self::EXPIRE);
@@ -103,7 +103,7 @@ class Session {
 	/**
 	 * Completely reset the session
 	 */
-	public static function reset() : \void {
+	public static function reset() : void {
 		self::end();
 		self::$inst = null;
 		set_cookie(self::NAME, null);

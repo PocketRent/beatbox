@@ -36,7 +36,7 @@ class :bb:form:confirm-password extends :bb:form:field {
 		</div>;
 	}
 
-	public function setValue(\mixed $value) : :bb:form:confirm-password {
+	public function setValue(mixed $value) : :bb:form:confirm-password {
 		if(!is_array($value)) {
 			parent::setValue($value);
 		} else {

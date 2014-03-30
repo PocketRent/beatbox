@@ -190,3 +190,6 @@ function server_var(string $name): mixed {
 	return null;
 }
 
+function inited() : bool {
+	return isset($GLOBALS['<__inited>']) && $GLOBALS['<__inited>'];
+}

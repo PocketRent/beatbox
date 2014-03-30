@@ -12,7 +12,7 @@ abstract class DataTable {
 	 * This assumes that the given row is from the database and
 	 * therefore resets and marked changes for this object.
 	 */
-	abstract protected function updateFromRow(Indexish<string,string> $row) : \void;
+	abstract protected function updateFromRow(Indexish<string,string> $row) : void;
 
 	/**
 	 * Get a map of updated columns for this object, the keys are the
@@ -35,29 +35,29 @@ abstract class DataTable {
 	/**
 	 * Returns the fields in as a ROW constructor literal
 	 */
-	abstract public function toRow(): \string;
+	abstract public function toRow(): string;
 
 	/**
 	 * Returns whether or not this object is "new", i.e. will
 	 * be inserted instead of updated
 	 */
-	abstract public function isNew(): \bool;
+	abstract public function isNew(): bool;
 
 	/**
 	 * Returns the table name for this object (normally the
 	 * class name)
 	 */
-	abstract public static function getTableName(): \string;
+	abstract public static function getTableName(): string;
 
 	/**
 	 * Returns a set of column names for this object
 	 */
-	abstract static function getColumnNames() : \ConstSet<\string>;
+	abstract static function getColumnNames() : \ConstSet<string>;
 
 	/**
 	 * Returns a set of column names that are primary keys
 	 */
-	abstract static function getPrimaryKeys() : \ConstSet<\string>;
+	abstract static function getPrimaryKeys() : \ConstSet<string>;
 
 	/**
 	 * ORM-getter for this class (uses LSB)
@@ -81,7 +81,7 @@ abstract class DataTable {
 	 *
 	 * Returns null if there is no matching object in the database
 	 */
-	public static async function get_by_pk(\mixed $id) : Awaitable<?this> {
+	public static async function get_by_pk(mixed $id) : Awaitable<?this> {
 		if(!$id) {
 			return null;
 		}
@@ -110,7 +110,7 @@ abstract class DataTable {
 	/**
 	 * Wrapper method for get_by_pk.
 	 */
-	public static function get_by_id(\mixed $id) : Awaitable<?this> {
+	public static function get_by_id(mixed $id) : Awaitable<?this> {
 		return static::get_by_pk($id);
 	}
 
@@ -137,7 +137,7 @@ abstract class DataTable {
 		return $v;
 	}
 
-	private \bool $deleted = false;
+	private bool $deleted = false;
 
 	/**
 	 * Write this object to the database.
@@ -150,7 +150,7 @@ abstract class DataTable {
 	 * current values of the primary key columns for the WHERE clause
 	 * in the UPDATE query.
 	 */
-	public async function write(\bool $force=false) : Awaitable<\bool> {
+	public async function write(bool $force=false) : Awaitable<bool> {
 		return await $this->writeWithConn(Connection::get(), $force);
 	}
 
@@ -158,7 +158,7 @@ abstract class DataTable {
 	 * Write this object to the database using the given connection,
 	 * $force has the same meaning as for write
 	 */
-	public async function writeWithConn(Connection $conn, \bool $force=false) : Awaitable<\bool> {
+	public async function writeWithConn(Connection $conn, bool $force=false) : Awaitable<bool> {
 		if ($conn == null)
 			throw new \InvalidArgumentException("Connection object is null");
 		if ($this->deleted)
@@ -183,7 +183,7 @@ abstract class DataTable {
 		return true;
 	}
 
-	private function getWriteQuery(Connection $conn, \bool $force) : ?\string {
+	private function getWriteQuery(Connection $conn, bool $force) : ?string {
 		if ($force) {
 			$values = $this->toMap();
 		} else {
@@ -238,13 +238,13 @@ abstract class DataTable {
 	 * The object shouldn't be used after deletion and will cause exceptions
 	 * to be thrown if this happens.
 	 */
-	public async function delete() : Awaitable<\void> {
+	public async function delete() : Awaitable<void> {
 		if ($this->deleted)
 			throw new DeletedObjectException('delete', get_called_class());
 		return await $this->deleteWithConn(Connection::get());
 	}
 
-	public async function deleteWithConn(Connection $conn) : Awaitable<\void> {
+	public async function deleteWithConn(Connection $conn) : Awaitable<void> {
 		if ($this->deleted)
 			throw new DeletedObjectException('delete', get_called_class());
 		$this->deleted = true;

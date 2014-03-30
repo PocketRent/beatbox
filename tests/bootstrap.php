@@ -14,6 +14,7 @@ define('RUNNING_TEST', true); // For code that needs to adjust for tests
 
 // Load the stuff
 require __DIR__ . '/../php/init.php';
+initialize_beatbox('test_conf.php');
 
 // Connect to the database
 
@@ -22,9 +23,10 @@ if (DATABASE_HOST) $connectString .= ' host=\''.DATABASE_HOST.'\'';
 if (DATABASE_USER) $connectString .= ' user=\''.DATABASE_USER.'\'';
 if (DATABASE_PASS) $connectString .= ' password=\''.DATABASE_PASS.'\'';
 
-($con = @pg_connect($connectString)) || die('Unable to connect to postgres');
+($con = pg_connect($connectString)) || die('Unable to connect to postgres');
 
 $dbname = 'PR_test_' . str_replace('.', '_', microtime(true));
+
 
 // Create the database
 pg_query($con, 'CREATE DATABASE "' . $dbname . '"') || die('Unable to create database');
@@ -36,7 +38,7 @@ $args = [
 	'-d',
 	$dbname,
 	'-C',
-	__DIR__ . '/../conf/',
+	__DIR__ . '/test_conf.php',
 	'--ignore-buildfiles',
 	__DIR__ . '/../db/'
 ];

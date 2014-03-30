@@ -698,7 +698,7 @@ class RouterTest extends beatbox\Test {
 class RouterTest_Callback implements beatbox\FragmentCallback {
 	public $url, $fragment;
 
-	public function forFragment(\Indexish<int,string> $url, \string $fragment) : \mixed {
+	public function forFragment(\Indexish<int,string> $url, string $fragment) : mixed {
 		$this->url = $url;
 		$this->fragment = $fragment;
 		return $this;

@@ -13,13 +13,13 @@ class Task implements \Serializable {
 
 	const QUEUE_NAME = 'bb:queue';
 
-	protected \string $callback;
+	protected string $callback;
 
-	protected \string $arguments;
+	protected string $arguments;
 
-	protected \int $policy = self::CON_ALWAYS;
+	protected int $policy = self::CON_ALWAYS;
 
-	protected static function config_redis(R $r) : \void {
+	protected static function config_redis(R $r) : void {
 		$r->setOption(R::OPT_SERIALIZER, R::SERIALIZER_NONE);
 		$r->select(REDIS_DB_TASKS);
 	}
@@ -27,7 +27,7 @@ class Task implements \Serializable {
 	/**
 	 * Load a task from the queue and run it
 	 */
-	public static function run() : \mixed {
+	public static function run() : mixed {
 		$task = self::redis()->lpop(self::QUEUE_NAME);
 		if($task) {
 			$task = unserialize($task);
@@ -61,7 +61,7 @@ class Task implements \Serializable {
 	 *
 	 * Valid options are always, different args and never.
 	 */
-	public function setConcurrent(\int $policy) : Task {
+	public function setConcurrent(int $policy) : Task {
 		if(!(Set {self::CON_ALWAYS, self::CON_NEVER, self::CON_DIFF})->contains($policy)) {
 			throw new \InvalidArgumentException(
 				'Concurrency policy must be one of the CON_ constants'
@@ -76,14 +76,14 @@ class Task implements \Serializable {
 	 *
 	 * Returns the length of the queue
 	 */
-	public function queue() : \int {
+	public function queue() : int {
 		return self::redis()->rpush(self::QUEUE_NAME, serialize($this));
 	}
 
 	/**
 	 * Checks if this task can start or not
 	 */
-	public function canStart() : \bool {
+	public function canStart() : bool {
 		$n = self::QUEUE_NAME . ':' . $this->callback;
 		$n_c = $n . ':count';
 		$n_a = $n . ':' . $this->arguments;
@@ -111,7 +111,7 @@ class Task implements \Serializable {
 	/**
 	 * Runs the tasks
 	 */
-	public function start() : \mixed {
+	public function start() : mixed {
 		if(!$this->setUp()) {
 			$this->queue();
 			return null;
@@ -134,7 +134,7 @@ class Task implements \Serializable {
 	 *
 	 * Assumes that it is allowed to start
 	 */
-	public function setUp() : \bool {
+	public function setUp() : bool {
 		$n = self::QUEUE_NAME . ':' . $this->callback;
 		$n_c = $n . ':count';
 		$n_a = $n . ':' . $this->arguments;
@@ -162,7 +162,7 @@ class Task implements \Serializable {
 	/**
 	 * Tear down after the task (state that it's finished)
 	 */
-	public function tearDown() : \void {
+	public function tearDown() : void {
 		$n = self::QUEUE_NAME . ':' . $this->callback;
 		$n_c = $n . ':count';
 		$n_a = $n . ':' . $this->arguments;
@@ -182,7 +182,7 @@ class Task implements \Serializable {
 	/**
 	 * Serialize this object. Should not be called directly.
 	 */
-	public function serialize() : \string {
+	public function serialize() : string {
 		$data = Map {
 			'c' => unserialize($this->callback),
 			'a' => unserialize($this->arguments),
@@ -194,7 +194,7 @@ class Task implements \Serializable {
 	/**
 	 * Unserialize this object. Should not be called directly.
 	 */
-	public function unserialize($data) : \void {
+	public function unserialize($data) : void {
 		$data = unserialize($data);
 		if(empty($data['c'])) {
 			throw new \InvalidArgumentException('Unserialize not passed a callback');

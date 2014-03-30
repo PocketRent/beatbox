@@ -7,14 +7,14 @@ namespace beatbox\test\constraint;
  */
 class Compare extends \PHPUnit_Framework_Constraint {
 	private \beatbox\Comparable $obj;
-	private \int $type = 0;
+	private int $type = 0;
 
-	public function __construct(\beatbox\Comparable $expected, \int $type) {
+	public function __construct(\beatbox\Comparable $expected, int $type) {
 		$this->obj = $expected;
 		$this->type = $type;
 	}
 
-	public function matches(\mixed $other) {
+	public function matches(mixed $other) {
 		$res = $this->obj->cmp($other);
 
 		if ($this->type == 0) return $res == 0;
@@ -22,7 +22,7 @@ class Compare extends \PHPUnit_Framework_Constraint {
 		if ($this->type < 0) return $res < 0;
 	}
 
-	public function failureDescription(\mixed $other) : \string {
+	public function failureDescription(mixed $other) : string {
 		if (method_exists($other, '__toString'))
 			$val = (string)$other;
 		else

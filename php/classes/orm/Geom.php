@@ -7,27 +7,27 @@ use beatbox\orm\Connection;
 use beatbox\orm\TypeParseException;
 
 abstract class GeomType implements beatbox\orm\Type {
-	abstract static function fromString(\string $val) : GeomType;
+	abstract static function fromString(string $val) : GeomType;
 }
 
 class point extends GeomType {
-	public \float $x;
-	public \float $y;
+	public float $x;
+	public float $y;
 
-	public function __construct(\float $x = 0.0, \float $y = 0.0) {
+	public function __construct(float $x = 0.0, float $y = 0.0) {
 		$this->x = $x;
 		$this->y = $y;
 	}
 
-	public function toDBString(Connection $_unused) : \string {
+	public function toDBString(Connection $_unused) : string {
 		return $this->__toString();
 	}
 
-	public function __toString() : \string {
+	public function __toString() : string {
 		return sprintf('(%f, %f)', $this->x, $this->y);
 	}
 
-	public static function fromString(\string $val) : point {
+	public static function fromString(string $val) : point {
 		$parser = new _GeomParser($val);
 		return self::parse($parser);
 	}
@@ -64,15 +64,15 @@ class lseg extends GeomType {
 		$this->end = $end;
 	}
 
-	public function toDBString(Connection $_unused) : \string {
+	public function toDBString(Connection $_unused) : string {
 		return $this->__toString();
 	}
 
-	public function __toString() : \string {
+	public function __toString() : string {
 		return sprintf("[%s,%s]", $this->start, $this->end);
 	}
 
-	public static function fromString(\string $val) : lseg {
+	public static function fromString(string $val) : lseg {
 		$parser = new _GeomParser($val);
 
 		$delim = '';
@@ -114,15 +114,15 @@ class box extends GeomType {
 		$this->end = $end;
 	}
 
-	public function toDBString(Connection $_unused) : \string {
+	public function toDBString(Connection $_unused) : string {
 		return $this->__toString();
 	}
 
-	public function __toString() : \string {
+	public function __toString() : string {
 		return sprintf("%s,%s", $this->start, $this->end);
 	}
 
-	public static function fromString(\string $val) : box {
+	public static function fromString(string $val) : box {
 		$parser = new _GeomParser($val);
 
 		$delim = false;
@@ -155,18 +155,18 @@ class box extends GeomType {
 
 class path extends GeomType {
 	public ImmVector<point> $points;
-	public \bool $open;
+	public bool $open;
 
-	public function __construct(?Traversable<point> $points = null, \bool $open=false) {
+	public function __construct(?Traversable<point> $points = null, bool $open=false) {
 		$this->points = new ImmVector($points);
 		$this->open = $open;
 	}
 
-	public function toDBString(Connection $_unused) : \string {
+	public function toDBString(Connection $_unused) : string {
 		return $this->__toString();
 	}
 
-	public function __toString() : \string {
+	public function __toString() : string {
 		$contents = bb_join(',', $this->points);
 		if ($this->open) {
 			return '['.$contents.']';
@@ -175,7 +175,7 @@ class path extends GeomType {
 		}
 	}
 
-	public static function fromString(\string $val) : path {
+	public static function fromString(string $val) : path {
 		$parser = new _GeomParser($val);
 
 		$delim = '';
@@ -222,15 +222,15 @@ class polygon extends GeomType {
 		$this->points = new ImmVector($points);
 	}
 
-	public function toDBString(Connection $_unused) : \string {
+	public function toDBString(Connection $_unused) : string {
 		return $this->__toString();
 	}
 
-	public function __toString() : \string {
+	public function __toString() : string {
 		return '('.bb_join(',', $this->points).')';
 	}
 
-	public static function fromString(\string $val) : polygon {
+	public static function fromString(string $val) : polygon {
 		$parser = new _GeomParser($val);
 
 		$delim = '';
@@ -271,23 +271,23 @@ class polygon extends GeomType {
 
 class circle extends GeomType {
 	public point $center;
-	public \float $radius;
+	public float $radius;
 
-	public function __construct(?point $center = null, \float $radius = 1.0) {
+	public function __construct(?point $center = null, float $radius = 1.0) {
 		if ($center == null) $this->center = new point();
 		else $this->center = $center;
 		$this->radius = $radius;
 	}
 
-	public function toDBString(Connection $_unused) : \string {
+	public function toDBString(Connection $_unused) : string {
 		return $this->__toString();
 	}
 
-	public function __toString() : \string {
+	public function __toString() : string {
 		return sprintf("<%s, %f>", $this->center, $this->radius);
 	}
 
-	public static function fromString(\string $val) : circle {
+	public static function fromString(string $val) : circle {
 		$parser = new _GeomParser($val);
 
 		$delim = '';
@@ -318,14 +318,14 @@ class circle extends GeomType {
 }
 
 class _GeomParser {
-	private \string $str;
-	private \int $pos = 0;
+	private string $str;
+	private int $pos = 0;
 
-	public function __construct(\string $s) {
+	public function __construct(string $s) {
 		$this->str = $s;
 	}
 
-	public function peekChar(\int $n=0) : ?\string {
+	public function peekChar(int $n=0) : ?string {
 		$pos = $this->pos + $n;
 		if ($pos < strlen($this->str)) {
 			return $this->str[$pos];
@@ -334,18 +334,18 @@ class _GeomParser {
 		}
 	}
 
-	public function goBack(\int $n=1):\void {
+	public function goBack(int $n=1):void {
 		if ($n < 1) return;
 		if ($n > $this->pos) $n = $this->pos;
 
 		$this->pos -= $n;
 	}
 
-	public function getPos() : \int {
+	public function getPos() : int {
 		return $this->pos;
 	}
 
-	public function eatChar(\string $c) : \bool {
+	public function eatChar(string $c) : bool {
 		$this->skipWhitespace();
 		$c = $c[0];
 		if ($this->pos < strlen($this->str) && $this->str[$this->pos] == $c) {
@@ -356,7 +356,7 @@ class _GeomParser {
 		}
 	}
 
-	public function getFloat() : (\bool, \float) {
+	public function getFloat() : (bool, float) {
 		$this->skipWhitespace();
 		$start = $this->pos;
 		$seen_point = false;
@@ -381,7 +381,7 @@ class _GeomParser {
 		return tuple(true, $num);
 	}
 
-	public function skipWhitespace():\void {
+	public function skipWhitespace():void {
 		$len = strlen($this->str);
 		while ($this->pos < $len && ctype_space($this->str[$this->pos]))
 			$this->pos++;

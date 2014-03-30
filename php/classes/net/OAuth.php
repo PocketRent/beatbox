@@ -2,7 +2,7 @@
 
 namespace beatbox\net;
 
-newtype SignMethod = \string;
+newtype SignMethod = string;
 
 class OAuth {
 
@@ -10,32 +10,32 @@ class OAuth {
 	const SignMethod HMAC_SHA1 = 'HMAC-SHA1';
 	const SignMethod RSA_SHA1 = 'RSA-SHA1';
 
-	private \string $requestMethod = 'GET';
+	private string $requestMethod = 'GET';
 	private SignMethod $signMethod = OAuth::PLAINTEXT;
-	private Map<\string, \string> $oauthParameters = Map {};
-	private ?\string $realm = null;
+	private Map<string, string> $oauthParameters = Map {};
+	private ?string $realm = null;
 
-	private ?\string $scheme;
-	private ?\string $host;
-	private ?\int $port;
-	private \string $path = '/';
-	private Map<\string, \string> $queryParameters = Map {};
+	private ?string $scheme;
+	private ?string $host;
+	private ?int $port;
+	private string $path = '/';
+	private Map<string, string> $queryParameters = Map {};
 
-	private \bool $requestIsForm = false;
-	private ?Map<\string, \string> $requestForm;
-	private ?\string $requestBody;
+	private bool $requestIsForm = false;
+	private ?Map<string, string> $requestForm;
+	private ?string $requestBody;
 
-	private ?\string $private_key;
-	private \string $consumerSecret = '';
-	private ?\string $tokenSecret;
+	private ?string $private_key;
+	private string $consumerSecret = '';
+	private ?string $tokenSecret;
 
-	public function __construct(?\string $url = null) {
+	public function __construct(?string $url = null) {
 		if ($url) {
 			$this->setURL($url);
 		}
 	}
 
-	public function setURL(\string $url) {
+	public function setURL(string $url) {
 		$url_params = parse_url($url);
 		invariant(is_array($url_params), '$url is not a valid url');
 
@@ -127,46 +127,46 @@ class OAuth {
 
 	}
 
-	public function setRequestMethod(\string $method) {
+	public function setRequestMethod(string $method) {
 		$this->requestMethod = strtoupper($method);
 	}
 
-	public function setHMAC(\string $secret) {
+	public function setHMAC(string $secret) {
 		$this->signMethod = self::HMAC_SHA1;
 		$this->consumerSecret = $secret;
 	}
 
-	public function setRSA(\string $private_key_file) {
+	public function setRSA(string $private_key_file) {
 		$this->signMethod = self::RSA_SHA1;
 		$this->private_key = $private_key_file;
 	}
 
-	public function setBody(\string $body) {
+	public function setBody(string $body) {
 		$this->requestIsForm = false;
 		$this->requestBody = $body;
 	}
 
-	public function setForm(Map<\string,\string> $params) {
+	public function setForm(Map<string,string> $params) {
 		$this->requestIsForm = true;
 		$this->requestForm = $params;
 	}
 
-	public function setOAuthParameter(\string $param, \string $value) {
+	public function setOAuthParameter(string $param, string $value) {
 		if ($param == 'token')
 			trigger_error("'token' parameter should be set using `setToken`", E_USER_WARNING);
 		$this->oauthParameters[$param] = $value;
 	}
 
-	public function setToken(\string $token, ?\string $secret=null) {
+	public function setToken(string $token, ?string $secret=null) {
 		$this->oauthParameters['token'] = $token;
 		$this->tokenSecret = $secret;
 	}
 
-	public function setRealm(\string $realm) {
+	public function setRealm(string $realm) {
 		$this->realm = $realm;
 	}
 
-	public function generateSignature() : \string {
+	public function generateSignature() : string {
 		switch ($this->signMethod) {
 		case self::HMAC_SHA1:
 			$text = $this->signatureBaseString();
@@ -202,14 +202,14 @@ class OAuth {
 		}
 	}
 
-	private function signatureBaseString() : \string {
+	private function signatureBaseString() : string {
 		return sprintf("%s&%s&%s",
 			$this->requestMethod,
 			rawurlencode($this->baseStringURI()),
 			rawurlencode($this->normalizedParameters()));
 	}
 
-	public function getHeaderString() : \string {
+	public function getHeaderString() : string {
 		$params = $this->getOAuthParams();
 
 		$params['signature'] = $this->generateSignature();
@@ -233,7 +233,7 @@ class OAuth {
 	}
 
 	private function normalizedParameters()
-			: \string {
+			: string {
 		$params = Vector {};
 
 		$params->addAll($this->queryParameters->items());
@@ -245,25 +245,25 @@ class OAuth {
 		if ($this->requestIsForm)
 			$params->addAll(nullthrows($this->requestForm)->items());
 
-		$params = $params->map(function(Pair<\string,\string> $p) : Pair<\string, \string> {
+		$params = $params->map(function(Pair<string,string> $p) : Pair<string, string> {
 			$k = rawurlencode($p[0]);
 			$v = rawurlencode($p[1]);
 			return Pair { $k, $v };
 		})->toVector();
 
-		usort($params, function (Pair<\string, \string> $p1, Pair<\string, \string> $p2) : int {
+		usort($params, function (Pair<string, string> $p1, Pair<string, string> $p2) : int {
 			return strcmp($p1[0], $p2[0]);
 		});
 
 		return bb_join('&', $params->map($p ==> $p[0].'='.$p[1]));
 	}
 
-	private Map<\string, \string> $_fullOAuthParams = Map {};
-	private function getOAuthParams() : Map<\string,\string> {
+	private Map<string, string> $_fullOAuthParams = Map {};
+	private function getOAuthParams() : Map<string,string> {
 		$params = $this->_fullOAuthParams;
 		$params->setAll($this->oauthParameters);
 
-		$setMissing = function(\string $p, (function(): string) $v) : \void use($params) {
+		$setMissing = function(string $p, (function(): string) $v) : void use($params) {
 			if (!$params->containsKey($p))
 				$params->set($p, $v());
 		};
@@ -278,7 +278,7 @@ class OAuth {
 		return clone $params;
 	}
 
-	private function baseStringURI() : \string {
+	private function baseStringURI() : string {
 
 		$port = '';
 		if ($this->port) {

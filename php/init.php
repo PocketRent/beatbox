@@ -1,106 +1,17 @@
 <?hh
 
-// INI
-date_default_timezone_set('UTC');
-
-// Constants
-//// Permissions
-define('PERM_UNKNOWN', 0);
-define('PERM_PENDING', 1);
-define('PERM_NOTALLOWED', 2);
-define('PERM_ALLOWED', 4);
-// Device types
-define('DEVICE_DESKTOP', 1);
-define('DEVICE_TABLET', 2);
-define('DEVICE_MOBILE', 4);
-define('DEVICE_ALL', DEVICE_DESKTOP | DEVICE_TABLET | DEVICE_MOBILE);
-
-/** Redis Databases **/
-// Default database, shouldn't normally be used
-define('REDIS_DB_DEFAULT', 0);
-// Cache database, should only be used by the
-// cache implementation.
-define('REDIS_DB_CACHE', 1);
-// Session database
-define('REDIS_DB_SETTINGS', 2);
-// Tasks database
-define('REDIS_DB_TASKS', 3);
-// Test database
-define('REDIS_DB_TEST', 15);
-
-// Load the env-conf
-require __DIR__ . '/../conf/conf.php';
+// Front-load the env functions so everything can use them
+// to check stuff
+require_once __DIR__ . '/functions/env/Env.php';
 
 // Load the error handlers
-require __DIR__ . '/classes/errors/PHP.php';
+require_once __DIR__ . '/classes/errors/Exception.php';
+require_once __DIR__ . '/classes/errors/HTTP.php';
+require_once __DIR__ . '/classes/errors/PHP.php';
 
-// Load all helper functions
-require __DIR__ . '/functions/loader.php';
+// Load all helper functions - This shouldn't be here see issue:
+//		https://github.com/facebook/hhvm/issues/2206
+require_once __DIR__ . '/functions/loader.php';
 
-// Load XHP
-require __DIR__ . '/../xhp/init.php';
-:x:base::$ENABLE_VALIDATION = in_dev();
-
-// Load the classmap thing
-require __DIR__ . '/../build/classmap';
-
-// This registers the autoloader map, does it inside
-// a function to avoid any issues from the require of
-// the map file
-function register_autoload_map() : void {
-	$path = realpath(CONF_DIR . '/map.php');
-	if(!$path) {
-		makeMap();
-		$path = realpath(CONF_DIR . '/map.php');
-	}
-	$map = null;
-	if($path) {
-		require $path;
-	} else {
-		trigger_error("Cannot find class map", E_USER_ERROR);
-	}
-	invariant($map instanceof Map, '$map should be an instance of Map');
-
-	$map['function'] = Map {};
-
-	// fb_autoload_map doesn't play nice with syntax errors, so during development
-	// using the spl autoloader is prefered. In production, fb_autoload_map is
-	// faster, so we use that.
-	if (in_dev()) {
-		spl_autoload_register(function(string $name):void use (&$map) {
-			$canon_name = strtolower($name);
-			if (isset($map['class'][$canon_name])) {
-				require BASE_DIR.'/'.$map['class'][$canon_name];
-			} else if (!defined('RUNNING_TEST')) {
-				// Regenerate the map to try and load the new class
-				$new_map = makeMap();
-				if ($new_map['class']->differenceByKey($map['class'])->count() > 0) {
-					$map = $new_map;
-					if (isset($map['class'][$canon_name])) {
-						require BASE_DIR.'/'.$map['class'][$canon_name];
-					}
-				}
-			}
-		});
-	} else {
-		fb_autoload_map($map->toArray(), BASE_DIR.'/');
-	}
-}
-
-register_autoload_map();
-
-if (DEV_MODE) {
-	assert_options(ASSERT_ACTIVE, 1);
-	assert_options(ASSERT_BAIL, 1);
-} else {
-	assert_options(ASSERT_ACTIVE, 0);
-}
-
-// Fallback values for configuration values
-if (!defined('ASSET_PATH')) {
-	// This shouldn't really be in the document root, but it'll do for now
-	define('ASSET_PATH', BASE_DOC_DIR.'/assets');
-}
-if (!defined('ASSET_DIR')) {
-	define('ASSET_DIR', basename(ASSET_PATH));
-}
+// Load the, uhh, loader functions
+require_once __DIR__.'/utils/loader.php';

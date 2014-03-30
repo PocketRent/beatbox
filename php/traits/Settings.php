@@ -8,26 +8,26 @@ trait Settings {
 	/**
 	 * Returns the name of the table for this object. Is used as the ObjectType value.
 	 */
-	abstract protected static function getTableName() : \string;
+	abstract protected static function getTableName() : string;
 
 	/**
 	 * Returns the ID for this object. This should be unique across objects that have the same
 	 * table name.
 	 */
-	abstract protected function getID() : \mixed;
+	abstract protected function getID() : mixed;
 
-	private \bool $settings_loaded = false;
-	private Map<\string, \mixed> $settings_data = Map {};
-	private Map<\string, \mixed> $settings_original = Map {};
+	private bool $settings_loaded = false;
+	private Map<string, mixed> $settings_data = Map {};
+	private Map<string, mixed> $settings_original = Map {};
 
-	private ?\string $settings_key = null;
+	private ?string $settings_key = null;
 
-	protected static function config_redis(\Redis $inst) : \void {
+	protected static function config_redis(\Redis $inst) : void {
 		$inst->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
 		$inst->select(REDIS_DB_SETTINGS);
 	}
 
-	protected function loadSettings() : \void {
+	protected function loadSettings() : void {
 		if($this->settings_loaded) return;
 		$this->settings_loaded = true;
 		$id = (string)$this->getID();
@@ -40,33 +40,33 @@ trait Settings {
 		register_shutdown_function(inst_meth($this, 'endSettings'));
 	}
 
-	public function getSetting(\string $key) : \mixed {
+	public function getSetting(string $key) : mixed {
 		if($this->hasSetting($key)) {
 			return $this->settings_data[$key];
 		}
 		return null;
 	}
 
-	public function getSettingsData() : \ConstMap<\string, \mixed> {
+	public function getSettingsData() : \ConstMap<string, mixed> {
 		return $this->settings_data;
 	}
 
-	public function hasSetting(\string $key) : \bool {
+	public function hasSetting(string $key) : bool {
 		$this->loadSettings();
 		return isset($this->settings_data[$key]);
 	}
 
-	public function setSetting(\string $key, \mixed $value) : \void {
+	public function setSetting(string $key, mixed $value) : void {
 		$this->loadSettings();
 		$this->settings_data[$key] = $value;
 	}
 
-	public function clearSetting(\string $key) : \void {
+	public function clearSetting(string $key) : void {
 		$this->loadSettings();
 		unset($this->settings_data[$key]);
 	}
 
-	public function endSettings() : \void {
+	public function endSettings() : void {
 		if($this->settings_loaded) {
 			self::redis_transaction(function(\Redis $r) {
 				// Redis::hmset wants an array

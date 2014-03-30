@@ -5,17 +5,17 @@ namespace beatbox\mailer;
 class Outbound {
 	const default_from = 'PocketRent <help@pro.pocketrent.com>';
 
-	protected \string $to;
-	protected \string $subject;
-	protected \string $content;
-	protected \string $from;
-	protected Map<\string, \string> $attachments = Map {};
+	protected string $to;
+	protected string $subject;
+	protected string $content;
+	protected string $from;
+	protected Map<string, string> $attachments = Map {};
 
 	/**
 	 * Construct an outbound email
 	 */
-	public function __construct(\string $to, \string $subject, :x:base $content,
-								?\string $from = null) {
+	public function __construct(string $to, string $subject, :x:base $content,
+								?string $from = null) {
 		if(!$from) {
 			$from = static::default_from;
 		}
@@ -28,7 +28,7 @@ class Outbound {
 	/**
 	 * Set who the email is sent to.
 	 */
-	public function setTo(\string $to) : Outbound {
+	public function setTo(string $to) : Outbound {
 		$this->to = $to;
 		return $this;
 	}
@@ -36,7 +36,7 @@ class Outbound {
 	/**
 	 * Add an attachment to the email
 	 */
-	public function addAttachment(\string $file_path) : Outbound {
+	public function addAttachment(string $file_path) : Outbound {
 		$this->attachments[$file_path] = get_mime_type($file_path);
 		return $this;
 	}
@@ -50,8 +50,8 @@ class Outbound {
 	}
 
 	// Don't call this directly
-	public static function real_send(\string $to, \string $subject, \string $content, \string $from,
-										Map $attachments) : \void {
+	public static function real_send(string $to, string $subject, string $content, string $from,
+										Map $attachments) : void {
 		if(strpos($content, '<body') === false) {
 			$content = "<!doctype html><html><body>$content</body></html>";
 		} else if(strpos($content, '<html') === false) {

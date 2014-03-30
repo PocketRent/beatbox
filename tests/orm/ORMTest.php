@@ -126,19 +126,19 @@ WHERE ("TestTable"."ID" IS NOT NULL)', $str);
 // we can test the SQL query generation without having
 // to generate code or rely on it already existing
 class TestTable extends orm\DataTable {
-	protected function updateFromRow(\Indexish<string,string> $row) : \void { }
+	protected function updateFromRow(\Indexish<string,string> $row) : void { }
 	protected function getUpdatedColumns() : Map<string,mixed> { return Map {}; }
 	protected function originalValues() : ImmMap<string,mixed> { return ImmMap {}; }
 
 	public function toMap() : Map { return Map {}; }
-	public function toRow() : \string { return ''; }
-	public function isNew() : \bool { return true; }
+	public function toRow() : string { return ''; }
+	public function isNew() : bool { return true; }
 
-	public static function getTableName() : \string {
+	public static function getTableName() : string {
 		return 'TestTable';
 	}
 
-	public static function getColumnNames() : \ConstSet<\string> {
+	public static function getColumnNames() : \ConstSet<string> {
 		return ImmSet {
 			'ID',
 			'AuxID',
@@ -147,7 +147,7 @@ class TestTable extends orm\DataTable {
 		};
 	}
 
-	public static function getPrimaryKeys() : \ConstSet<\string> {
+	public static function getPrimaryKeys() : \ConstSet<string> {
 		return ImmSet {
 			'ID',
 			'AuxID'

@@ -3,7 +3,7 @@
 namespace beatbox\errors;
 
 class PHP {
-	private static ImmSet<\int> $fatal_errors = ImmSet {
+	private static ImmSet<int> $fatal_errors = ImmSet {
 		E_ERROR,
 		E_PARSE,
 		E_CORE_ERROR,
@@ -14,14 +14,16 @@ class PHP {
 	/**
 	 * Handler for a PHP error
 	 */
-	public static function errors(\int $number, \string $message, \string $file,
-									\int $line): \bool {
+	public static function errors(int $number, string $message, string $file,
+									int $line): bool {
 		if(error_reporting() == 0 && !self::$fatal_errors->contains($number)) {
 			return false;
 		}
 		$stack = debug_backtrace();
 		$message = trim($message);
-		send_event('error:' . $number, $number, $message, $file, $line, $stack);
+		if (inited()) {
+			send_event('error:' . $number, $number, $message, $file, $line, $stack);
+		}
 
 		if(in_dev()) {
 			$e = new HTTP_Exception(null, 500);
@@ -48,7 +50,7 @@ class PHP {
 		return true;
 	}
 
-	private static function number_to_error(\int $num) : \string {
+	private static function number_to_error(int $num) : string {
 		switch($num) {
 			case E_ERROR: return "E_ERROR";
 			case E_WARNING: return "E_WARNING";
@@ -70,7 +72,7 @@ class PHP {
 		}
 	}
 
-	private static function pretty_backtrace(array $stack) : \string {
+	private static function pretty_backtrace(array $stack) : string {
 		// pop off the first item, as it's the call to the error handler
 		array_shift($stack);
 		$i = 1;
@@ -99,12 +101,12 @@ class PHP {
 		return implode("\n", $bt);
 	}
 
-	private static function pretty_args(array $args) : \string {
+	private static function pretty_args(array $args) : string {
 		$pretty = array_map(class_meth('beatbox\Errors\PHP', 'pretty_arg'), $args);
 		return implode(', ', $pretty);
 	}
 
-	private static function pretty_arg(\mixed $arg) : \string {
+	private static function pretty_arg(mixed $arg) : string {
 		// UNSAFE
 		switch(gettype($arg)) {
 			case 'array':
@@ -118,7 +120,7 @@ class PHP {
 					return $name . ' '
 							. self::pretty_array($arg, $arg instanceof Collection ? '{}' : '[]');
 				} else if($arg instanceof :x:base) {
-					return '<' . $arg::class2element($name) . '>';
+					return '<' . :x:base::class2element($name) . '>';
 				}
 				return $name;
 			case 'boolean':
@@ -137,7 +139,7 @@ class PHP {
 		}
 	}
 
-	private static function pretty_array(Traversable $arg, \string $braces = '[]') : \string {
+	private static function pretty_array(Traversable $arg, string $braces = '[]') : string {
 		assert(strlen($braces) == 2);
 		$items = [];
 		$expected = 0;
@@ -157,7 +159,9 @@ class PHP {
 				}
 			}
 		} else {
-			$items = $arg;
+			foreach ($arg as $val) {
+				$items[] = self::pretty_arg($val);
+			}
 		}
 		assert(count($items) == count($arg));
 		try {
@@ -177,7 +181,7 @@ class PHP {
 	/**
 	 * Handler for uncaught exceptions
 	 */
-	public static function exceptions(\Exception $exception) : \bool {
+	public static function exceptions(\Exception $exception) : bool {
 		$message = trim($exception->getMessage());
 		$file = $exception->getFile();
 		$line = $exception->getLine();
@@ -186,7 +190,9 @@ class PHP {
 		if($exception instanceof Exception) {
 			$event = $exception->getEventPrefix() . $event;
 		}
-		send_event($event, $exception->getCode(), $message, $file, $line, $exception, $stack);
+		if (inited()) {
+			send_event($event, $exception->getCode(), $message, $file, $line, $exception, $stack);
+		}
 		if($exception instanceof HTTP_Exception) {
 			$code = $exception->getBaseCode();
 			$exception->sendToBrowser();

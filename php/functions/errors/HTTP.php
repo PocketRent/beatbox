@@ -8,7 +8,7 @@
  * @uses beatbox\errors\HTTP::error()
  */
 <<NoReturn>>
-function http_error(int $code, ?\string $status = null) : void {
+function http_error(int $code, ?string $status = null) : void {
 	return beatbox\errors\HTTP::error($code, $status);
 }
 

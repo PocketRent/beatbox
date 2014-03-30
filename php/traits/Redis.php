@@ -1,11 +1,24 @@
 <?hh
 
+/** Redis Databases **/
+// Default database, shouldn't normally be used
+const int REDIS_DB_DEFAULT  = 0;
+// Cache database, should only be used by the
+// cache implementation.
+const int REDIS_DB_CACHE    = 1;
+// Session database
+const int REDIS_DB_SETTINGS = 2;
+// Tasks database
+const int REDIS_DB_TASKS    = 3;
+// Test database
+const int REDIS_DB_TEST     = 15;
+
 namespace beatbox;
 
 use \Redis as R;
 
 trait Redis {
-	abstract protected static function config_redis(R $redis) : \void;
+	abstract protected static function config_redis(R $redis) : void;
 
 	/**
 	 * Gets a redis object to do operations on
@@ -15,10 +28,10 @@ trait Redis {
 		if(!$inst) {
 			$inst = new R();
 			$inst->connect(REDIS_SERVER);
-			if(defined('REDIS_PASSWORD')) {
+			if(REDIS_PASSWORD) {
 				$inst->auth(REDIS_PASSWORD);
 			}
-			if(defined('APP_NAME')) {
+			if(APP_NAME) {
 				$inst->setOption(R::OPT_PREFIX, APP_NAME);
 			}
 			self::config_redis($inst);

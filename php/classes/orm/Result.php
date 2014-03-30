@@ -3,13 +3,13 @@
 namespace beatbox\orm;
 
 abstract class Result {
-	protected \resource $result;
+	protected resource $result;
 
-	private ?\string $tag = null;
-	private \int $oid = 0;
-	protected \int $count = -1;
+	private ?string $tag = null;
+	private int $oid = 0;
+	protected int $count = -1;
 
-	public static function from_raw_result(\resource $res) : Result {
+	public static function from_raw_result(resource $res) : Result {
 		// Log the command tag, this contains enough information for simple
 		// analysis.
 		send_event("db::result", pg_result_status($res, PGSQL_STATUS_STRING));
@@ -29,28 +29,28 @@ abstract class Result {
 	 * Predicate Methods
 	 */
 
-	public function isSelect() : \bool {
+	public function isSelect() : bool {
 		return $this->getTag() == 'SELECT';
 	}
 
-	public function isInsert() : \bool {
+	public function isInsert() : bool {
 		return $this->getTag() == 'INSERT';
 	}
 
-	public function isUpdate() : \bool {
+	public function isUpdate() : bool {
 		return $this->getTag() == 'UPDATE';
 	}
 
-	public function isDelete() : \bool {
+	public function isDelete() : bool {
 		return $this->getTag() == 'DELETE';
 	}
 
-	public function getTag() : \string {
+	public function getTag() : string {
 		$this->parseTag();
 		return nullthrows($this->tag);
 	}
 
-	private function parseTag() : \void {
+	private function parseTag() : void {
 		if ($this->tag == null) {
 			$cmd_tag = pg_result_status($this->result, PGSQL_STATUS_STRING);
 			$parts = explode(' ', $cmd_tag);
@@ -64,7 +64,7 @@ abstract class Result {
 		}
 	}
 
-	public function __construct(\resource $result) {
+	public function __construct(resource $result) {
 		$this->result = $result;
 	}
 
@@ -72,13 +72,13 @@ abstract class Result {
 	 * Returns the number of rows associated with this query,
 	 * either the number returned, or the number affected
 	 */
-	abstract public function numRows() : \int;
+	abstract public function numRows() : int;
 }
 
 class ModifyResult extends Result {
-	private \int $num_rows = -1;
+	private int $num_rows = -1;
 
-	public function numRows() : \int {
+	public function numRows() : int {
 		$this->getTag();
 		return $this->count;
 	}
@@ -88,17 +88,17 @@ class ModifyResult extends Result {
 class QueryResult extends Result implements Iterable<array<string,string>> {
 	use \StrictIterable<array<string,string>>;
 
-	private \int $num_rows = -1;
+	private int $num_rows = -1;
 
 	private Vector $rows = Vector {};
 
-	public function __construct(\resource $result) {
+	public function __construct(resource $result) {
 		parent::__construct($result);
 
 		$this->rows->reserve($this->numRows());
 	}
 
-	public function numRows() : \int {
+	public function numRows() : int {
 		if ($this->num_rows == -1) {
 			$this->num_rows = pg_num_rows($this->result);
 		}
@@ -110,7 +110,7 @@ class QueryResult extends Result implements Iterable<array<string,string>> {
 	 *
 	 * Will throw an exception if the given position is out of bounds
 	 */
-	public function nthRow(\int $pos) : Map<\string,\string> {
+	public function nthRow(int $pos) : Map<string,string> {
 		if ($pos >= 0 && $pos < $this->numRows()) {
 			if ($pos >= $this->rows->count()) {
 				$iter = $this->getIterator();
@@ -155,13 +155,13 @@ class ResultIterable implements Iterable<array<string,string>> {
 }
 
 class ResultIterator implements Iterator<array<string,string>> {
-	private \resource $result;
+	private resource $result;
 	private Vector $rows;
-	private \int $num_rows;
+	private int $num_rows;
 
-	private \int $cur_idx = 0;
+	private int $cur_idx = 0;
 
-	public function __construct(\resource $result, Vector $rows, \int $num_rows) {
+	public function __construct(resource $result, Vector $rows, int $num_rows) {
 		$this->result = $result;
 		$this->rows = $rows;
 		$this->num_rows = $num_rows;
@@ -180,19 +180,19 @@ class ResultIterator implements Iterator<array<string,string>> {
 		return $this->rows->at($this->cur_idx);
 	}
 
-	public function key() : \int {
+	public function key() : int {
 		return $this->cur_idx;
 	}
 
-	public function next() : \void {
+	public function next() : void {
 		$this->cur_idx++;
 	}
 
-	public function rewind() : \void {
+	public function rewind() : void {
 		$this->cur_idx = 0;
 	}
 
-	public function valid() : \bool {
+	public function valid() : bool {
 		return $this->cur_idx < $this->num_rows;
 	}
 }

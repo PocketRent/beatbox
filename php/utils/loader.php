@@ -61,10 +61,11 @@ function register_autoload_map(ImmSet<string> $dirs) : string {
 		if ($kind != 'constant') {
 			$name = strtolower($name);
 		}
+
 		// Check to see if it's in the map, if the file has an error, it won't say, so
 		// try loading it manually
 		if (isset($map[$kind][$name])) {
-			require_once $map[$kind][$name];
+			require_once $base.$map[$kind][$name];
 		}
 		if ($kind == 'class' || $kind == 'type') {
 			$new_hash = register_autoload_map($dirs);

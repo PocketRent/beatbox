@@ -4,6 +4,7 @@ const int T_XHP_LABEL = 382;
 const int T_SHAPE = 402;
 const int T_NEWTYPE = 403;
 const int T_TYPE = 405;
+const int T_GROUP = 423;
 
 namespace beatbox\utils;
 
@@ -107,12 +108,11 @@ function build_symbol_map(Traversable<string> $directories) : (string, SymbolMap
 		$relative = true;
 	}
 
-	var_dump($dirs);
+	$base_len = strlen($base);
 
-	$base_len = $cwd_len;
 	if ($relative) {
-		$dirs = $dirs->map(function ($d) use ($base_len) {
-			return substr($d, $base_len % strlen($d));
+		$dirs = $dirs->map(function ($d) use ($cwd_len) {
+			return substr($d, $cwd_len % strlen($d));
 		});
 	}
 
@@ -120,24 +120,27 @@ function build_symbol_map(Traversable<string> $directories) : (string, SymbolMap
 		$map = array_merge_recursive($map, get_symbols_from_dir($dir));
 	}
 
+	$strip_len = $base_len;
+	if ($relative)
+		$strip_len += $cwd_len;
 	foreach ($map['class'] as $cls => $file) {
 		if (is_array($file)) $file = array_pop($file);
-		$map['class'][$cls] = substr(realpath($file), $base_len);
+		$map['class'][$cls] = substr(realpath($file), $strip_len);
 	}
 
 	foreach ($map['function'] as $fn => $file) {
 		if (is_array($file)) $file = array_pop($file);
-		$map['function'][$fn] = substr(realpath($file), $base_len);
+		$map['function'][$fn] = substr(realpath($file), $strip_len);
 	}
 
 	foreach ($map['type'] as $type => $file) {
 		if (is_array($file)) $file = array_pop($file);
-		$map['type'][$type] = substr(realpath($file), $base_len);
+		$map['type'][$type] = substr(realpath($file), $strip_len);
 	}
 
 	foreach ($map['constant'] as $const => $file) {
 		if (is_array($file)) $file = array_pop($file);
-		$map['constant'][$const] = substr(realpath($file), $base_len);
+		$map['constant'][$const] = substr(realpath($file), $strip_len);
 	}
 
 
@@ -292,6 +295,10 @@ class SymbolParser {
 			$this->bump();
 			return 'xhp_'.str_replace(array(':', '-'), array('__', '_'), $element);
 		} else if ($start_token == T_STRING) {
+			$name = $this->getTokenValue();
+			$this->bump();
+			return $name;
+		} else if ($start_token == T_GROUP) {
 			$name = $this->getTokenValue();
 			$this->bump();
 			return $name;

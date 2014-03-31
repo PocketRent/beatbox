@@ -325,17 +325,17 @@ class PGType {
 
 	public function convertCode(CodeFile $f, string $dest, string $raw, bool $sub=false) {
 		$tstring = $this->__toString();
-		if ($tstring == '\int' && $this->type_cat == PGType::TCAT_NUMERIC) {
+		if ($tstring == 'int' && $this->type_cat == PGType::TCAT_NUMERIC) {
 			$f->writeLine("$dest = (int)$raw;");
-		} else if ($tstring == '\float') {
+		} else if ($tstring == 'float') {
 			$f->writeLine("$dest = (float)$raw;");
-		} else if ($tstring == '\string') {
+		} else if ($tstring == 'string') {
 			if ($sub) {
 				$f->writeLine("$dest = db_parse_string($raw);");
 			} else {
 				$f->writeLine("$dest = $raw;");
 			}
-		} else if ($tstring == '\bool') {
+		} else if ($tstring == 'bool') {
 			$f->writeLine("$dest = $raw == 't';");
 		} else if ($this->type_cat == PGType::TCAT_ARRAY) {
 			$subtype = $this->type_dict->typeByOid($this->sub_type);
@@ -399,7 +399,7 @@ class PGType {
 			}
 			$file->writeLine();
 
-			$file->startBlock('public static function fromString(\string $val): '.$this->name);
+			$file->startBlock('public static function fromString(string $val): '.$this->name);
 
 			$file->writeLine('$parts = db_parse_composite($val);');
 
@@ -468,7 +468,7 @@ class PGType {
 				$file->writeLine();
 			}
 
-			$file->startBlock("public function __toString(): \\string");
+			$file->startBlock("public function __toString(): string");
 			$file->writeLine("\$str = \"".$this->name." {\\n\";");
 			foreach ($elements as $name => $t) {
 				$file->writeLine("\$str .= '    $name => ';");
@@ -487,21 +487,21 @@ class PGType {
 		if ($this->type == PGType::T_BASE) {
 			if ($this->type_cat == PGType::TCAT_ARRAY) {
 				if ($this->sub_type == 0) {
-					return 'Vector<\mixed>';
+					return 'Vector<mixed>';
 				} else {
 					$sub = $this->type_dict->typeByOid($this->sub_type);
 					return "Vector<$sub>";
 				}
 			} else if ($this->type_cat == PGType::TCAT_NUMERIC) {
 				if (substr($this->name, 0, 3) == 'int') {
-					return '\int';
+					return 'int';
 				} else {
-					return '\float';
+					return 'float';
 				}
 			} else if ($this->type_cat == PGType::TCAT_BOOL) {
-				return '\bool';
+				return 'bool';
 			} else if ($this->type_cat == PGType::TCAT_STRING) {
-				return "\string";
+				return "string";
 			} else if ($this->type_cat == PGType::TCAT_DATETIME) {
 				return "\\beatbox\\orm\\DateTimeType";
 			} else if ($this->type_cat == PGType::TCAT_GEOM) {
@@ -509,13 +509,13 @@ class PGType {
 			} else if ($this->type_cat == PGType::TCAT_USER_DEF) {
 				switch ($this->name) {
 				case 'hstore':
-					return 'Map<\string,\string>';
+					return 'Map<string,string>';
 				}
 			}
 		} else if ($this->type == PGType::T_DOMAIN) {
 			return $this->type_dict->typeByOid($this->sub_type)->__toString();
 		} else if ($this->type == PGType::T_ENUM) {
-			return '\string';
+			return 'string';
 		}
 		return $this->name;
 	}
@@ -1058,11 +1058,11 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 
 		$tbl_data->writeLine();
 		$tbl_data->writeLine("// Original data");
-		$tbl_data->writeLine("private ?Map<\\string,\\mixed> \$orig = null;");
+		$tbl_data->writeLine("private ?Map<string,mixed> \$orig = null;");
 
 		$tbl_data->writeLine();
 		$tbl_data->writeLine("// Map to track changes");
-		$tbl_data->writeLine("private Map<\\string,\\mixed> \$changed = Map {};");
+		$tbl_data->writeLine("private Map<string,mixed> \$changed = Map {};");
 
 
 		$tbl_data->writeLine();
@@ -1111,7 +1111,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 			$isDateTime = $type->type_cat == PGType::TCAT_DATETIME;
 			$type_ret = strlen($type_arg) ? ": $type" : '';
 			if (strlen($type_arg) == 0) {
-				$type_ret = ": \\void";
+				$type_ret = ": void";
 			} else if ($col->nullable) {
 				$type_ret = ": ?$type";
 			} else {
@@ -1131,7 +1131,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 
 			if ($col->updatable) {
 				if($isDateTime) {
-					$tbl_data->startBlock("public function set$col->name(\\mixed \$val): this");
+					$tbl_data->startBlock("public function set$col->name(mixed \$val): this");
 					if(!$col->nullable) {
 						$tbl_data->writeLine('assert(!is_null($val));');
 					}
@@ -1165,7 +1165,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 					$name = $col->name;
 					$subt = $type->sub_type ?
 						$dict->typeByOid($type->sub_type)->__toString() :
-						'\mixed';
+						'mixed';
 					$tbl_data->startBlock("public function set$name({$prefix}Traversable<$subt> \$val$def_val): this");
 					$tbl_data->writeLine("\$this->changed['$name'] = true;");
 					$tbl_data->writeLine("\$this->_$name = Vector {};");
@@ -1197,7 +1197,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 			$table_name = $has_one[1];
 			$columns = $has_one[2];
 
-			$tbl_data->startBlock("public function getOne{$relname}<T as \\beatbox\\orm\\DataTable>(\\string \$klass): ORM<T> ");
+			$tbl_data->startBlock("public function getOne{$relname}<T as \\beatbox\\orm\\DataTable>(string \$klass): ORM<T> ");
 
 			$tbl_data->writeLine("\$query = new ORM(\$klass);");
 			foreach ($columns as $col_pair) {
@@ -1214,7 +1214,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 			$table_name = $has_many[1];
 			$columns = $has_many[2];
 
-			$tbl_data->startBlock("public function getMany{$relname}<T>(\\string \$klass): ORM<T>");
+			$tbl_data->startBlock("public function getMany{$relname}<T>(string \$klass): ORM<T>");
 
 			$tbl_data->writeLine("\$query = new ORM(\$klass);");
 			foreach ($columns as $i => $col_pair) {
@@ -1231,7 +1231,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 		$tbl_data->writeLine();
 
 		$tbl_data->startBlock("protected final function "
-								. "updateFromRow(Indexish<string,string> \$row): \\void");
+								. "updateFromRow(Indexish<string,string> \$row): void");
 		$tbl_data->writeLine('$orig = Map {};');
 		$tbl_data->writeLine('$this->changed = Map {};');
 
@@ -1246,12 +1246,12 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 
 		$tbl_data->endBlock();
 
-		$tbl_data->startBlock("public final static function getTableName(): \string");
+		$tbl_data->startBlock("public final static function getTableName(): string");
 		$tbl_data->writeLine("return '$table->name';");
 		$tbl_data->endBlock();
 
 
-		$tbl_data->startBlock("public final function getUpdatedColumns(): Map<\\string, \\mixed>");
+		$tbl_data->startBlock("public final function getUpdatedColumns(): Map<string, mixed>");
 
 		$tbl_data->writeLine('$changed = Map {};');
 		foreach ($table->columns as $col) {
@@ -1265,7 +1265,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 
 		$tbl_data->writeLine();
 
-		$tbl_data->startBlock("public final function toMap(): Map<\string,\mixed>");
+		$tbl_data->startBlock("public final function toMap(): Map<string,mixed>");
 
 		$tbl_data->writeLine('$map = Map {};');
 		foreach ($table->columns as $col) {
@@ -1277,13 +1277,13 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 
 		$tbl_data->writeLine();
 
-		$tbl_data->startBlock("protected final function originalValues(): ImmMap<\string, \mixed>");
+		$tbl_data->startBlock("protected final function originalValues(): ImmMap<string, mixed>");
 		$tbl_data->writeLine('return $this->orig ? $this->orig->toImmMap() : ImmMap {};');
 		$tbl_data->endBlock();
 
 		$tbl_data->writeLine();
 
-		$tbl_data->startBlock('public final function toRow(): \string');
+		$tbl_data->startBlock('public final function toRow(): string');
 		$tbl_data->writeLine('$con = Connection::get();');
 		$tbl_data->writeLine('$values = Vector {};');
 		foreach($table->columns as $col) {

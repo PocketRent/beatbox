@@ -41,7 +41,7 @@ class PHP {
 			} else {
 				echo $bt, "\n";
 			}
-			die();
+			die(1);
 		} else {
 			if(self::$fatal_errors->contains($number)) {
 				http_error(500);

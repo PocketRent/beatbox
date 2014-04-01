@@ -2,6 +2,9 @@ language: php
 php:
   - hhvm
 
+services:
+    - redis-server
+
 before_script:
   - sudo add-apt-repository ppa:mapnik/boost -y
   - wget -O - http://dl.hhvm.com/conf/hhvm.gpg.key | sudo apt-key add -

@@ -10,4 +10,4 @@ before_script:
   - sudo apt-get -y purge hhvm
   - sudo apt-get -y install hhvm-nightly
 
-script: tests/runner.php -c phpunit.travis.xml
+script: hhvm -vEval.EnableHipHopSyntax=true tests/runner.php -c phpunit.travis.xml

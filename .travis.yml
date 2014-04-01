@@ -1,0 +1,5 @@
+language: php
+php:
+  - hhvm
+
+script: test/runner.php -c phpunit.travis.yml

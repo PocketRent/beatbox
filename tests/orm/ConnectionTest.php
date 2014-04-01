@@ -8,6 +8,7 @@ class ConnectionTest extends beatbox\Test {
 
 	/**
 	 * @group sanity
+	 * @group database
 	 */
 	public function testQueryBasic() {
 		$conn = Connection::get();
@@ -24,6 +25,7 @@ class ConnectionTest extends beatbox\Test {
 
 	/**
 	 * @group sanity
+	 * @group database
 	 */
 	public function testMultiQuery() {
 		$conn = Connection::get();
@@ -41,6 +43,7 @@ class ConnectionTest extends beatbox\Test {
 
 	/**
 	 * @group sanity
+	 * @group database
 	 */
 	public function testQueryAsync() {
 		$conn = Connection::get();
@@ -66,6 +69,7 @@ class ConnectionTest extends beatbox\Test {
 
 	/**
 	 * @group fast
+	 * @group database
 	 */
 	public function testQueueQuery() {
 		$conn = Connection::get();

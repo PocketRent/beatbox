@@ -8,6 +8,7 @@ class ORMTest extends beatbox\Test {
 
 	/**
 	 * @group sanity
+	 * @group database
 	 *
 	 */
 	public function testBasicQuery() {
@@ -17,6 +18,7 @@ class ORMTest extends beatbox\Test {
 
 	/**
 	 * @group fast
+	 * @group database
 	 * @depends testBasicQuery
 	 *
 	 */
@@ -43,6 +45,7 @@ WHERE ("TestTable"."ID"=\'1\') AND ("TestTable"."AuxID">\'5\') AND (trim(both fr
 
 	/**
 	 * @group fast
+	 * @group database
 	 * @depends testBasicQuery
 	 *
 	 */
@@ -70,6 +73,7 @@ ORDER BY "TestTable"."ID" ASC, "TestTable"."AuxID" ASC', $str);
 
 	/**
 	 * @group fast
+	 * @group database
 	 *
 	 */
 	public function testValidation() {
@@ -96,6 +100,7 @@ ORDER BY "TestTable"."ID" ASC, "TestTable"."AuxID" ASC', $str);
 
 	/**
 	 * @group fast
+	 * @group database
 	 *
 	 */
 	public function testNullFilter() {
@@ -111,6 +116,7 @@ WHERE ("TestTable"."ID" IS NOT NULL)', $str);
 
 	/**
 	 * @group fast
+	 * @group database
 	 *
 	 */
 	public function testFromClause() {

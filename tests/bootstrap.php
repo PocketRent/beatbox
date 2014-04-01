@@ -16,47 +16,57 @@ define('RUNNING_TEST', true); // For code that needs to adjust for tests
 require __DIR__ . '/../php/init.php';
 initialize_beatbox('test_conf.php');
 
-// Connect to the database
+$con = null;
+$connectString = null;
+$dbname = null;
 
-$connectString = 'dbname=\'postgres\'';
-if (DATABASE_HOST) $connectString .= ' host=\''.DATABASE_HOST.'\'';
-if (DATABASE_USER) $connectString .= ' user=\''.DATABASE_USER.'\'';
-if (DATABASE_PASS) $connectString .= ' password=\''.DATABASE_PASS.'\'';
+// Check to see if the pgsql extension is loaded
+if (function_exists('pg_connect')) {
+	// Connect to the database
 
-($con = pg_connect($connectString)) || die('Unable to connect to postgres');
+	$connectString = 'dbname=\'postgres\'';
+	if (DATABASE_HOST) $connectString .= ' host=\''.DATABASE_HOST.'\'';
+	if (DATABASE_USER) $connectString .= ' user=\''.DATABASE_USER.'\'';
+	if (DATABASE_PASS) $connectString .= ' password=\''.DATABASE_PASS.'\'';
 
-$dbname = 'PR_test_' . str_replace('.', '_', microtime(true));
+	($con = pg_connect($connectString)) || die('Unable to connect to postgres');
+
+	$dbname = 'PR_test_' . str_replace('.', '_', microtime(true));
 
 
-// Create the database
-pg_query($con, 'CREATE DATABASE "' . $dbname . '"') || die('Unable to create database');
-pg_close($con);
+	// Create the database
+	pg_query($con, 'CREATE DATABASE "' . $dbname . '"') || die('Unable to create database');
+	pg_close($con);
 
-// Build the schema by running the command
-$args = [
-	'create',
-	'-d',
-	$dbname,
-	'-C',
-	__DIR__ . '/test_conf.php',
-	'--ignore-buildfiles',
-	__DIR__ . '/../db/'
-];
-$cmd = escapeshellcmd(__DIR__ . '/../build/database');
-$args = array_map('escapeshellarg', $args);
-$cmd = $cmd . ' ' . implode(' ', $args);
+	// Build the schema by running the command
+	$args = [
+		'create',
+		'-d',
+		$dbname,
+		'-C',
+		__DIR__ . '/test_conf.php',
+		'--ignore-buildfiles',
+		__DIR__ . '/../db/'
+	];
+	$cmd = escapeshellcmd(__DIR__ . '/../build/database');
+	$args = array_map('escapeshellarg', $args);
+	$cmd = $cmd . ' ' . implode(' ', $args);
 
-passthru($cmd);
+	passthru($cmd);
 
-// Create a new connection to set the global object
-$con = new beatbox\orm\Connection(['dbname' => $dbname]);
+	// Create a new connection to set the global object
+	$con = new beatbox\orm\Connection(['dbname' => $dbname]);
+
+}
 
 // Shutdown handler
 register_shutdown_function(function() use($connectString, $dbname, $con) {
-	$con->close();
-	$con = pg_connect($connectString);
-	pg_query($con, 'DROP DATABASE "' . $dbname . '"');
-	pg_close($con);
+	if ($con) {
+		$con->close();
+		$con = pg_connect($connectString);
+		pg_query($con, 'DROP DATABASE "' . $dbname . '"');
+		pg_close($con);
+	}
 
 	// Delete temporary assets folder
 	if (file_exists(ASSET_PATH))

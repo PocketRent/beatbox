@@ -11,12 +11,15 @@ newtype CodeVisibility = int;
  */
 
 class CodeFile implements Writeable {
+	private string $filename = '';
+
 	private string $namespace = '';
 	private Vector<string> $uses = Vector {};
 
 	private Vector<CodeItem> $items = Vector {};
 
 	private ?string $prelude;
+	private bool $isStrict = false;
 
 	public function setNamespace(string $ns) : void {
 		$this->namespace = $ns;
@@ -28,6 +31,14 @@ class CodeFile implements Writeable {
 
 	public function setPrelude(string $p) : void {
 		$this->prelude = $p;
+	}
+
+	public function setFilename(string $name) : void {
+		$this->filename = $name;
+	}
+
+	public function setStrict(bool $val = true) : void {
+		$this->isStrict = $val;
 	}
 
 	public function func(string $name,
@@ -46,8 +57,21 @@ class CodeFile implements Writeable {
 		return $cls;
 	}
 
+	public function writeToFile(string $filename) : void {
+		$this->setFilename($filename);
+		$handle = fopen($filename, 'w+');
+		$writer = FileWriter::fromHandle($handle);
+		$this->write($writer);
+		fflush($handle);
+		fclose($handle);
+	}
+
 	public function write(FileWriter $writer) : void {
-		$writer->str('<?hh');
+		if ($this->isStrict) {
+			$writer->str('<?hh // strict');
+		} else {
+			$writer->str('<?hh');
+		}
 		$writer->ensureNewline();
 		$writer->newline();
 
@@ -74,7 +98,8 @@ class CodeFile implements Writeable {
 	private function writePrelude(FileWriter $writer) : void {
 		if ($this->prelude !== null) {
 			if ($this->prelude == '') return;
-			$lines = explode("\n", $this->prelude);
+			$prelude = $this->processPrelude();
+			$lines = explode("\n", $prelude);
 			$writer->str('/**');
 			$writer->ensureNewline();
 			foreach ($lines as $l) {
@@ -88,6 +113,15 @@ class CodeFile implements Writeable {
 			$writer->ensureNewline();
 			$writer->newline();
 		}
+	}
+
+	private function processPrelude() : string {
+		$prelude = nullthrows($this->prelude);
+
+		$prelude = preg_replace('#([^%]?)%d#', "\${1}".date('Y-m-d'), $prelude) ?: $prelude;
+		$prelude = preg_replace('#([^%]?)%f#', "\${1}$this->filename", $prelude) ?: $prelude;
+
+		return $prelude;
 	}
 }
 
@@ -136,7 +170,7 @@ class CodeFunction extends CodeItem {
 	public function __construct(string $name,
 		Vector<CodeArgument> $args,
 		string $returnType,
-		?Vector<string> $typeParams) {
+		?Vector<string> $typeParams=null) {
 
 		parent::__construct($name);
 
@@ -172,6 +206,14 @@ class CodeClass extends CodeItem {
 
 	private bool $abstract = false;
 	private bool $final = false;
+
+	public function extends_(string $baseClass) : void {
+		$this->extends = $baseClass;
+	}
+
+	public function implements_(Vector<string> $interfaces) : void {
+		$this->implements = $interfaces;
+	}
 
 	public function field(string $type, string $name) : CodeField {
 		$field = new CodeField($type, $name);
@@ -235,7 +277,7 @@ class CodeMethod extends CodeFunction {
 		$this->static = $static;
 	}
 
-	public function setPrivacy(CodeVisibility $type) : void {
+	public function setVisibility(CodeVisibility $type) : void {
 		$this->visibility = $type;
 	}
 
@@ -263,8 +305,8 @@ class CodeBlock extends CodeStatement {
 		$this->statements->add(new AssignmentStatement($variable, $value));
 	}
 
-	public function ret(?string $variable = null) : void {
-		$this->statements->add(new ReturnStatement($variable));
+	public function ret(?string $expr = null) : void {
+		$this->statements->add(new ReturnStatement($expr));
 	}
 
 	public function call(string $func, Vector<string> $args) : void {
@@ -389,7 +431,7 @@ class CodeArgument implements Writeable {
 	public function write(FileWriter $writer) : void {
 		$writer->str('%s $%s', $this->type, $this->name);
 		if ($this->default !== null) {
-			$writer->str('= %s', $this->default);
+			$writer->str(' = %s', $this->default);
 		}
 	}
 }
@@ -419,7 +461,7 @@ class CodeField implements Writeable {
 		$writer->writeVis($this->visibility);
 		$writer->str('%s $%s', $this->type, $this->name);
 		if ($this->default !== null) {
-			$writer->str('= %s', $this->default);
+			$writer->str(' = %s', $this->default);
 		}
 		$writer->str(';');
 	}
@@ -483,24 +525,30 @@ class FileWriter {
 
 		$comma = false;
 		foreach ($items as $item) {
-			$this->write((string)$item);
 			if ($comma)
 				$this->write(", ");
 			$comma = true;
+			$this->write((string)$item);
 		}
 		$this->write($close);
 	}
 
 	public function writeList<T as Writeable>(string $delims, Traversable<T> $items) : void {
-		$open = $delims[0];
-		$close = $delims[1];
+		if (strlen($delims) == 0) {
+			$open = $close = '';
+		} else if (strlen($delims) == 1) {
+			$open = $close = $delims;
+		} else {
+			$open = $delims[0];
+			$close = $delims[1];
+		}
 		$this->write($open);
 
 		$comma = false;
 		foreach ($items as $item) {
-			$item->write($this);
 			if ($comma)
 				$this->write(", ");
+			$item->write($this);
 			$comma = true;
 		}
 		$this->write($close);

@@ -435,7 +435,7 @@ final class Request {
 		$colon = strpos($header, ':');
 		if ($colon > 0) {
 			$headerName = strtolower(substr($header, 0, $colon));
-			$headerValue = preg_replace('/^\W+/', '', substr($header, $colon));
+			$headerValue = (string)preg_replace('/^\W+/', '', substr($header, $colon));
 
 			$this->headers[$headerName] = $headerValue;
 		}

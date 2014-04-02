@@ -141,8 +141,8 @@ class EnvTest extends beatbox\Test {
 	public function testGetCookie() {
 		$this->assertNull(get_cookie('testValue'));
 
-		$_COOKIE['testValue'] = 3;
-		$this->assertEquals(3, get_cookie('testValue'));
+		$_COOKIE['testValue'] = '3';
+		$this->assertEquals('3', get_cookie('testValue'));
 	}
 
 	/**
@@ -151,8 +151,8 @@ class EnvTest extends beatbox\Test {
 	public function testRequestVar() {
 		$this->assertNull(request_var('testValue'));
 
-		$_REQUEST['testValue'] = 3;
-		$this->assertEquals(3, request_var('testValue'));
+		$_REQUEST['testValue'] = '3';
+		$this->assertEquals('3', request_var('testValue'));
 	}
 
 	/**
@@ -161,8 +161,8 @@ class EnvTest extends beatbox\Test {
 	public function testPostVar() {
 		$this->assertNull(post_var('testValue'));
 
-		$_POST['testValue'] = 3;
-		$this->assertEquals(3, post_var('testValue'));
+		$_POST['testValue'] = '3';
+		$this->assertEquals('3', post_var('testValue'));
 	}
 
 	/**
@@ -171,8 +171,8 @@ class EnvTest extends beatbox\Test {
 	public function testGetVar() {
 		$this->assertNull(get_var('testValue'));
 
-		$_GET['testValue'] = 3;
-		$this->assertEquals(3, get_var('testValue'));
+		$_GET['testValue'] = '3';
+		$this->assertEquals('3', get_var('testValue'));
 	}
 
 	/**

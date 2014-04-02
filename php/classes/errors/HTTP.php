@@ -9,7 +9,7 @@ class HTTP {
 	 * @param int $code The HTTP status code
 	 * @param string $status The status description
 	 */
-	public static function error(int $code, ?string $status = null) : void {
+	public static function error(int $code, ?string $status = null) : \void {
 		throw new HTTP_Exception($status, $code);
 	}
 
@@ -22,7 +22,7 @@ class HTTP {
 	 * @param string $to the URL to redirect to
 	 * @param string $fallback the URL to fallback to
 	 */
-	public static function redirect(string $to, ?string $fallback=null, int $code = 302): void {
+	public static function redirect(string $to, ?string $fallback=null, int $code = 302): \void {
 		$e = new HTTP_Exception(null, $code);
 
 		if($to) {
@@ -62,7 +62,7 @@ class HTTP {
 	 *
 	 * @param string $fallback the URL to fallback to
 	 */
-	public static function redirect_back(?string $fallback = null) : void {
+	public static function redirect_back(?string $fallback = null) : \void {
 		$referer = (string)server_var('HTTP_REFERER');
 		self::redirect($referer, $fallback);
 	}
@@ -160,7 +160,7 @@ class HTTP_Exception extends Exception {
 
 	protected Vector<Pair<string, bool>> $headers = Vector {};
 
-	public function setHeader(string $header, string $value, bool $replace = true) : void {
+	public function setHeader(string $header, string $value, bool $replace = true) : \void {
 		assert(strpos($header, ':') === false);
 		$this->headers[] = Pair {"$header: $value", $replace };
 	}
@@ -169,7 +169,7 @@ class HTTP_Exception extends Exception {
 		return 'http:';
 	}
 
-	public function sendToBrowser() : void {
+	public function sendToBrowser() : \void {
 		$line = 'HTTP/1.1 ' . $this->getBaseCode();
 		if(static::$status_map->contains($this->getBaseCode())) {
 			$line .= ' ' . static::$status_map[$this->getBaseCode()];

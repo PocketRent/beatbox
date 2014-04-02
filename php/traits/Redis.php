@@ -18,7 +18,7 @@ namespace beatbox;
 use \Redis as R;
 
 trait Redis {
-	abstract protected static function config_redis(R $redis) : void;
+	abstract protected static function config_redis(R $redis) : \void;
 
 	/**
 	 * Gets a redis object to do operations on

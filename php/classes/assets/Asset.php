@@ -92,7 +92,7 @@ class Asset {
 	/**
 	 * Sets the name of the file
 	 */
-	public function setName(string $name) : void {
+	public function setName(string $name) : \void {
 		$this->name = $name;
 	}
 
@@ -107,7 +107,7 @@ class Asset {
 	/**
 	 * Sets the MIME type of the file
 	 */
-	public function setMIME(string $mime) : void {
+	public function setMIME(string $mime) : \void {
 		$this->mime = $mime;
 	}
 
@@ -131,7 +131,7 @@ class Asset {
 	 * Loads a file from the given source path, moving it from
 	 * the original location.
 	 */
-	public function loadSourceFile(string $source) : void {
+	public function loadSourceFile(string $source) : \void {
 		if (!is_file($source)) {
 			throw new \InvalidArgumentException("'$source' is a not a file");
 		}
@@ -277,7 +277,7 @@ class Asset {
 		}
 	}
 
-	public function __clone() : void {
+	public function __clone() : \void {
 		$this->id = null;
 	}
 

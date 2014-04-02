@@ -10,7 +10,7 @@
 
 require_once __DIR__.'/symbolmap.php';
 
-function initialize_beatbox(string $conf) : void {
+function initialize_beatbox(string $conf) : \void {
 	date_default_timezone_set('UTC');
 
 	if (is_readable($conf)) {

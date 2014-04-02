@@ -1,6 +1,6 @@
 <?hh
 
-function generateHelp() : void {
+function generateHelp() : \void {
 	$exe = $GLOBALS['exe'];
 	echo <<<HELP
 Usage: $exe generate [options] <dest-directory>
@@ -31,7 +31,7 @@ HELP;
 
 }
 
-function doGenerate(Vector<string> $args) : void {
+function doGenerate(Vector<string> $args) : \void {
 	$GLOBALS['verbose'] = false;
 
 	$db_info = parse_common_args($args);
@@ -383,7 +383,7 @@ class PGType {
 		return $this->type == PGType::T_COMPOSITE && !$this->written;
 	}
 
-	public function writeTo(CodeFile $file) : void {
+	public function writeTo(CodeFile $file) : \void {
 		if($this->type_cat == PGType::TCAT_ARRAY || $this->type == PGType::T_DOMAIN) {
 			return $this->type_dict->typeByOid($this->sub_type)->writeTo($file);
 		}
@@ -633,12 +633,12 @@ class Table {
 		$this->oid = $oid;
 	}
 
-	public function addColumn(array $col) : void {
+	public function addColumn(array $col) : \void {
 		$this->columns[$col['column_name']] = new Column($col);
 		$this->cols_sorted = false;
 	}
 
-	public function loadComments(resource $conn) : void {
+	public function loadComments(resource $conn) : \void {
 		vprint("Loading comments for {$this->name}");
 
 		$q = pg_query_params($conn,
@@ -673,7 +673,7 @@ class Table {
 		return null;
 	}
 
-	public function sortColumns() : void {
+	public function sortColumns() : \void {
 		if (!$this->cols_sorted) {
 			uasort($this->columns, function (Column $a, Column $b): int {
 				if ($a->position == $b->position) return 0;
@@ -683,7 +683,7 @@ class Table {
 		}
 	}
 
-	public function setPrimaryKey(Traversable $cols) : void {
+	public function setPrimaryKey(Traversable $cols) : \void {
 		foreach($cols as $col) {
 			$this->columns[$col]->primary = true;
 		}
@@ -697,12 +697,12 @@ class Table {
 	}
 
 	public function addHasOne(string $name, string $table,
-								Vector<Pair<string,string>> $cols) : void {
+								Vector<Pair<string,string>> $cols) : \void {
 		$this->has_ones[$name] = Pair { $table, $cols };
 	}
 
 	public function addHasMany(string $name, string $table,
-								Vector<Pair<string, string>> $cols) : void {
+								Vector<Pair<string, string>> $cols) : \void {
 		$this->has_manys[$name] = Pair { $table, $cols };
 	}
 
@@ -937,7 +937,7 @@ function load_constraints(resource $conn): Vector<Constraint> {
 	return Vector::fromItems($constraints->values());
 }
 
-function resolve_fk_constraints(Vector<Table> $tables, Vector<Constraint> $constraints) : void {
+function resolve_fk_constraints(Vector<Table> $tables, Vector<Constraint> $constraints) : \void {
 	vprint("Resolving constraints");
 
 	foreach ($constraints as $constraint) {
@@ -977,20 +977,20 @@ class CodeFile {
 		}
 	}
 
-	public function writeLine(string $line="", ?int $indent=null) : void {
+	public function writeLine(string $line="", ?int $indent=null) : \void {
 		if ($this->file == null) command_fail("Code file closed!");
 		$indent = str_repeat("\t", $indent === null ? $this->indent : (int)$indent);
 		$line = sprintf("%s%s", $indent, $line);
 		fwrite($this->file, rtrim($line)."\n");
 	}
 
-	public function startBlock(string $before="", string $brace_char='{') : void {
+	public function startBlock(string $before="", string $brace_char='{') : \void {
 		$this->writeLine(trim($before." ".$brace_char));
 		$this->braces->add(reverse_brace($brace_char));
 		$this->indent++;
 	}
 
-	public function endBlock() : void {
+	public function endBlock() : \void {
 		$this->indent--;
 		$end = $this->braces->pop();
 		if ($end != '') {
@@ -998,7 +998,7 @@ class CodeFile {
 		}
 	}
 
-	public function writePHPPreamble(bool $dne=true) : void {
+	public function writePHPPreamble(bool $dne=true) : \void {
 		if ($this->file == null) command_fail("Code file closed!");
 		fwrite($this->file, "<?hh // strict\n");
 
@@ -1007,7 +1007,7 @@ class CodeFile {
 		}
 	}
 
-	public function blockComment(string $comment, bool $doc=false) : void {
+	public function blockComment(string $comment, bool $doc=false) : \void {
 		$lines = explode("\n", $comment);
 		if (count($lines) > 0) {
 			if ($doc) {
@@ -1022,14 +1022,14 @@ class CodeFile {
 		}
 	}
 
-	public function close() : void {
+	public function close() : \void {
 		fclose($this->file);
 		$this->file = null;
 	}
 }
 
 function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
-						?string $ns=null) : void {
+						?string $ns=null) : \void {
 	$ns = $ns ? $ns : "";
 
 	$types_file = new CodeFile($directory.'/types.php');
@@ -1111,7 +1111,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 			$isDateTime = $type->type_cat == PGType::TCAT_DATETIME;
 			$type_ret = strlen($type_arg) ? ": $type" : '';
 			if (strlen($type_arg) == 0) {
-				$type_ret = ": void";
+				$type_ret = ": \\void";
 			} else if ($col->nullable) {
 				$type_ret = ": ?$type";
 			} else {
@@ -1231,7 +1231,7 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 		$tbl_data->writeLine();
 
 		$tbl_data->startBlock("protected final function "
-								. "updateFromRow(Indexish<string,string> \$row): void");
+								. "updateFromRow(Indexish<string,string> \$row): \\void");
 		$tbl_data->writeLine('$orig = Map {};');
 		$tbl_data->writeLine('$this->changed = Map {};');
 

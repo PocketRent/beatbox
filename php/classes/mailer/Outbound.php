@@ -44,14 +44,14 @@ class Outbound {
 	/**
 	 * Queue these emails ready for sending
 	 */
-	public function send() : void {
+	public function send() : \void {
 		add_task(cast_callable([get_called_class(), 'real_send']), $this->to, $this->subject,
 					$this->content, $this->from, $this->attachments);
 	}
 
 	// Don't call this directly
 	public static function real_send(string $to, string $subject, string $content, string $from,
-										Map $attachments) : void {
+										Map $attachments) : \void {
 		if(strpos($content, '<body') === false) {
 			$content = "<!doctype html><html><body>$content</body></html>";
 		} else if(strpos($content, '<html') === false) {

@@ -9,7 +9,7 @@ class Cache {
 
 	const DEFAULT_EXPIRE = 21600; // Default expiration is 6 hours
 
-	protected static function config_redis(R $r) : void {
+	protected static function config_redis(R $r) : \void {
 		$r->setOption(R::OPT_SERIALIZER, R::SERIALIZER_PHP);
 		$r->select(REDIS_DB_CACHE);
 	}
@@ -69,7 +69,7 @@ class Cache {
 	 * An expire value <= 0 means no expiration.
 	 */
 	public static function set(string $key, mixed $value, int $expire = Cache::DEFAULT_EXPIRE,
-								Traversable<string> $tags = Vector {}) : void {
+								Traversable<string> $tags = Vector {}) : \void {
 		$key = self::key_name($key);
 		self::redis()->multi();
 		self::redis()->set($key, $value, $expire);
@@ -84,7 +84,7 @@ class Cache {
 	 * DateTime object instance.
 	 */
 	public static function set_until(string $key, mixed $value, mixed $expire,
-										Traversable<string> $tags = Vector {}) : void {
+										Traversable<string> $tags = Vector {}) : \void {
 		$key = self::key_name($key);
 
 		if ($expire instanceof \DateTime) {
@@ -105,7 +105,7 @@ class Cache {
 	/**
 	 * Remove a value from the cache
 	 */
-	public static function remove(string $key) : void {
+	public static function remove(string $key) : \void {
 		$key = self::key_name($key);
 		self::redis()->del($key);
 	}
@@ -115,7 +115,7 @@ class Cache {
 	 * the given tags and will unconditionally delete the member
 	 * keys.
 	 */
-	public static function delete_tags(...) : void {
+	public static function delete_tags(...) : \void {
 		$args = func_get_args();
 		$tags = array_map(class_meth('beatbox\Cache', 'tag_name'), $args);
 		// Get the members of the tags
@@ -133,7 +133,7 @@ class Cache {
 		});
 	}
 
-	private static function add_tags(string $key, Traversable<string> $tags) : void {
+	private static function add_tags(string $key, Traversable<string> $tags) : \void {
 		// Add the key to a set for each tag.
 		foreach ($tags as $tag) {
 			$tag = self::tag_name($tag);

@@ -1,6 +1,6 @@
 <?hh
 
-function createHelp() : void {
+function createHelp() : \void {
 	$exe = $GLOBALS['exe'];
 	echo <<<HELP
 Usage: $exe create [options] <source-directory>
@@ -13,7 +13,7 @@ Usage: $exe create [options] <source-directory>
 HELP;
 }
 
-function doCreate(Vector<string> &$args) : void {
+function doCreate(Vector<string> &$args) : \void {
 	$GLOBALS['verbose'] = false;
 	// Info for creation
 	$info = parse_common_args($args);
@@ -304,7 +304,7 @@ function get_db_files_r(string $dirname, Vector<DBFile> &$files,
 	return Pair {$sqls, $exes};
 }
 
-function run_sql(int $type, resource $conn, Vector<DBFile> $files) : void {
+function run_sql(int $type, resource $conn, Vector<DBFile> $files) : \void {
 	$scripts = $files->filter(function (DBFile $info) : bool use ($type) {
 		return $info->type == $type;
 	});
@@ -327,7 +327,7 @@ function run_sql(int $type, resource $conn, Vector<DBFile> $files) : void {
 	}
 }
 
-function create_tables(resource $conn, string $buildfile_dir, Vector<DBFile> $files) : void {
+function create_tables(resource $conn, string $buildfile_dir, Vector<DBFile> $files) : \void {
 	$dbs = 0;
 	$count = 0;
 	$errors = 0;
@@ -376,7 +376,7 @@ function create_tables(resource $conn, string $buildfile_dir, Vector<DBFile> $fi
 	}
 }
 
-function alter_and_migrate(resource $conn, string $buildfile_dir, Vector<DBFile> $files) : void {
+function alter_and_migrate(resource $conn, string $buildfile_dir, Vector<DBFile> $files) : \void {
 	$nscripts = 0;
 	$count = 0;
 	$skipped = 0;

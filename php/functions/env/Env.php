@@ -46,7 +46,7 @@ function is_cli() : bool {
  * Returns the type of the current device
  */
 function device_type() : int {
-	return Browser::device_type();
+	return (int)Browser::device_type();
 }
 
 /**

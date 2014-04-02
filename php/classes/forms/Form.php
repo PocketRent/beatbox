@@ -81,7 +81,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 	}
 
 	protected static function add_to_map(Map<string,mixed> $base, string $name,
-											mixed $value) : void {
+											mixed $value) : \void {
 		$matches = [];
 		if(preg_match('#^(.+?)\[(.*?)\](.*)$#', $name, $matches)) {
 			if(!$matches[2]) {

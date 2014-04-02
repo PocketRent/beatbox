@@ -135,11 +135,11 @@ class CommandException extends Exception {
 }
 
 <<NoReturn>>
-function command_fail(?string $msg, int $code=1) : void {
+function command_fail(?string $msg, int $code=1) : \void {
 	throw new CommandException($msg, $code);
 }
 
-function vprint(string $msg) : void {
+function vprint(string $msg) : \void {
 	if ($GLOBALS['verbose']) {
 		echo $msg, "\n";
 	}

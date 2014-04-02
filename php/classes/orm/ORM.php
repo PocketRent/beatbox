@@ -323,7 +323,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 		}
 	}
 
-	public function __clone() : void {
+	public function __clone() : \void {
 		$this->result = null;
 		$this->conds = clone $this->conds;
 		$this->sorts = clone $this->sorts;
@@ -341,7 +341,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 		return $this->result;
 	}
 
-	protected function validateField(string $field) : void {
+	protected function validateField(string $field) : \void {
 		if (!$this->valid_fields->contains($field)) {
 			throw new InvalidFieldException($field, $this->valid_fields);
 		}
@@ -542,7 +542,7 @@ class AggregateORM extends ORM<Map<string,string>> {
 		}
 	}
 
-	public function __clone() : void {
+	public function __clone() : \void {
 		parent::__clone();
 		$this->extra_fields = clone $this->extra_fields;
 		$this->group_bys = clone $this->group_bys;

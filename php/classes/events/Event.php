@@ -18,7 +18,7 @@ class Event {
 	 * true, then the callback is called on all events with a prefix in $name
 	 */
 	public static function attach_listener(CallbackFunction $callback, string $name,
-											bool $prefix = false): void {
+											bool $prefix = false): \void {
 		if($prefix) {
 			if(!self::$prefix_listeners->contains($name)) {
 				self::$prefix_listeners[$name] = Vector {$callback};
@@ -58,7 +58,7 @@ class Event {
 	/**
 	 * Send the event out to be processed asynchronously
 	 */
-	public function send() : void {
+	public function send() : \void {
 		add_task(cast_callable([get_called_class(), 'async_run']), $this->name, $this->args);
 	}
 
@@ -84,7 +84,7 @@ class Event {
 		return $vals;
 	}
 
-	public static function reset(): void {
+	public static function reset(): \void {
 		self::$exact_listeners = Map {};
 		self::$prefix_listeners = Map {};
 	}

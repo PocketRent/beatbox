@@ -46,7 +46,7 @@ EOF;
 		$func = new utils\CodeFunction('testFunc', Vector {}, 'void');
 
 		$expected = <<<EOF
-function testFunc() : void {}
+function testFunc() : \void {}
 EOF;
 		$actual = $this->write($func);
 
@@ -64,7 +64,7 @@ EOF;
 		$func = new utils\CodeFunction('testFuncArgs', $args, 'void');
 
 		$expected = <<<'EOF'
-function testFuncArgs(string $foo, Obj $bar) : void {}
+function testFuncArgs(string $foo, Obj $bar) : \void {}
 EOF;
 		$actual = $this->write($func);
 
@@ -83,7 +83,7 @@ EOF;
 		$func = new utils\CodeFunction('testFuncArgsWParams', $args, 'void', $params);
 
 		$expected = <<<'EOF'
-function testFuncArgsWParams<T>(string $foo, T $bar) : void {}
+function testFuncArgsWParams<T>(string $foo, T $bar) : \void {}
 EOF;
 		$actual = $this->write($func);
 
@@ -315,9 +315,9 @@ EOF;
 
 		$expected = <<<'EOF'
 class TestClass {
-	public function m1() : void {}
-	protected function m2() : void {}
-	private function m3() : void {}
+	public function m1() : \void {}
+	protected function m2() : \void {}
+	private function m3() : \void {}
 
 }
 EOF;

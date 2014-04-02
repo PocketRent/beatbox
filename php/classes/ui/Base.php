@@ -34,7 +34,7 @@ abstract class :bb:base extends :x:element {
 		return $id;
 	}
 
-	final protected function render() : :x:element {
+	final protected function render() : :x:composable-element {
 		$allowed = (int)$this->getAttribute('devices');
 		if(!($allowed & device_type())) {
 			return <x:frag />;

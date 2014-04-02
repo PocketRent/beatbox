@@ -59,6 +59,9 @@ if (function_exists('pg_connect')) {
 
 }
 
+// Un-register our error handler so PHPUnit sticks its in
+restore_error_handler();
+
 // Shutdown handler
 register_shutdown_function(function() use($connectString, $dbname, $con) {
 	if ($con) {

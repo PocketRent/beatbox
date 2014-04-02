@@ -10,14 +10,14 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		var validator,
 		var handler;
 
-	protected function compose() :form {
+	protected function compose(): :form {
 		return <form>
 			{$this->getChildren()}
 			<bb:form:csrf />
 		</form>;
 	}
 
-	public function forFragment(\Indexish<int, string> $url, string $fragment) : :x:base {
+	public function forFragment(\Indexish<int, string> $url, string $fragment) : ?:x:base {
 		if(!$this->getAttribute('method')) {
 			$this->setAttribute('method', 'post');
 		}

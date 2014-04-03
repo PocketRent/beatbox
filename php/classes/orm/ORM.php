@@ -164,7 +164,7 @@ class ORM<T> implements \IteratorAggregate<T>, \Countable {
 
 	public function count() : int {
 		$res = wait($this->countWith('*', 'C')->getNth(0));
-		return (int)nullthrows($res)->at('C');
+		return (int)nullthrows($res)['C'];
 	}
 
 	/**

@@ -1246,6 +1246,16 @@ function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
 
 		$tbl_data->endBlock();
 
+		$tbl_data->startBlock("public final function copy(): this");
+		$tbl_data->writeLine('$copy = new static();');
+
+		foreach ($table->columns as $col) {
+			$tbl_data->writeLine("\$copy->set{$col->name}(\$this->get{$col->name}());");
+		}
+		$tbl_data->writeLine("return \$copy;");
+
+		$tbl_data->endBlock();
+
 		$tbl_data->startBlock("public final static function getTableName(): string");
 		$tbl_data->writeLine("return '$table->name';");
 		$tbl_data->endBlock();

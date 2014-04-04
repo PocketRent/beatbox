@@ -139,6 +139,7 @@ class TestTable extends orm\DataTable {
 	public function toMap() : Map { return Map {}; }
 	public function toRow() : string { return ''; }
 	public function isNew() : bool { return true; }
+	public function copy(): this { return $this; }
 
 	public static function getTableName() : string {
 		return 'TestTable';

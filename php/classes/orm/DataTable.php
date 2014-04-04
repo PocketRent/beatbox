@@ -60,6 +60,11 @@ abstract class DataTable {
 	abstract static function getPrimaryKeys() : \ConstSet<string>;
 
 	/**
+	 * Creates a copy of this object, marking all the fields as changed
+	 */
+	abstract public function copy(): this;
+
+	/**
 	 * ORM-getter for this class (uses LSB)
 	 *
 	 * @return ORM

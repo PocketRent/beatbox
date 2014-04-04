@@ -10,13 +10,13 @@ class ExpectedCallableExpection extends InvariantViolationException {}
  */
 class UnexpectedNullException extends InvariantViolationException {}
 
-function invariant(mixed $test, string $message): \void {
+function invariant(mixed $test, string $message): void {
   if (!$test) {
     invariant_violation($message);
   }
 }
 
-function invariant_violation(string $message): \void {
+function invariant_violation(string $message): void {
   throw new InvariantViolationException($message);
 }
 

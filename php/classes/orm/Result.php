@@ -50,7 +50,7 @@ abstract class Result {
 		return nullthrows($this->tag);
 	}
 
-	private function parseTag() : \void {
+	private function parseTag() : void {
 		if ($this->tag == null) {
 			$cmd_tag = pg_result_status($this->result, PGSQL_STATUS_STRING);
 			$parts = explode(' ', $cmd_tag);
@@ -184,11 +184,11 @@ class ResultIterator implements Iterator<array<string,string>> {
 		return $this->cur_idx;
 	}
 
-	public function next() : \void {
+	public function next() : void {
 		$this->cur_idx++;
 	}
 
-	public function rewind() : \void {
+	public function rewind() : void {
 		$this->cur_idx = 0;
 	}
 

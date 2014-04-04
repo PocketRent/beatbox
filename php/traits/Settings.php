@@ -22,12 +22,12 @@ trait Settings {
 
 	private ?string $settings_key = null;
 
-	protected static function config_redis(\Redis $inst) : \void {
+	protected static function config_redis(\Redis $inst) : void {
 		$inst->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
 		$inst->select(REDIS_DB_SETTINGS);
 	}
 
-	protected function loadSettings() : \void {
+	protected function loadSettings() : void {
 		if($this->settings_loaded) return;
 		$this->settings_loaded = true;
 		$id = (string)$this->getID();
@@ -56,17 +56,17 @@ trait Settings {
 		return isset($this->settings_data[$key]);
 	}
 
-	public function setSetting(string $key, mixed $value) : \void {
+	public function setSetting(string $key, mixed $value) : void {
 		$this->loadSettings();
 		$this->settings_data[$key] = $value;
 	}
 
-	public function clearSetting(string $key) : \void {
+	public function clearSetting(string $key) : void {
 		$this->loadSettings();
 		unset($this->settings_data[$key]);
 	}
 
-	public function endSettings() : \void {
+	public function endSettings() : void {
 		if($this->settings_loaded) {
 			self::redis_transaction(function(\Redis $r) {
 				// Redis::hmset wants an array
@@ -77,7 +77,7 @@ trait Settings {
 					}
 				}
 				if(count($set)) {
-					$r->hmset($this->settings_key, $set);
+					var_dump($r->hmset($this->settings_key, $set));
 				}
 				// call_user_func_array wants an array
 				$del = [$this->settings_key];

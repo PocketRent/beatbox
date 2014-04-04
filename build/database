@@ -42,7 +42,7 @@ function main(Vector<string> $args) : int {
     return 0;
 }
 
-function usage(string $exe, ?string $command=null) : \void {
+function usage(string $exe, ?string $command=null) : void {
     if ($command && $GLOBALS['commands']->containsKey($command)) {
         $cmd = $GLOBALS['commands'][$command];
         if (isset($cmd['help'])) {

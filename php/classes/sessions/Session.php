@@ -50,7 +50,7 @@ class Session {
 	/**
 	 * Initialise a session
 	 */
-	protected static function init() : \void {
+	protected static function init() : void {
 		if(!self::inst()->hasSetting('CSRF')) {
 			self::inst()->setSetting('CSRF', generate_random_token());
 		}
@@ -76,7 +76,7 @@ class Session {
 	/**
 	 * Set the session value for the given key
 	 */
-	public static function set(string $key, mixed $value) : \void {
+	public static function set(string $key, mixed $value) : void {
 		if($key === 'CSRF') {
 			throw new \InvalidArgumentException('Unable to set CSRF key.');
 		}
@@ -86,14 +86,14 @@ class Session {
 	/**
 	 * Clear the value from the session for the given key
 	 */
-	public static function clear(string $key) : \void {
+	public static function clear(string $key) : void {
 		self::start(false) && self::inst()->clearSetting($key);
 	}
 
 	/**
 	 * Close and write the session
 	 */
-	public static function end() : \void {
+	public static function end() : void {
 		if(self::$inst) {
 			self::$inst->endSettings();
 			self::redis()->expire('session:' . self::$id, self::EXPIRE);
@@ -103,7 +103,7 @@ class Session {
 	/**
 	 * Completely reset the session
 	 */
-	public static function reset() : \void {
+	public static function reset() : void {
 		self::end();
 		self::$inst = null;
 		set_cookie(self::NAME, null);

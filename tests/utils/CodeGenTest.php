@@ -43,10 +43,10 @@ EOF;
 	 * @group sanity
 	 */
 	public function testSimpleFunction() {
-		$func = new utils\CodeFunction('testFunc', Vector {}, '\void');
+		$func = new utils\CodeFunction('testFunc', Vector {}, 'void');
 
 		$expected = <<<'EOF'
-function testFunc() : \void {}
+function testFunc() : void {}
 EOF;
 		$actual = $this->write($func);
 
@@ -61,10 +61,10 @@ EOF;
 			new utils\CodeArgument('foo', 'string'),
 			new utils\CodeArgument('bar', 'Obj'),
 		};
-		$func = new utils\CodeFunction('testFuncArgs', $args, '\void');
+		$func = new utils\CodeFunction('testFuncArgs', $args, 'void');
 
 		$expected = <<<'EOF'
-function testFuncArgs(string $foo, Obj $bar) : \void {}
+function testFuncArgs(string $foo, Obj $bar) : void {}
 EOF;
 		$actual = $this->write($func);
 
@@ -80,10 +80,10 @@ EOF;
 			new utils\CodeArgument('bar', 'T'),
 		};
 		$params = Vector { 'T' };
-		$func = new utils\CodeFunction('testFuncArgsWParams', $args, '\void', $params);
+		$func = new utils\CodeFunction('testFuncArgsWParams', $args, 'void', $params);
 
 		$expected = <<<'EOF'
-function testFuncArgsWParams<T>(string $foo, T $bar) : \void {}
+function testFuncArgsWParams<T>(string $foo, T $bar) : void {}
 EOF;
 		$actual = $this->write($func);
 
@@ -306,18 +306,18 @@ EOF;
 	 */
 	public function testClassMethods() {
 		$cls = new utils\CodeClass('TestClass');
-		$f1 = $cls->method('m1', Vector {}, '\void');
-		$f2 = $cls->method('m2', Vector {}, '\void');
-		$f3 = $cls->method('m3', Vector {}, '\void');
+		$f1 = $cls->method('m1', Vector {}, 'void');
+		$f2 = $cls->method('m2', Vector {}, 'void');
+		$f3 = $cls->method('m3', Vector {}, 'void');
 
 		$f2->setVisibility(utils\VIS_PROTECTED);
 		$f3->setVisibility(utils\VIS_PRIVATE);
 
 		$expected = <<<'EOF'
 class TestClass {
-	public function m1() : \void {}
-	protected function m2() : \void {}
-	private function m3() : \void {}
+	public function m1() : void {}
+	protected function m2() : void {}
+	private function m3() : void {}
 
 }
 EOF;

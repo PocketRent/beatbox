@@ -263,7 +263,7 @@ class OAuth {
 		$params = $this->_fullOAuthParams;
 		$params->setAll($this->oauthParameters);
 
-		$setMissing = function(string $p, (function(): string) $v) : \void use($params) {
+		$setMissing = function(string $p, (function(): string) $v) : void use($params) {
 			if (!$params->containsKey($p))
 				$params->set($p, $v());
 		};

@@ -88,13 +88,13 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 	public function isNegativeInfinity() : bool { return $this->_infinity == 1; }
 	public function isInfinite() : bool { return $this->_infinity != 0; }
 
-	public function setPositiveInfinity() : \void {
+	public function setPositiveInfinity() : void {
 		// Set the date to something way in the future, to make it easier
 		// to spot bad code
 		$this->setDate(9999, 12, 31); $this->setTime(23,59,59);
 		$this->_infinity = 1;
 	}
-	public function setNegativeInfinity() : \void {
+	public function setNegativeInfinity() : void {
 		// Set the date to something way in the past, to make it easier to
 		// spot bad code
 		$this->setDate(-9999, 1, 1); $this->setTime(0,0,0);

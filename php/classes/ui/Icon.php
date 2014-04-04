@@ -52,7 +52,7 @@ class :bb:icon extends :bb:base {
 	 *
 	 * @param DOMElement $root  The root element which should be formatted.
 	 */
-	protected static function formatDOMElement(DOMElement $root) : \void {
+	protected static function formatDOMElement(DOMElement $root) : void {
 		/* Check what this element contains. */
 		$fullText = ''; /* All text in this element. */
 		$textNodes = Vector {}; /* Text nodes which should be deleted. */
@@ -120,7 +120,7 @@ class :bb:icon extends :bb:base {
 class :bb:thumbnail extends :bb:icon {
 	private ?beatbox\Asset $asset = null;
 
-	public function setAsset(\beatbox\Asset $asset) : \void {
+	public function setAsset(\beatbox\Asset $asset) : void {
 		$this->asset = $asset;
 	}
 }

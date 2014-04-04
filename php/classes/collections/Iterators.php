@@ -13,11 +13,11 @@ class UnzipIterator<Tk,Tv> implements KeyedIterator<Tk,Tv> {
 		return $this->i->current()[1];
 	}
 
-	public function next() : \void {
+	public function next() : void {
 		$this->i->next();
 	}
 
-	public function rewind() : \void {
+	public function rewind() : void {
 		$this->i->rewind();
 	}
 

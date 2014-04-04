@@ -95,7 +95,7 @@ abstract class :x:composable-element extends :x:base {
   const TYPE_FLOAT    = 8;
   const TYPE_CALLABLE = 9;
 
-  protected function init(): \void {}
+  protected function init(): void {}
 
   /**
    * A new :x:composable-element is instantiated for every literal tag
@@ -399,7 +399,7 @@ abstract class :x:composable-element extends :x:base {
     return $this;
   }
 
-  final protected function __flushElementChildren(): \void {
+  final protected function __flushElementChildren(): void {
 
     // Flush all :xhp elements to x:primitive's
     $ln = count($this->children);
@@ -548,7 +548,7 @@ abstract class :x:composable-element extends :x:base {
   }
 
   final private function validateArrayAttributeValue(array<int,mixed> $decl, string $attr,
-                                                     array<mixed> $val): \void {
+                                                     array<mixed> $val): void {
     if ($decl[0]) { // Key declaration
       if ($decl[0] == self::TYPE_STRING) {
         $type = 'string';
@@ -621,7 +621,7 @@ abstract class :x:composable-element extends :x:base {
    * Validates that this element's children match its children descriptor, and
    * throws an exception if that's not the case.
    */
-  final protected function validateChildren(): \void {
+  final protected function validateChildren(): void {
     $decl = $this->__xhpChildrenDeclaration();
     if ($decl === 1) { // Any children allowed
       return;

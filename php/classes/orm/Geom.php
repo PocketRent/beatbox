@@ -334,7 +334,7 @@ class _GeomParser {
 		}
 	}
 
-	public function goBack(int $n=1): \void {
+	public function goBack(int $n=1): void {
 		if ($n < 1) return;
 		if ($n > $this->pos) $n = $this->pos;
 
@@ -381,7 +381,7 @@ class _GeomParser {
 		return tuple(true, $num);
 	}
 
-	public function skipWhitespace(): \void {
+	public function skipWhitespace(): void {
 		$len = strlen($this->str);
 		while ($this->pos < $len && ctype_space($this->str[$this->pos]))
 			$this->pos++;

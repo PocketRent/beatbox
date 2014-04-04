@@ -446,7 +446,7 @@ class SymbolParser {
 		}
 	}
 
-	private function skipTokens() : \void {
+	private function skipTokens() : void {
 		while ($this->pos < count($this->tokens)) {
 			$token = $this->tokens[$this->pos];
 			if (is_array($token)) {

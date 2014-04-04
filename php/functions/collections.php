@@ -43,7 +43,7 @@ function map_merge_recursive<Tk>(ConstMap<Tk,mixed> $base, ...) : Map<Tk,mixed> 
 /**
  * Vector equivalent of array_unshift
  */
-function vector_unshift<T>(MutableVector<T> $v, T $val) : \void {
+function vector_unshift<T>(MutableVector<T> $v, T $val) : void {
 	// UNSAFE - because of the temporary null added to the beginning
 	$v->add(null); // Add a null element to the end
 	for ($i = $v->count()-1; $i > 0; $i--) {

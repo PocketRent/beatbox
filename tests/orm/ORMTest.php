@@ -132,7 +132,7 @@ WHERE ("TestTable"."ID" IS NOT NULL)', $str);
 // we can test the SQL query generation without having
 // to generate code or rely on it already existing
 class TestTable extends orm\DataTable {
-	protected function updateFromRow(\Indexish<string,string> $row) : \void { }
+	protected function updateFromRow(\Indexish<string,string> $row) : void { }
 	protected function getUpdatedColumns() : Map<string,mixed> { return Map {}; }
 	protected function originalValues() : ImmMap<string,mixed> { return ImmMap {}; }
 

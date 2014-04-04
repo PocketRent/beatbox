@@ -29,7 +29,7 @@ class :bb:form:file extends :bb:form:field {
 		return parent::validate();
 	}
 
-	protected function validateFile(array $file) : \void {
+	protected function validateFile(array $file) : void {
 		if($file['error'] != UPLOAD_ERR_OK) {
 			if($file['error'] == UPLOAD_ERR_NO_FILE) {
 				$this->setValue(array());

@@ -18,32 +18,33 @@ namespace beatbox;
 use \Redis as R;
 
 trait Redis {
-	abstract protected static function config_redis(R $redis) : \void;
+	abstract protected static function config_redis(R $redis) : void;
+
+	private static ?R $__redis__inst = null;
 
 	/**
 	 * Gets a redis object to do operations on
 	 */
 	protected static function redis() : R {
-		static $inst = null;
-		if(!$inst) {
-			$inst = new R();
-			$inst->connect(REDIS_SERVER);
+		if(!self::$__redis__inst) {
+			self::$__redis__inst = new R();
+			self::$__redis__inst->connect(REDIS_SERVER);
 			if(REDIS_PASSWORD) {
-				$inst->auth(REDIS_PASSWORD);
+				self::$__redis__inst->auth(REDIS_PASSWORD);
 			}
 			if(APP_NAME) {
-				$inst->setOption(R::OPT_PREFIX, APP_NAME);
+				self::$__redis__inst->setOption(R::OPT_PREFIX, APP_NAME);
 			}
-			self::config_redis($inst);
+			self::config_redis(self::$__redis__inst);
 
 			if (defined('RUNNING_TEST')) {
 				// The test runner should always use the test database,
 				// which we clear on connection
-				$inst->select(REDIS_DB_TEST);
-				$inst->flushdb();
+				self::$__redis__inst->select(REDIS_DB_TEST);
+				self::$__redis__inst->flushdb();
 			}
 		}
-		return $inst;
+		return self::$__redis__inst;
 	}
 
 	/**

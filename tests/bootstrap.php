@@ -1,5 +1,7 @@
 <?hh
 
+die('No bootstrap!');
+
 // Test defines
 define('RUNNING_TEST', true); // For code that needs to adjust for tests
 

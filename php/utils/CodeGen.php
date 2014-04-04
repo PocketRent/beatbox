@@ -21,23 +21,23 @@ class CodeFile implements Writeable {
 	private ?string $prelude;
 	private bool $isStrict = false;
 
-	public function setNamespace(string $ns) : \void {
+	public function setNamespace(string $ns) : void {
 		$this->namespace = $ns;
 	}
 
-	public function addUse(string $use) : \void {
+	public function addUse(string $use) : void {
 		$this->uses->add($use);
 	}
 
-	public function setPrelude(string $p) : \void {
+	public function setPrelude(string $p) : void {
 		$this->prelude = $p;
 	}
 
-	public function setFilename(string $name) : \void {
+	public function setFilename(string $name) : void {
 		$this->filename = $name;
 	}
 
-	public function setStrict(bool $val = true) : \void {
+	public function setStrict(bool $val = true) : void {
 		$this->isStrict = $val;
 	}
 
@@ -57,7 +57,7 @@ class CodeFile implements Writeable {
 		return $cls;
 	}
 
-	public function writeToFile(string $filename) : \void {
+	public function writeToFile(string $filename) : void {
 		$this->setFilename($filename);
 		$handle = fopen($filename, 'w+');
 		$writer = FileWriter::fromHandle($handle);
@@ -66,7 +66,7 @@ class CodeFile implements Writeable {
 		fclose($handle);
 	}
 
-	public function write(FileWriter $writer) : \void {
+	public function write(FileWriter $writer) : void {
 		if ($this->isStrict) {
 			$writer->str('<?hh // strict');
 		} else {
@@ -95,7 +95,7 @@ class CodeFile implements Writeable {
 		}
 	}
 
-	private function writePrelude(FileWriter $writer) : \void {
+	private function writePrelude(FileWriter $writer) : void {
 		if ($this->prelude !== null) {
 			if ($this->prelude == '') return;
 			$prelude = $this->processPrelude();
@@ -137,11 +137,11 @@ abstract class CodeItem implements Writeable {
 		$this->name = $name;
 	}
 
-	public function setComment(string $comment) : \void {
+	public function setComment(string $comment) : void {
 		$this->comment = $comment;
 	}
 
-	public function writeComment(FileWriter $writer) : \void {
+	public function writeComment(FileWriter $writer) : void {
 		if ($this->comment !== null) {
 			if ($this->comment == '') return;
 			$lines = explode("\n", $this->comment);
@@ -185,7 +185,7 @@ class CodeFunction extends CodeItem {
 		return $this->block;
 	}
 
-	public function write(FileWriter $writer) : \void {
+	public function write(FileWriter $writer) : void {
 		$writer->str("function %s", $this->name);
 		if ($this->typeParams) {
 			$writer->strList('<>', $this->typeParams);
@@ -207,11 +207,11 @@ class CodeClass extends CodeItem {
 	private bool $abstract = false;
 	private bool $final = false;
 
-	public function extends_(string $baseClass) : \void {
+	public function extends_(string $baseClass) : void {
 		$this->extends = $baseClass;
 	}
 
-	public function implements_(Vector<string> $interfaces) : \void {
+	public function implements_(Vector<string> $interfaces) : void {
 		$this->implements = $interfaces;
 	}
 
@@ -231,7 +231,7 @@ class CodeClass extends CodeItem {
 		return $fn;
 	}
 
-	public function write(FileWriter $writer) : \void {
+	public function write(FileWriter $writer) : void {
 		if ($this->abstract)
 			$writer->str('abstract ');
 		else if ($this->final)
@@ -273,15 +273,15 @@ class CodeMethod extends CodeFunction {
 	private bool $abstract = false;
 	private bool $final = false;
 
-	public function setStatic(bool $static = true) : \void {
+	public function setStatic(bool $static = true) : void {
 		$this->static = $static;
 	}
 
-	public function setVisibility(CodeVisibility $type) : \void {
+	public function setVisibility(CodeVisibility $type) : void {
 		$this->visibility = $type;
 	}
 
-	public function write(FileWriter $writer) : \void {
+	public function write(FileWriter $writer) : void {
 		$writer->writeVis($this->visibility);
 
 		if ($this->abstract)
@@ -301,19 +301,19 @@ abstract class CodeStatement implements Writeable { }
 class CodeBlock extends CodeStatement {
 	private Vector<CodeStatement> $statements = Vector {};
 
-	public function assign(string $variable, string $value) : \void {
+	public function assign(string $variable, string $value) : void {
 		$this->statements->add(new AssignmentStatement($variable, $value));
 	}
 
-	public function ret(?string $expr = null) : \void {
+	public function ret(?string $expr = null) : void {
 		$this->statements->add(new ReturnStatement($expr));
 	}
 
-	public function call(string $func, Vector<string> $args) : \void {
+	public function call(string $func, Vector<string> $args) : void {
 		$this->statements->add(new CallStatement($func, $args));
 	}
 
-	public function methodCall(string $obj, string $func, Vector<string> $args) : \void {
+	public function methodCall(string $obj, string $func, Vector<string> $args) : void {
 		$func = sprintf('%s->%s', $obj, $func);
 		$this->call($func, $args);
 	}
@@ -324,7 +324,7 @@ class CodeBlock extends CodeStatement {
 		return $if;
 	}
 
-	public function write(FileWriter $writer) : \void {
+	public function write(FileWriter $writer) : void {
 		if ($this->statements->count() == 0) {
 			$writer->str('{}');
 		} else {
@@ -349,7 +349,7 @@ class AssignmentStatement extends CodeStatement {
 		$this->value = $value;
 	}
 
-	public function write(FileWriter $writer) : \void {
+	public function write(FileWriter $writer) : void {
 		$writer->str('$%s = %s;', $this->variable, $this->value);
 		$writer->ensureNewline();
 	}
@@ -362,7 +362,7 @@ class ReturnStatement extends CodeStatement {
 		$this->expression = $expression;
 	}
 
-	public function write(FileWriter $writer) : \void {
+	public function write(FileWriter $writer) : void {
 		if ($this->expression !== null) {
 			$writer->str('return %s;', $this->expression);
 		} else {
@@ -381,7 +381,7 @@ class CallStatement extends CodeStatement {
 		$this->args = $args;
 	}
 
-	public function write(FileWriter $writer) : \void {
+	public function write(FileWriter $writer) : void {
 		$writer->str('%s', $this->func);
 		$writer->strList('()', $this->args);
 		$writer->str(';');
@@ -406,7 +406,7 @@ class IfStatement extends CodeBlock {
 		return $this->else;
 	}
 
-	public function write(FileWriter $writer) : \void {
+	public function write(FileWriter $writer) : void {
 		$writer->str('if (%s) ', $this->condition);
 		parent::write($writer);
 		$else = $this->else;
@@ -428,7 +428,7 @@ class CodeArgument implements Writeable {
 		$this->default = $default;
 	}
 
-	public function write(FileWriter $writer) : \void {
+	public function write(FileWriter $writer) : void {
 		$writer->str('%s $%s', $this->type, $this->name);
 		if ($this->default !== null) {
 			$writer->str(' = %s', $this->default);
@@ -449,15 +449,15 @@ class CodeField implements Writeable {
 		$this->name = $name;
 	}
 
-	public function setVisibility(CodeVisibility $vis) : \void {
+	public function setVisibility(CodeVisibility $vis) : void {
 		$this->visibility = $vis;
 	}
 
-	public function setDefault(string $default) : \void {
+	public function setDefault(string $default) : void {
 		$this->default = $default;
 	}
 
-	public function write(FileWriter $writer) : \void {
+	public function write(FileWriter $writer) : void {
 		$writer->writeVis($this->visibility);
 		$writer->str('%s $%s', $this->type, $this->name);
 		if ($this->default !== null) {
@@ -466,7 +466,7 @@ class CodeField implements Writeable {
 		$writer->str(';');
 	}
 
-	public function writeComment(FileWriter $writer) : \void {
+	public function writeComment(FileWriter $writer) : void {
 		if ($this->comment !== null) {
 			if ($this->comment == '') return;
 			$lines = explode("\n", $this->comment);
@@ -486,7 +486,7 @@ class CodeField implements Writeable {
 }
 
 interface Writeable {
-	public function write(FileWriter $writer) : \void;
+	public function write(FileWriter $writer) : void;
 }
 
 class FileWriter {
@@ -503,7 +503,7 @@ class FileWriter {
 		return $writer;
 	}
 
-	public function str(string $s, ...) : \void {
+	public function str(string $s, ...) : void {
 		$args = func_get_args();
 		array_shift($args);
 
@@ -512,7 +512,7 @@ class FileWriter {
 		$this->write($str);
 	}
 
-	public function strList<T as Stringish>(string $delims, Traversable<T> $items) : \void {
+	public function strList<T as Stringish>(string $delims, Traversable<T> $items) : void {
 		if (strlen($delims) == 0) {
 			$open = $close = '';
 		} else if (strlen($delims) == 1) {
@@ -533,7 +533,7 @@ class FileWriter {
 		$this->write($close);
 	}
 
-	public function writeList<T as Writeable>(string $delims, Traversable<T> $items) : \void {
+	public function writeList<T as Writeable>(string $delims, Traversable<T> $items) : void {
 		if (strlen($delims) == 0) {
 			$open = $close = '';
 		} else if (strlen($delims) == 1) {
@@ -554,28 +554,28 @@ class FileWriter {
 		$this->write($close);
 	}
 
-	public function startBlock() : \void {
+	public function startBlock() : void {
 		$this->ensureNewline();
 		$this->indent++;
 	}
 
-	public function endBlock() : \void {
+	public function endBlock() : void {
 		$this->indent--;
 		$this->ensureNewline();
 	}
 
-	public function ensureNewline() : \void {
+	public function ensureNewline() : void {
 		if (!$this->hasNewline) {
 			$this->newline();
 		}
 	}
 
-	public function newline() : \void {
+	public function newline() : void {
 		fwrite($this->handle(), "\n");
 		$this->hasNewline = true;
 	}
 
-	public function writeVis(CodeVisibility $vis) : \void {
+	public function writeVis(CodeVisibility $vis) : void {
 		switch ($vis) {
 		case VIS_PUBLIC:
 			$this->write('public ');
@@ -589,7 +589,7 @@ class FileWriter {
 		}
 	}
 
-	private function write(string $s) : \void {
+	private function write(string $s) : void {
 		$len = strlen($s);
 		if ($len == 0) return;
 		fprintf($this->handle(), "%s%s", $this->indent(), $s);

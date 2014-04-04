@@ -82,7 +82,7 @@ final class Connection {
 	/**
 	 * This sets the default connection that would be returned by Connection::get()
 	 */
-	public static function setDefault(Connection $conn) : \void {
+	public static function setDefault(Connection $conn) : void {
 		self::$connection = $conn;
 	}
 
@@ -144,7 +144,7 @@ final class Connection {
 	 * progress, this creates a savepoint instead that can be rolled back
 	 * to.
 	 */
-	public function begin() : \void {
+	public function begin() : void {
 		if ($this->in_transaction) {
 			$savepoint = "__savepoint_".($this->savepoints->count()+1);
 			$this->savepoints->add($savepoint);
@@ -160,7 +160,7 @@ final class Connection {
 	 * Sets the transaction mode as described at:
 	 *     http://www.postgresql.org/docs/9.1/static/sql-set-transaction.html
 	 */
-	public function setTransactionMode(string $mode) : \void {
+	public function setTransactionMode(string $mode) : void {
 		if ($this->in_transaction) {
 			wait($this->query('SET TRANSACTION '.$mode));
 		}
@@ -175,7 +175,7 @@ final class Connection {
 	 *
 	 * If the connection is not in a transaction, nothing happens.
 	 */
-	public function commit() : \void {
+	public function commit() : void {
 		if ($this->in_transaction) {
 			if ($this->savepoints->count() > 0) {
 				$savepoint = $this->savepoints->pop();
@@ -195,7 +195,7 @@ final class Connection {
 	 *
 	 * If the connection is not in a transaction, nothing happens.
 	 */
-	public function rollback() : \void {
+	public function rollback() : void {
 		if ($this->in_transaction) {
 			if ($this->savepoints->count() > 0) {
 				$savepoint = $this->savepoints->pop();

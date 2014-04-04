@@ -52,7 +52,7 @@ class :bb:form:dropdown extends :bb:form:field {
 		}
 	}
 
-	protected function selectValue(string $value, :x:base $base) : \void {
+	protected function selectValue(string $value, :x:base $base) : void {
 		foreach($this->childValueFields($base) as $item) {
 			if($value !== '' && $item->getAttribute('value') == $value) {
 				$item->setAttribute('selected', true);

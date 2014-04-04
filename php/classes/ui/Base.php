@@ -62,7 +62,7 @@ abstract class :bb:base extends :x:element {
 		return $root;
 	}
 
-	final protected function cascadeAttributes(:x:base $root) : \void {
+	final protected function cascadeAttributes(:x:base $root) : void {
 		// Get all attributes declared on this instance
 		$attributes = $this->getAttributes();
 		// Get all allowed attributes on the node returned

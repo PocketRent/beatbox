@@ -197,7 +197,7 @@ class Router {
 	/**
 	 * Clear all the known routes and checkers
 	 */
-	public static function reset() : \void {
+	public static function reset() : void {
 		self::$routes = Map {};
 		self::$regex_routes = Map {};
 		self::$checkers = Map {};
@@ -210,7 +210,7 @@ class Router {
 	/**
 	 * Add routes
 	 */
-	public static function add_routes(Map<string,mixed> $routes, bool $regex = false) : \void {
+	public static function add_routes(Map<string,mixed> $routes, bool $regex = false) : void {
 		foreach($routes as $path => $route) {
 			$l = strlen($path);
 			$path = trim($path, '/');
@@ -273,7 +273,7 @@ class Router {
 	/**
 	 * Add a checker for the given metadata key
 	 */
-	public static function add_checker(string $key, CheckerCallback $callback) : \void {
+	public static function add_checker(string $key, CheckerCallback $callback) : void {
 		self::$checkers[strtolower($key)] = $callback;
 	}
 
@@ -288,7 +288,7 @@ class Router {
 	/**
 	 * Check if we're allowed to access the current fragment based on the metadata
 	 */
-	protected static function check_frag(string $frag, Map<string,mixed> $md) : \void {
+	protected static function check_frag(string $frag, Map<string,mixed> $md) : void {
 		foreach($md as $key => $val) {
 			if(!$val) {
 				continue;

@@ -15,3 +15,4 @@ require __DIR__ . '/orm/Parse.php';
 require __DIR__ . '/session/CSRF.php';
 require __DIR__ . '/session/Session.php';
 require __DIR__ . '/tasks/Task.php';
+require __DIR__ . '/types/Lazy.php';

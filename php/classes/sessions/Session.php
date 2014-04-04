@@ -13,12 +13,23 @@ class Session {
 
 	private static ?string $id=null;
 
+	private static ?Lazy<string> $host_domain;
+
 	protected static function getTableName() : string {
 		return 'session';
 	}
 
 	protected function getID() : string {
 		return nullthrows(self::$id);
+	}
+
+	public static function set_host_domain(Lazy<string> $host_domain) {
+		self::$host_domain = $host_domain;
+	}
+
+	public static function get_host_domain(): ?string {
+		$host = self::$host_domain ?: fun('host_domain');
+		return $host();
 	}
 
 	/**
@@ -30,9 +41,9 @@ class Session {
 				self::$inst = new self();
 				self::$id = get_cookie(self::NAME) ?:
 					generate_random_token();
-				$host = in_dev() ? null : host_domain();
+
 				set_cookie(self::NAME, self::$id, time() + self::EXPIRE, '/',
-							$host, false, true);
+							self::get_host_domain(), false, true);
 				register_shutdown_function([__CLASS__, 'end']);
 				self::init();
 			}

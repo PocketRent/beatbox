@@ -85,5 +85,18 @@ class SessionTest extends beatbox\Test {
 		$this->assertFalse(Session::exists('test'));
 		$this->assertFalse(Session::exists('o'));
 	}
-}
 
+	/**
+	 * @group fast
+	 */
+	public function testHostDomain() {
+		$this->assertNull(Session::get_host_domain());
+
+		Session::set_host_domain(make_lazy('test'));
+
+		$this->assertEquals('test', Session::get_host_domain());
+
+		// Revert back to the default handler
+		Session::set_host_domain(fun('host_domain'));
+	}
+}

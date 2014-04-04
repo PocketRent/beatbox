@@ -27,22 +27,23 @@ trait Redis {
 	 */
 	protected static function redis() : R {
 		if(!self::$__redis__inst) {
-			self::$__redis__inst = new R();
-			self::$__redis__inst->connect(REDIS_SERVER);
+			$inst = new R();
+			$inst->connect(REDIS_SERVER);
 			if(REDIS_PASSWORD) {
-				self::$__redis__inst->auth(REDIS_PASSWORD);
+				$inst->auth(REDIS_PASSWORD);
 			}
 			if(APP_NAME) {
-				self::$__redis__inst->setOption(R::OPT_PREFIX, APP_NAME);
+				$inst->setOption(R::OPT_PREFIX, APP_NAME);
 			}
-			self::config_redis(self::$__redis__inst);
+			self::config_redis($inst);
 
 			if (defined('RUNNING_TEST')) {
 				// The test runner should always use the test database,
 				// which we clear on connection
-				self::$__redis__inst->select(REDIS_DB_TEST);
-				self::$__redis__inst->flushdb();
+				$inst->select(REDIS_DB_TEST);
+				$inst->flushdb();
 			}
+			self::$__redis__inst = $inst;
 		}
 		return self::$__redis__inst;
 	}

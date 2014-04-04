@@ -136,8 +136,6 @@ function set_cookie(string $name, ?string $value = '', int $expire = 0, string $
 			$_COOKIE[$name] = $value;
 		}
 		return true;
-	} else {
-		var_dump('No cookie!');
 	}
 	return false;
 }

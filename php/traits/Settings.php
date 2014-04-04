@@ -77,7 +77,7 @@ trait Settings {
 					}
 				}
 				if(count($set)) {
-					var_dump($r->hmset($this->settings_key, $set));
+					$r->hmset($this->settings_key, $set);
 				}
 				// call_user_func_array wants an array
 				$del = [$this->settings_key];

@@ -400,7 +400,6 @@ abstract class :x:composable-element extends :x:base {
   }
 
   final protected function __flushElementChildren(): void {
-
     // Flush all :xhp elements to x:primitive's
     $ln = count($this->children);
     for ($ii = 0; $ii < $ln; ++$ii) {
@@ -420,9 +419,9 @@ abstract class :x:composable-element extends :x:base {
         }
 
         if ($child instanceof :x:frag) {
-          $left = Vector::slice($this->children, 0, $ii);
-          $right = Vector::slice($this->children, $ii+1);
-          $this->children = $left->addAll($child->children)->addAll($right);
+          $children = $this->children->toValuesArray();
+          array_splice($children, $ii, 1, $child->children);
+          $this->children = new Vector($children);
           $ln = count($this->children);
           --$ii;
         } else {

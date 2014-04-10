@@ -3,7 +3,7 @@
 /*
  * Loader functions
  *
- * These are used to load up everything required for Beatbox. They shouldn't
+ * These are used to load up everything required for BeatBox. They shouldn't
  * be used in production, as they do some redundant work. Instead, an entry
  * script should be generated using `tools/deploy`.
  */
@@ -18,8 +18,8 @@ function initialize_beatbox(string $conf) : void {
 		require_once $conf;
 
 		$dirs = ImmSet {
-			__DIR__.'/..', // Main Beatbox directory
-			__DIR__.'/../../lib', // Beatbox library directory
+			__DIR__.'/..', // Main BeatBox directory
+			__DIR__.'/../../lib', // BeatBox library directory
 			APPLICATION_DIR
 		};
 

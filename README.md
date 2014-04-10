@@ -1,4 +1,4 @@
-== Beatbox for HHVM ==
+## BeatBox for HHVM
 
 [![Build Status](https://travis-ci.org/PocketRent/beatbox.svg?branch=master)](https://travis-ci.org/PocketRent/beatbox)
 

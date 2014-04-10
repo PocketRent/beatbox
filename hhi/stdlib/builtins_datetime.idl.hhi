@@ -33,7 +33,7 @@ function date_timestamp_get($datetime) { }
 function date_timestamp_set($datetime, $timestamp) { }
 function date_timezone_get($object) { }
 function date_timezone_set($object, $timezone) { }
-function date($format, $timestamp = null) : string;
+function date($format, $timestamp = null): string { }
 function getdate($timestamp = null) { }
 function gettimeofday($return_float = false) { }
 function gmdate($format, $timestamp = null) { }
@@ -56,7 +56,7 @@ function timezone_offset_get($object, $dt) { }
 function timezone_open($timezone) { }
 function timezone_transitions_get($object) { }
 function timezone_version_get() { }
-class DateTime implements DateTimeInterface {
+class DateTime {
   const ATOM = 0;
   const COOKIE = 0;
   const ISO8601 = 0;
@@ -71,12 +71,12 @@ class DateTime implements DateTimeInterface {
   public function add($interval) { }
   public function __construct($time = "now", $timezone = null_object) { }
   static public function createFromFormat($format, $time, $timezone = null_object) { }
-  public function diff(DateTimeInterface $datetime2, bool $absolute = false): DateInterval {}
-  public function format(string $format): string {}
+  public function diff($datetime2, $absolute = false) { }
+  public function format($format) { }
   static public function getLastErrors() { }
-  public function getOffset(): int {}
-  public function getTimestamp(): int {}
-  public function getTimezone(): DateTimeZone {}
+  public function getOffset() { }
+  public function getTimestamp() { }
+  public function getTimezone() { }
   public function modify($modify) { }
   public function setDate($year, $month, $day) { }
   public function setISODate($year, $week, $day = 1) { }
@@ -110,21 +110,8 @@ class DateTimeZone {
 }
 class DateInterval {
   public function __construct($interval_spec) { }
-  public int $y;
-  public int $m;
-  public int $d;
-  public int $h;
-  public int $i;
-  public int $s;
-  public int $invert;
-  public mixed $days;
+  public function __get($member) { }
+  public function __set($member, $value) { }
   static public function createFromDateString($time) { }
   public function format($format) { }
-}
-interface DateTimeInterface {
-  public function diff(DateTimeInterface $datetime2, bool $absolute = false): DateInterval;
-  public function format(string $format): string;
-  public function getOffset(): int;
-  public function getTimestamp(): int;
-  public function getTimezone(): DateTimeZone;
 }

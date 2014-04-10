@@ -109,7 +109,7 @@ class AsyncMysqlRowBlockIterator {
   public function key() { }
   public function rewind() { }
 }
-class AsyncMysqlRow {
+class AsyncMysqlRow implements MysqlRow {
   public function __construct() { }
   public function getFieldAsInt(mixed $field): int { }
   public function getFieldAsDouble(mixed $field): float { }

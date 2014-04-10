@@ -226,11 +226,11 @@ class Router {
 			if($regex) {
 				$base = isset(self::$regex_routes[$path]) ?
 					self::$regex_routes[$path] :
-					Pair { new Map(), new Map() };
+					Pair { Map {}, Map {} };
 			} else {
 				$base = isset(self::$routes[$path]) ?
 					self::$routes[$path] :
-					Pair { new Map(), new Map() };
+					Pair { Map {}, Map {} };
 			}
 			if($fragments) {
 				invariant($fragments instanceof Map, "Fragments should be a map");
@@ -266,8 +266,7 @@ class Router {
 				}
 			}
 		}
-		// UNSAFE
-		return Pair { new Map(), new Map() };
+		return Pair { Map {}, Map {} };
 	}
 
 	/**

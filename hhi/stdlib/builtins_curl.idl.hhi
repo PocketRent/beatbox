@@ -31,9 +31,3 @@ function fb_curl_multi_fdset($mh, &$read_fd_set, &$write_fd_set, &$exc_fd_set, &
 function curl_multi_getcontent($ch) { }
 function curl_multi_info_read($mh, &$msgs_in_queue = null) { }
 function curl_multi_close($mh) { }
-function evhttp_set_cache($address, $max_conn, $port = 80) { }
-function evhttp_get($url, $headers = null, $timeout = 5) { }
-function evhttp_post($url, $data, $headers = null, $timeout = 5) { }
-function evhttp_async_get($url, $headers = null, $timeout = 5) { }
-function evhttp_async_post($url, $data, $headers = null, $timeout = 5) { }
-function evhttp_recv($handle) { }

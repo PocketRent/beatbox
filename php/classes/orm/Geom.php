@@ -191,7 +191,7 @@ class path extends GeomType {
 		}
 
 		$pos = $parser->getPos();
-		$vector = new Vector();
+		$vector = Vector {};
 
 		try {
 			$vector->add(point::parse($parser));
@@ -245,7 +245,7 @@ class polygon extends GeomType {
 		}
 
 		$pos = $parser->getPos();
-		$vector = new Vector();
+		$vector = Vector {};
 
 		try {
 			$vector->add(point::parse($parser));

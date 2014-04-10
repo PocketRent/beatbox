@@ -156,7 +156,6 @@ interface ConstVector<Tv> extends ConstCollection<Tv>,
   public function filterWithKey((function(int, Tv): bool) $callback):
     ConstVector<Tv>;
   public function zip<Tu>(Traversable<Tu> $iterable): ConstVector<Pair<Tv, Tu>>;
-  public function linearSearch(Tv $val): int;
 }
 
 interface MutableVector<Tv> extends ConstVector<Tv>,

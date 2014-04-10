@@ -47,7 +47,7 @@ final class Vector<Tv> implements MutableVector<Tv> {
    * Create an empty Vector (if no parameters are passed) or create
    * a Vector from an Traversable (if one parameter is passed).
    */
-  public function __construct(?Traversable<Tv> $it = null);
+  public function __construct(?Traversable<Tv> $it);
 
   /**
    * Returns an array containing the values from this Vector.
@@ -191,17 +191,9 @@ final class Vector<Tv> implements MutableVector<Tv> {
   /**
    * Returns a Vector containing the values from the specified array.
    */
-  public static function fromArray(array $arr): Vector<Tv>;
+  public static function fromArray<T>(array<T, Tv> $arr): Vector<Tv>;
 
   public static function fromItems(?Traversable<Tv> $items): Vector<Tv>;
-
-  /**
-   * Slice a Vector. This function provides the functionality of
-   * array_slice() for Vectors. Note that this function returns
-   * a new Vector and does not modify the original Vector.
-   */
-  public static function slice(Vector<Tv> $v, int $offset,
-                               ?int $len = null): Vector<Tv>;
 
   public function __toString(): string;
 

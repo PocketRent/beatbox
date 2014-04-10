@@ -25,7 +25,6 @@ function fb_serialize($thing) { }
 function fb_unserialize($thing, &$success, &$errcode = null_variant) { }
 function fb_compact_serialize($thing) { }
 function fb_compact_unserialize($thing, &$success, &$errcode = null_variant) { }
-function fb_could_include($file) { }
 function fb_intercept($name, $handler, $data = null_variant) { }
 function fb_stubout_intercept_handler($name, $obj, $params, $data, &$done) { }
 function fb_rpc_intercept_handler($name, $obj, $params, $data, &$done) { }
@@ -54,7 +53,6 @@ function xhprof_sample_disable() { }
 function fb_load_local_databases($servers) { }
 function fb_parallel_query($sql_map, $max_thread = 50, $combine_result = true, $retry_query_on_fail = true, $connect_timeout = -1, $read_timeout = -1, $timeout_in_ms = false) { }
 function fb_crossall_query($sql, $max_thread = 50, $retry_query_on_fail = true, $connect_timeout = -1, $read_timeout = -1, $timeout_in_ms = false) { }
-function fb_const_fetch($key) { }
 function fb_output_compression($new_value) { }
 function fb_set_exit_callback($function) { }
 function fb_get_flush_stat() { }
@@ -65,3 +63,9 @@ function fb_lazy_realpath($filename) { }
 function fb_setprofile($callback) { }
 function fb_gc_collect_cycles() { }
 function fb_gc_detect_cycles($filename) { }
+
+namespace HH {
+
+function could_include($file) { }
+
+}

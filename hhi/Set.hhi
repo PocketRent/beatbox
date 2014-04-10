@@ -49,7 +49,7 @@ final class Set<Tv> implements MutableSet<Tv> {
    * Create an empty Set (if no parameters are passed) or create
    * a Set from an Traversable (if one parameter is passed).
    */
-  public function __construct(?Traversable<Tv> $it = null);
+  public function __construct(?Traversable<Tv> $it);
 
   /**
    * Returns an array containing the values from this Set.
@@ -105,7 +105,6 @@ final class Set<Tv> implements MutableSet<Tv> {
   public function remove(Tv $v): Set<Tv>;
 
   public function removeAll(Traversable<Tv> $other): Set<Tv>;
-  public function difference(Traversable<Tv> $other): Set<Tv>;
 
   /**
    * Returns an iterator that points to the beginning of this Set.

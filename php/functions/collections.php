@@ -6,7 +6,7 @@
  * Behaves in a similar manner to array_merge_recusrive
  */
 function map_merge_recursive<Tk>(ConstMap<Tk,mixed> $base, ...) : Map<Tk,mixed> {
-	$ret = new Map();
+	$ret = Map {};
 
 	$ret->setAll($base);
 

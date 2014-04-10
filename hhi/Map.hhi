@@ -53,7 +53,7 @@ final class Map<Tk, Tv> implements MutableMap<Tk, Tv> {
    * Create an empty Map (if no parameters are passed) or create
    * a Map from an KeyedTraversable (if one parameter is passed).
    */
-  public function __construct(?KeyedTraversable<Tk, Tv> $it = null);
+  public function __construct(?KeyedTraversable<Tk, Tv> $it);
 
   /**
    * Returns an array containing the key/value pairs from this Map
@@ -85,7 +85,6 @@ final class Map<Tk, Tv> implements MutableMap<Tk, Tv> {
   public function filterWithKey((function(Tk, Tv): bool) $callback):
     Map<Tk, Tv>;
   public function zip<Tu>(Traversable<Tu> $iterable): Map<Tk, Pair<Tv, Tu>>;
-  public function differenceByKey(?KeyedTraversable<Tk, Tv> $iterable): Map<Tk, Tv>;
 
   /**
    * Returns true if the Map is empty, false otherwise.
@@ -144,6 +143,11 @@ final class Map<Tk, Tv> implements MutableMap<Tk, Tv> {
    */
   public function remove(Tk $k): Map<Tk, Tv>;
   public function removeKey(Tk $k): Map<Tk, Tv>;
+
+  /**
+   * Returns a new Map with the keys in this Map not in $iterable
+   */
+  public function differenceByKey(KeyedTraversable<Tk, Tv> $iterable): Map<Tk, Tv>;
 
   /**
    * Returns an iterator that points to beginning of this Map.

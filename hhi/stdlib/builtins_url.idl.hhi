@@ -13,7 +13,7 @@ function base64_encode($data) { }
 function get_headers($url, $format = 0) { }
 function get_meta_tags($filename, $use_include_path = false) { }
 function http_build_query($formdata, $numeric_prefix = null, $arg_separator = null) { }
-function parse_url($url, $component = -1): mixed { }
+function parse_url($url, $component = -1) { }
 function rawurldecode($str) { }
 function rawurlencode($str) { }
 function urldecode($str) { }

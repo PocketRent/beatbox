@@ -12,7 +12,6 @@ define('PAGELET_NOT_READY', 0);
 define('PAGELET_READY', 0);
 define('PAGELET_DONE', 0);
 function dangling_server_proxy_old_request() { }
-function dangling_server_proxy_new_request($host) { }
 function pagelet_server_is_enabled() { }
 function pagelet_server_task_start($url, $headers = null, $post_data = null, $files = null) { }
 function pagelet_server_task_status($task) { }

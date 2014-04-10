@@ -293,14 +293,17 @@ class SymbolParser {
 		if ($start_token == T_XHP_LABEL) {
 			$element = $this->getTokenValue();
 			$this->bump();
+			$this->skipGenerics();
 			return 'xhp_'.str_replace(array(':', '-'), array('__', '_'), $element);
 		} else if ($start_token == T_STRING) {
 			$name = $this->getTokenValue();
 			$this->bump();
+			$this->skipGenerics();
 			return $name;
 		} else if ($start_token == T_GROUP) {
 			$name = $this->getTokenValue();
 			$this->bump();
+			$this->skipGenerics();
 			return $name;
 		} else {
 			throw new \Exception("Parse Error: Expected 'T_XHP_LABEL' or 'T_STRING', got '".
@@ -408,7 +411,7 @@ class SymbolParser {
 		}
 	}
 
-	private function skipType() {
+	private function skipType(): void {
 		switch ($this->getToken()) {
 		case T_XHP_LABEL:
 		case T_CALLABLE:
@@ -419,8 +422,7 @@ class SymbolParser {
 			break;
 		case T_ARRAY:
 			$this->bump();
-			if ($this->getTokenValue() == '<')
-				$this->skipBlock('<', '>');
+			$this->skipGenerics();
 			break;
 		case T_STRING:
 			$this->bump();
@@ -444,6 +446,11 @@ class SymbolParser {
 				break;
 			}
 		}
+	}
+
+	private function skipGenerics(): void {
+		if ($this->getTokenValue() == '<')
+			$this->skipBlock('<', '>');
 	}
 
 	private function skipTokens() : void {

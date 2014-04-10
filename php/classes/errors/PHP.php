@@ -81,7 +81,7 @@ class PHP {
 			$bt_line = "#$i: ";
 			if(isset($line['class'])) {
 				$class = $line['class'];
-				if(is_a($class, :x:base::element2class('x:base'), true)) {
+				if(is_a($class, 'xhp_x__base', true)) {
 					$class = '<' . :x:base::class2element($class) . '>';
 				}
 				$bt_line .= "$class{$line['type']}";

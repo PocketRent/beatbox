@@ -11,7 +11,7 @@ abstract class :bb:base extends :x:element {
 		int devices = DEVICE_ALL,
 		string id;
 
-	abstract protected function compose() : :x:element;
+	abstract protected function compose() : :x:composable-element;
 
 	protected ImmSet<string> $skipTransfer = ImmSet {};
 

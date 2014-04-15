@@ -31,7 +31,7 @@ function main(Vector<string> $args) : int {
         $cmd = $GLOBALS['commands'][$command];
         if (isset($cmd['run'])) {
             try {
-                $cmd['run'](Vector::slice($args, 2));
+				$cmd['run']($args->skip(2));
             } catch (CommandException $e) {
                 echo "Error running command: ".$e->getMessage()."\n";
                 return $e->getCode();

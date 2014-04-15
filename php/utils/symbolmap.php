@@ -1,6 +1,8 @@
 <?hh
 
 const int T_XHP_LABEL = 382;
+const int T_TYPELIST_LT = 398;
+const int T_TYPELIST_GT = 399;
 const int T_SHAPE = 402;
 const int T_NEWTYPE = 403;
 const int T_TYPE = 405;
@@ -411,6 +413,22 @@ class SymbolParser {
 		}
 	}
 
+	private function skipTokBlock(int $from, int $to) {
+		while ($this->pos < count($this->tokens) && $this->getToken() != $from){
+			$this->bump();
+		}
+		$scopes = 1;
+		$this->bump();
+		while ($scopes > 0) {
+			if ($this->getToken() == $from) {
+				$scopes++;
+			} else if ($this->getToken() == $to) {
+				$scopes--;
+			}
+			$this->bump();
+		}
+	}
+
 	private function skipType(): void {
 		switch ($this->getToken()) {
 		case T_XHP_LABEL:
@@ -451,6 +469,9 @@ class SymbolParser {
 	private function skipGenerics(): void {
 		if ($this->getTokenValue() == '<')
 			$this->skipBlock('<', '>');
+		else if ($this->getToken() == T_TYPELIST_LT) {
+			$this->skipTokBlock(T_TYPELIST_LT, T_TYPELIST_GT);
+		}
 	}
 
 	private function skipTokens() : void {

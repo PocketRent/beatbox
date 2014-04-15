@@ -53,6 +53,7 @@ function register_autoload_map(ImmSet<string> $dirs) : string {
 		fclose($map_file);
 	}
 
+
 	// Hash the map file so we know if it changes when we reload the map in the failure
 	// handler. If we don't we'll end up in an infinite loop if the symbol doesn't exist.
 	$hash = md5(file_get_contents(MAP_FILE));
@@ -65,7 +66,7 @@ function register_autoload_map(ImmSet<string> $dirs) : string {
 		// Check to see if it's in the map, if the file has an error, it won't say, so
 		// try loading it manually
 		if (isset($map[$kind][$name])) {
-			require_once $base.$map[$kind][$name];
+			require $base.$map[$kind][$name];
 		}
 		if ($kind == 'class' || $kind == 'type') {
 			$new_hash = register_autoload_map($dirs);
@@ -73,6 +74,7 @@ function register_autoload_map(ImmSet<string> $dirs) : string {
 			// the autoloader should try again.
 			return $new_hash != $hash;
 		}
+
 
 		// This is a workaround for HHVM issue #2206
 		if (strpos($name, '\\')) {

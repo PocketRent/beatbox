@@ -56,7 +56,14 @@ function timezone_offset_get($object, $dt) { }
 function timezone_open($timezone) { }
 function timezone_transitions_get($object) { }
 function timezone_version_get() { }
-class DateTime {
+interface DateTimeInterface {
+	public function diff(DateTimeInterface $datetime2, bool $absolute = false): DateInterval;
+	public function format(string $format) : string;
+	public function getOffset() : int;
+	public function getTimestamp() : int;
+	public function getTimezone() : DateTimeZone;
+}
+class DateTime extends DateTimeInterface {
   const ATOM = 0;
   const COOKIE = 0;
   const ISO8601 = 0;
@@ -71,7 +78,7 @@ class DateTime {
   public function add($interval) { }
   public function __construct($time = "now", $timezone = null_object) { }
   static public function createFromFormat($format, $time, $timezone = null_object) { }
-  public function diff($datetime2, $absolute = false) { }
+  public function diff(DateTimeInterface $datetime2, bool $absolute = false) : DateInterval;
   public function format($format) { }
   static public function getLastErrors() { }
   public function getOffset() { }
@@ -109,6 +116,15 @@ class DateTimeZone {
   static public function listIdentifiers() { }
 }
 class DateInterval {
+  public int $y;
+  public int $m;
+  public int $d;
+  public int $h;
+  public int $i;
+  public int $s;
+  public int $invert;
+  public mixed $days;
+
   public function __construct($interval_spec) { }
   public function __get($member) { }
   public function __set($member, $value) { }

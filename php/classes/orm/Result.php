@@ -85,12 +85,12 @@ class ModifyResult extends Result {
 
 }
 
-class QueryResult extends Result implements Iterable<array<string,string>> {
-	use \StrictIterable<array<string,string>>;
+class QueryResult extends Result implements Iterable<Map<string,string>> {
+	use \StrictIterable<Map<string,string>>;
 
 	private int $num_rows = -1;
 
-	private Vector $rows = Vector {};
+	private Vector<Map<string,string>> $rows = Vector {};
 
 	public function __construct(resource $result) {
 		parent::__construct($result);
@@ -140,8 +140,8 @@ class QueryResult extends Result implements Iterable<array<string,string>> {
 	}
 }
 
-class ResultIterable implements Iterable<array<string,string>> {
-	use \LazyIterable<array<string,string>>;
+class ResultIterable implements Iterable<Map<string,string>> {
+	use \LazyIterable<Map<string,string>>;
 
 	private QueryResult $result;
 
@@ -154,20 +154,20 @@ class ResultIterable implements Iterable<array<string,string>> {
 	}
 }
 
-class ResultIterator implements Iterator<array<string,string>> {
+class ResultIterator implements Iterator<Map<string,string>> {
 	private resource $result;
-	private Vector<array> $rows;
+	private Vector<Map<string,string>> $rows;
 	private int $num_rows;
 
 	private int $cur_idx = 0;
 
-	public function __construct(resource $result, Vector<array> $rows, int $num_rows) {
+	public function __construct(resource $result, Vector<Map<string,string>> $rows, int $num_rows) {
 		$this->result = $result;
 		$this->rows = $rows;
 		$this->num_rows = $num_rows;
 	}
 
-	public function current() : array {
+	public function current() : Map<string,string> {
 		invariant($this->cur_idx != $this->num_rows,
 					"Tried to iterate past the end of the iterator");
 		if ($this->cur_idx == $this->rows->count()) {
@@ -175,7 +175,7 @@ class ResultIterator implements Iterator<array<string,string>> {
 			$row = pg_fetch_assoc($this->result);
 			if (!$row) // We shouldn't ever get NULL, so false is an error
 				throw new ResultException($this->result, "Error getting next row");
-			$this->rows->add($row);
+			$this->rows->add(Map::fromArray($row));
 		}
 		return $this->rows->at($this->cur_idx);
 	}

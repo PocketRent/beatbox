@@ -9,7 +9,7 @@
  */
 <<NoReturn>>
 function http_error(int $code, ?string $status = null) : void {
-	return beatbox\errors\HTTP::error($code, $status);
+	beatbox\errors\HTTP::error($code, $status);
 }
 
 /**
@@ -24,7 +24,7 @@ function http_error(int $code, ?string $status = null) : void {
  */
 <<NoReturn>>
 function redirect(string $to, ?string $fallback=null, int $code = 302) : void {
-	return beatbox\errors\HTTP::redirect($to, $fallback, $code);
+	beatbox\errors\HTTP::redirect($to, $fallback, $code);
 }
 
 /**
@@ -38,5 +38,5 @@ function redirect(string $to, ?string $fallback=null, int $code = 302) : void {
  */
 <<NoReturn>>
 function redirect_back(?string $fallback = null) : void {
-	return beatbox\errors\HTTP::redirect_back($fallback);
+	beatbox\errors\HTTP::redirect_back($fallback);
 }

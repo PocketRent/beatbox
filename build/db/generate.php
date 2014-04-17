@@ -385,7 +385,8 @@ class PGType {
 
 	public function writeTo(CodeFile $file) : void {
 		if($this->type_cat == PGType::TCAT_ARRAY || $this->type == PGType::T_DOMAIN) {
-			return $this->type_dict->typeByOid($this->sub_type)->writeTo($file);
+			$this->type_dict->typeByOid($this->sub_type)->writeTo($file);
+			return;
 		}
 		vprint("Generating type code for $this->name");
 

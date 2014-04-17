@@ -24,7 +24,7 @@ function session_exists(string $key) : bool {
  * @uses beatbox\Session::set()
  */
 function session_set(string $key, mixed $value) : void {
-	return beatbox\Session::set($key, $value);
+	beatbox\Session::set($key, $value);
 }
 
 /**
@@ -33,5 +33,5 @@ function session_set(string $key, mixed $value) : void {
  * @uses beatbox\Session::clear()
  */
 function session_clear(string $key) : void {
-	return beatbox\Session::clear($key);
+	beatbox\Session::clear($key);
 }

@@ -5,10 +5,12 @@ php:
 services:
     - redis-server
 
+env:
+  matrix:
+    - TEST=1 HACK=0
+
 matrix:
   include:
-    - php: hhvm
-      env: TEST=1 HACK=0
     - php: hhvm
       env: TEST=0 HACK=1
 
@@ -21,5 +23,5 @@ before_script:
   - sudo apt-get -y install hhvm-nightly
 
 script:
- - "if [ \"$TEST\" = \"1\" ]; then hhvm -vEval.EnableHipHopSyntax=true tests/runner.php -c phpunit.travis.xml; fi"
- - "if [ \"$HACK\" = \"1\" ]; then hh_client; fi"
+  - "if [ \"$TEST\" = \"1\" ]; then hhvm -vEval.EnableHipHopSyntax=true tests/runner.php -c phpunit.travis.xml; fi"
+  - "if [ \"$HACK\" = \"1\" ]; then hh_client; fi"

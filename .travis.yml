@@ -5,6 +5,13 @@ php:
 services:
     - redis-server
 
+matrix:
+  include:
+    - php: hhvm
+      env: TEST=1 HACK=0
+    - php: hhvm
+      env: TEST=0 HACK=1
+
 before_script:
   - sudo add-apt-repository ppa:mapnik/boost -y
   - wget -O - http://dl.hhvm.com/conf/hhvm.gpg.key | sudo apt-key add -
@@ -13,4 +20,6 @@ before_script:
   - sudo apt-get -y purge hhvm
   - sudo apt-get -y install hhvm-nightly
 
-script: hhvm -vEval.EnableHipHopSyntax=true tests/runner.php -c phpunit.travis.xml
+script:
+ - "if [ \"$TEST\" = \"1\" ]; then hhvm -vEval.EnableHipHopSyntax=true tests/runner.php -c phpunit.travis.xml; fi"
+ - "if [ \"$HACK\" = \"1\" ]; then hh_client; fi"

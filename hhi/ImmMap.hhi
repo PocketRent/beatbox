@@ -110,6 +110,11 @@ final class ImmMap<Tk, Tv> implements ConstMap<Tk, Tv>, Indexish<Tk, Tv> {
   public function differenceByKey(KeyedTraversable<Tk, Tv> $iterable): Map<Tk, Tv>;
 
   /**
+   * Returns an ImmMap containing the first n values of this ImmMap.
+   */
+  public function take(int $n): ImmMap<Tk, Tv>;
+
+  /**
    * Returns an iterator that points to beginning of this ImmMap.
    */
   public function getIterator(): MapIterator<Tk, Tv>;

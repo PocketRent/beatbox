@@ -3,7 +3,7 @@ php:
   - hhvm
 
 services:
-    - redis-server
+  - redis-server
 
 env:
   matrix:

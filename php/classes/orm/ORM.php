@@ -3,8 +3,10 @@
 namespace beatbox\orm;
 
 use Awaitable;
+use Countable;
+use IteratorAggregate;
 
-class ORM<T> implements \IteratorAggregate<T>, \Countable {
+class ORM<T> implements IteratorAggregate<T>, Countable {
 	protected string $data_class;
 	protected string $table;
 	protected Connection $conn;

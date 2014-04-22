@@ -5,10 +5,10 @@ class :bb:icon extends :bb:base {
 
 	protected ImmSet<string> $skipTransfer = ImmSet {'src'};
 
-	protected function compose() : :x:element {
+	protected function compose() : :x:composable-element {
 		$src = (string)$this->getAttribute('src');
 
-		$base = BASE_DOC_DIR . '/';
+		$base = BASE_DIR . '/';
 
 		if(have_svg()) {
 			$available = Vector {'svgz', 'svg', 'png', 'jpeg', 'gif'};

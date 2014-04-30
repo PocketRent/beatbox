@@ -3,5 +3,5 @@
 namespace beatbox;
 
 interface FragmentCallback {
-	public function forFragment(\Indexish<int,string> $url, string $fragment) : mixed;
+	public function forFragment(Path $url, string $fragment) : mixed;
 }

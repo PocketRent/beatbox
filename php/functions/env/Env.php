@@ -36,6 +36,20 @@ function is_pagelet() : bool {
 }
 
 /**
+ * Checks to see if the pagelet server can be used to split requests.
+ *
+ * @param string $method - Only allow for this request method, or null for all
+ */
+function can_pagelet(?string $method = null): bool {
+	if ($method) {
+		$method = request_method() == strtoupper($method);
+	} else {
+		$method = true;
+	}
+	return $method && pagelet_server_is_enabled() && !defined('RUNNING_TEST');
+}
+
+/**
  * Checks if this request was made via the CLI
  */
 function is_cli() : bool {

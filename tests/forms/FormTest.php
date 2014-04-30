@@ -19,13 +19,13 @@ class FormTest extends beatbox\Test {
 	 */
 	public function testFragmentHandling() {
 		$form = <bb:form />;
-		$form->forFragment(['a', 'b'], 'test');
+		$form->forFragment(ImmVector {'a', 'b'}, 'test');
 
 		$this->assertEquals('post', $form->getAttribute('method'));
 		$this->assertEquals('a/b?fragments=test', $form->getAttribute('action'));
 
 		$form->setAttribute('method', 'get');
-		$form->forFragment(['b', 'b'], 'testing');
+		$form->forFragment(ImmVector {'b', 'b'}, 'testing');
 
 		// Overriding shouldn't happen
 		$this->assertEquals('get', $form->getAttribute('method'));
@@ -34,7 +34,7 @@ class FormTest extends beatbox\Test {
 		$form->removeAttribute('action');
 
 		// Special case
-		$form->forFragment(['/'], 'testing');
+		$form->forFragment(ImmVector {'/'}, 'testing');
 		$this->assertEquals('get', $form->getAttribute('method'));
 		$this->assertEquals('/?fragments=testing', $form->getAttribute('action'));
 	}
@@ -169,7 +169,7 @@ class FormTest extends beatbox\Test {
 			$this->assertEquals('test', $d['Field']);
 		});
 
-		$form->forFragment(['/'], 'form');
+		$form->forFragment(ImmVector {'/'}, 'form');
 		$this->assertTrue($called);
 	}
 
@@ -191,13 +191,13 @@ class FormTest extends beatbox\Test {
 			$this->assertSame($form, $f);
 		});
 
-		$res = $form->forFragment(['/'], 'form');
+		$res = $form->forFragment(ImmVector {'/'}, 'form');
 		$this->assertFalse($called);
 		$this->assertSame($form, $res);
 
 		try {
 			$_SERVER['HTTP_X_REQUESTED_WITH'] = 'No AJAX';
-			$form->forFragment(['/'], 'form');
+			$form->forFragment(ImmVector {'/'}, 'form');
 			$this->fail('Non-AJAX form validation should throw an exception');
 		} catch(beatbox\errors\HTTP_Exception $e) {
 			$this->assertEquals(302, $e->getBaseCode());
@@ -219,14 +219,14 @@ class FormTest extends beatbox\Test {
 
 		try {
 			$this->assertEquals('Value', $field->getValue());
-			$form->forFragment(['/'], 'form');
+			$form->forFragment(ImmVector {'/'}, 'form');
 			$this->fail('Should have errored');
 		} catch(beatbox\errors\HTTP_Exception $e) {
 			$this->assertEquals('', $field->getValue());
 		}
 		$field->setValue('Value');
 		$_SERVER['REQUEST_METHOD'] = 'GET';
-		$form->forFragment(['/'], 'form');
+		$form->forFragment(ImmVector {'/'}, 'form');
 		$this->assertEquals('', $field->getValue());
 	}
 
@@ -252,7 +252,7 @@ class FormTest extends beatbox\Test {
 			$this->assertEquals(Map { 'Field' => Vector {'test', 'testing', 'd'} }, $d);
 		});
 
-		$form->forFragment(['/'], 'form');
+		$form->forFragment(ImmVector {'/'}, 'form');
 		$this->assertTrue($called);
 
 		$form = <bb:form>
@@ -275,7 +275,7 @@ class FormTest extends beatbox\Test {
 			} }, $d);
 		});
 
-		$form->forFragment(['/'], 'form');
+		$form->forFragment(ImmVector {'/'}, 'form');
 		$this->assertTrue($called);
 	}
 }

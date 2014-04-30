@@ -231,8 +231,8 @@ class PHP {
 		} else if($exception instanceof HTTP_Exception) {
 			$code = $exception->getBaseCode();
 			$path = 'error-' . $code;
-			$routes = \beatbox\Router::get_routes_for_path($path)[0];
-			if($routes->get('page')) {
+			$routes = \beatbox\Router::get_routes_for_path($path);
+			if($routes && $routes[0]->get('page')) {
 				echo \beatbox\Router::route($path);
 			} else if(file_exists(BASE_DIR . '/src/errors/' . $path . '.html')) {
 				echo file_get_contents(BASE_DIR . '/src/errors/' . $path . '.html');

@@ -7,15 +7,15 @@ use beatbox;
 class RouterTest extends beatbox\Test {
 	// Wipe the existing routes for each test
 	public function setUp() {
-		beatbox\Router::reset();
+		TestRouter::reset();
 	}
 
 	/**
 	 * @group sanity
 	 */
 	public function testEmpty() {
-		$this->assertEquals(beatbox\Router::get_routes_for_path('/'), Pair { Map {}, Map {}});
-		$this->assertEquals(beatbox\Router::get_routes_for_path('home'), Pair { Map {}, Map {}});
+		$this->assertNull(beatbox\Router::get_routes_for_path('/'));
+		$this->assertNull(beatbox\Router::get_routes_for_path('home'));
 	}
 
 	/**
@@ -23,37 +23,39 @@ class RouterTest extends beatbox\Test {
 	 * @depends testEmpty
 	 */
 	public function testAddRoute() {
+		beatbox\Router::add_simple_routes(Map {
+			'/' => Map { 'page' => fun('pageGenerator') }
+		});
 		beatbox\Router::add_routes(Map {
-			'/' => Map { 'page' => 'pageGenerator' },
 			'home' => Pair { Map {
-				'form' => 'homeForm',
-				'logout' => 'homeLogout'
+				'form' => fun('homeForm'),
+				'logout' => fun('homeLogout')
 			}, Map {'CSRF' => true}}
 		});
 
 		$this->assertEquals(
-			beatbox\Router::get_routes_for_path('/'),
-			Pair { Map {'page' => 'pageGenerator'}, Map {}}
+			Pair { Map {'page' => 'pageGenerator'}, Map {}},
+			beatbox\Router::get_routes_for_path('/')
 		);
 
 		$this->assertEquals(
-			beatbox\Router::get_routes_for_path('home'),
-			Pair { Map {'form' => 'homeForm', 'logout' => 'homeLogout'}, Map {'CSRF' => true}}
+			Pair { Map {'form' => 'homeForm', 'logout' => 'homeLogout'}, Map {'CSRF' => true}},
+			beatbox\Router::get_routes_for_path('home')
 		);
 
 		beatbox\Router::add_routes(Map {
-			'/' => Pair { Map {'form' => 'pageForm'}, Map{'CSRF' => true}},
-			'home' => Pair{null, Map {'CSRF' => false}}
+			'/' => Pair { Map {'form' => fun('pageForm')}, Map{'CSRF' => true}},
+			'home' => Pair{Map {}, Map {'CSRF' => false}}
 		});
 
 		$this->assertEquals(
-			beatbox\Router::get_routes_for_path('/'),
-			Pair { Map {'page' => 'pageGenerator', 'form' => 'pageForm'}, Map {'CSRF' => true}}
+			Pair { Map {'page' => 'pageGenerator', 'form' => 'pageForm'}, Map {'CSRF' => true}},
+			beatbox\Router::get_routes_for_path('/')
 		);
 
 		$this->assertEquals(
-			beatbox\Router::get_routes_for_path('home'),
-			Pair { Map {'form' => 'homeForm', 'logout' => 'homeLogout'}, Map {'CSRF' => false}}
+			Pair { Map {'form' => 'homeForm', 'logout' => 'homeLogout'}, Map {'CSRF' => false}},
+			beatbox\Router::get_routes_for_path('home')
 		);
 	}
 
@@ -62,16 +64,18 @@ class RouterTest extends beatbox\Test {
 	 * @depends testAddRoute
 	 */
 	public function testReset() {
+		beatbox\Router::add_simple_routes(Map {
+			'/' => Map { 'page' => fun('pageGenerator') }
+		});
 		beatbox\Router::add_routes(Map {
-			'/' => Map {'page' => 'pageGenerator'},
 			'home' => Pair { Map {
-				'form' => 'homeForm',
-				'logout' => 'homeLogout'
+				'form' => fun('homeForm'),
+				'logout' => fun('homeLogout')
 			}, Map {'CSRF' => true}}
 		});
-		beatbox\Router::reset();
-		$this->assertEquals(beatbox\Router::get_routes_for_path('/'), Pair { Map {}, Map {}});
-		$this->assertEquals(beatbox\Router::get_routes_for_path('home'), Pair { Map {}, Map {}});
+		TestRouter::reset();
+		$this->assertNull(beatbox\Router::get_routes_for_path('/'));
+		$this->assertNull(beatbox\Router::get_routes_for_path('home'));
 	}
 
 	/**
@@ -82,8 +86,9 @@ class RouterTest extends beatbox\Test {
 		$args = [];
 		$called = false;
 
-		beatbox\Router::add_routes(Map {
-			'/' => Map {'page' => function() use(&$args, &$called) {
+		beatbox\Router::add_simple_routes(Map {
+			'/' => Map {'page' => function(beatbox\Path $url, beatbox\Extension $ext,
+											beatbox\Metadata $md) use(&$args, &$called) {
 				$args = func_get_args();
 				$called = true;
 				return 'Hello';
@@ -93,13 +98,14 @@ class RouterTest extends beatbox\Test {
 		$actual = beatbox\Router::route('/', Vector {'page'});
 
 		$this->assertTrue($called, 'Was our callback called');
-		$this->assertEquals($args, [['/'], null, Map {}],
+		$this->assertEquals([ImmVector {'/'}, null, Map {}], $args,
 								'We should have a list of segments, no extension and no metadata');
-		$this->assertEquals($actual, 'Hello', 'Our callback correctly returned');
+		$this->assertEquals('Hello', $actual, 'Our callback correctly returned');
 
 		// Test that overriding works properly
-		beatbox\Router::add_routes(Map {
-			'/' => Map {'page' => function() use(&$args, &$called) {
+		beatbox\Router::add_simple_routes(Map {
+			'/' => Map {'page' => function(beatbox\Path $url, beatbox\Extension $ext,
+											beatbox\Metadata $md) use(&$args, &$called) {
 				$args = array_reverse(func_get_args());
 				$called = false;
 				return 'Good bye';
@@ -109,9 +115,9 @@ class RouterTest extends beatbox\Test {
 		$actual = beatbox\Router::route('/', Vector {'page'});
 
 		$this->assertFalse($called, 'Was our callback called');
-		$this->assertEquals($args, [Map {}, null, ['/']],
+		$this->assertEquals([Map {}, null, ImmVector {'/'}], $args,
 							'We should have a list of segments, no extension and no metadata');
-		$this->assertEquals($actual, 'Good bye', 'Our callback correctly returned');
+		$this->assertEquals('Good bye', $actual, 'Our callback correctly returned');
 	}
 
 	/**
@@ -122,8 +128,9 @@ class RouterTest extends beatbox\Test {
 		$args = [];
 		$called = false;
 
-		beatbox\Router::add_routes(Map {
-			'test/\d+' => Map {'page' => function() use(&$args, &$called) {
+		beatbox\Router::add_simple_routes(Map {
+			'test/\d+' => Map {'page' => function(beatbox\Path $url, beatbox\Extension $ext,
+													beatbox\Metadata $md) use(&$args, &$called) {
 				$args = func_get_args();
 				$called = true;
 				return 'Hello';
@@ -133,13 +140,14 @@ class RouterTest extends beatbox\Test {
 		$actual = beatbox\Router::route('test/123', Vector {'page'});
 
 		$this->assertTrue($called, 'Was our callback called');
-		$this->assertEquals($args, [['test', '123'], null, Map {}],
+		$this->assertEquals([ImmVector {'test', '123'}, null, Map {}], $args,
 							'We should have a list of segments, no extension and no metadata');
-		$this->assertEquals($actual, 'Hello', 'Our callback correctly returned');
+		$this->assertEquals('Hello', $actual, 'Our callback correctly returned');
 
 		// Test that overriding works properly
-		beatbox\Router::add_routes(Map {
-			'test/\d+' => Map {'page' => function() use(&$args, &$called) {
+		beatbox\Router::add_simple_routes(Map {
+			'test/\d+' => Map {'page' => function(beatbox\Path $url, beatbox\Extension $ext,
+													beatbox\Metadata $md) use(&$args, &$called) {
 				$args = array_reverse(func_get_args());
 				$called = false;
 				return 'Good bye';
@@ -149,7 +157,7 @@ class RouterTest extends beatbox\Test {
 		$actual = beatbox\Router::route('test/4', Vector {'page'});
 
 		$this->assertFalse($called, 'Was our callback called');
-		$this->assertEquals($args, [Map {}, null, ['test', '4']],
+		$this->assertEquals([Map {}, null, ImmVector {'test', '4'}], $args,
 							'We should have a list of segments, no extension and no metadata');
 		$this->assertEquals($actual, 'Good bye', 'Our callback correctly returned');
 	}
@@ -162,7 +170,7 @@ class RouterTest extends beatbox\Test {
 		beatbox\Router::add_routes(Map {
 			'home' => Pair {
 				Map {
-					'page' => 'pageHandler'
+					'page' => fun('pageHandler')
 				},
 				Map {
 					'CSRF' => true,
@@ -170,15 +178,15 @@ class RouterTest extends beatbox\Test {
 			}
 		});
 
-		$routes = beatbox\Router::get_routes_for_path('home');
-		$this->assertMapsEqual($routes[0], Map {'page' => 'pageHandler'});
-		$this->assertMapsEqual($routes[1], Map {'CSRF' => true});
+		$routes = nullthrows(beatbox\Router::get_routes_for_path('home'));
+		$this->assertMapsEqual(Map {'page' => 'pageHandler'}, $routes[0]);
+		$this->assertMapsEqual(Map {'CSRF' => true}, $routes[1]);
 
 		beatbox\Router::add_routes(Map {
 			'home' => Pair {
 				Map {
-					'page' => 'outerPageHandler',
-					'form' => 'formHandler',
+					'page' => fun('outerPageHandler'),
+					'form' => fun('formHandler'),
 				},
 				Map {
 					'CSRF' => '0',
@@ -187,12 +195,12 @@ class RouterTest extends beatbox\Test {
 			}
 		});
 
-		$routes = beatbox\Router::get_routes_for_path('home');
-		$this->assertMapsEqual($routes[0], Map {
+		$routes = nullthrows(beatbox\Router::get_routes_for_path('home'));
+		$this->assertMapsEqual(Map {
 			'page' => 'outerPageHandler',
 			'form' => 'formHandler'
-		});
-		$this->assertMapsEqual($routes[1], Map {'CSRF' => '0', 'MemberCheck' => 1});
+		}, $routes[0]);
+		$this->assertMapsEqual(Map {'CSRF' => '0', 'MemberCheck' => 1}, $routes[1]);
 	}
 
 	/**
@@ -203,8 +211,9 @@ class RouterTest extends beatbox\Test {
 		$args = [];
 		$called = false;
 
-		beatbox\Router::add_routes(Map {
-			'home' => Map {'page' => function() use(&$args, &$called) {
+		beatbox\Router::add_simple_routes(Map {
+			'home' => Map {'page' => function(beatbox\Path $url, beatbox\Extension $ext,
+												beatbox\Metadata $md) use(&$args, &$called) {
 				$args = func_get_args();
 				$called = true;
 				return 'Hello';
@@ -213,18 +222,18 @@ class RouterTest extends beatbox\Test {
 
 		$response = beatbox\Router::route('home');
 
-		$this->assertEquals($response, 'Hello');
+		$this->assertEquals('Hello', $response);
 		$this->assertTrue($called);
-		$this->assertEquals($args, [['home'], null, Map {}]);
+		$this->assertEquals([ImmVector {'home'}, null, Map {}], $args);
 
 		$args = [];
 		$called = false;
 
 		$response = beatbox\Router::route('home/extra');
 
-		$this->assertEquals($response, 'Hello');
+		$this->assertEquals('Hello', $response);
 		$this->assertTrue($called);
-		$this->assertEquals($args, [['home', 'extra'], null, Map {}]);
+		$this->assertEquals([ImmVector {'home', 'extra'}, null, Map {}], $args);
 	}
 
 	/**
@@ -238,14 +247,16 @@ class RouterTest extends beatbox\Test {
 		$nested = [];
 		$nestedCalled = false;
 
-		beatbox\Router::add_routes(Map {
+		beatbox\Router::add_simple_routes(Map {
 			'/' => Map {
-				'a' => function() use(&$args, &$called) {
+				'a' => function(beatbox\Path $url, beatbox\Extension $ext,
+								beatbox\Metadata $md) use(&$args, &$called) {
 					$args = func_get_args();
 					$called = true;
 					return 'Hello';
 				},
-				'b' => function() use(&$nested, &$nestedCalled) {
+				'b' => function(beatbox\Path $url, beatbox\Extension $ext,
+								beatbox\Metadata $md) use(&$nested, &$nestedCalled) {
 					$nested = func_get_args();
 					$nestedCalled = true;
 					return 'World';
@@ -259,12 +270,12 @@ class RouterTest extends beatbox\Test {
 		$response = (string)beatbox\Router::route('/', Vector {'a', 'b'});
 
 		$this->assertTrue($called, 'The a callback was not called');
-		$this->assertEquals($args, [['/'], null, Map {}]);
+		$this->assertEquals([ImmVector {'/'}, null, Map {}], $args);
 		$this->assertTrue($nestedCalled);
-		$this->assertEquals($nested, [['/'], null, Map {}]);
+		$this->assertEquals([ImmVector {'/'}, null, Map {}], $nested);
 
 		$response = json_decode($response, true);
-		$this->assertEquals($response, ['a' => 'Hello', 'b' => 'World']);
+		$this->assertEquals(['a' => 'Hello', 'b' => 'World'], $response);
 	}
 
 	/**
@@ -278,7 +289,7 @@ class RouterTest extends beatbox\Test {
 			beatbox\Router::route('non-existent');
 			$this->fail('Should have thrown an error');
 		} catch(beatbox\errors\HTTP_Exception $e) {
-			$this->assertEquals($e->getBaseCode(), 404, 'Should have a 404 error');
+			$this->assertEquals(404, $e->getBaseCode(), 'Should have a 404 error');
 		}
 
 		// Check too many fragments for non-ajax
@@ -286,18 +297,19 @@ class RouterTest extends beatbox\Test {
 			beatbox\Router::route('/', Vector { 'page', 'form', 'errors'});
 			$this->fail('Should have thrown an error');
 		} catch(beatbox\errors\HTTP_Exception $e) {
-			$this->assertEquals($e->getBaseCode(), 400, 'Should have a 400 error');
+			$this->assertEquals(400, $e->getBaseCode(), 'Should have a 400 error');
 		}
 
 		// Check no fragment
-		beatbox\Router::add_routes(Map {
-			'/' => Map { 'page' => function() {} }
+		beatbox\Router::add_simple_routes(Map {
+			'/' => Map { 'page' => function(beatbox\Path $url, beatbox\Extension $ext,
+											beatbox\Metadata $md) {} }
 		});
 		try {
 			beatbox\Router::route('/', Vector {'form'});
 			$this->fail('Should have thrown an error');
 		} catch(beatbox\errors\HTTP_Exception $e) {
-			$this->assertEquals($e->getBaseCode(), 404, 'Should have a 404 error');
+			$this->assertEquals(404, $e->getBaseCode(), 'Should have a 404 error');
 		}
 
 		// Setup AJAX
@@ -307,7 +319,7 @@ class RouterTest extends beatbox\Test {
 			beatbox\Router::route('/', Vector {'form'});
 			$this->fail('Should have thrown an error');
 		} catch(beatbox\errors\HTTP_Exception $e) {
-			$this->assertEquals($e->getBaseCode(), 404, 'Should have a 404 error');
+			$this->assertEquals(404, $e->getBaseCode(), 'Should have a 404 error');
 		}
 
 		// Check a single, missing fragment
@@ -315,7 +327,7 @@ class RouterTest extends beatbox\Test {
 			beatbox\Router::route('/', Vector {'page', 'form'});
 			$this->fail('Should have thrown an error');
 		} catch(beatbox\errors\HTTP_Exception $e) {
-			$this->assertEquals($e->getBaseCode(), 404, 'Should have a 404 error');
+			$this->assertEquals(404, $e->getBaseCode(), 'Should have a 404 error');
 		}
 	}
 
@@ -324,19 +336,20 @@ class RouterTest extends beatbox\Test {
 	 * @depends testAjaxResponse
 	 */
 	public function testXHP() {
-		beatbox\Router::add_routes(Map {
-			'/' => Map { 'page' => function() { return <div></div>; } }
+		beatbox\Router::add_simple_routes(Map {
+			'/' => Map { 'page' => function(beatbox\Path $url, beatbox\Extension $ext,
+											beatbox\Metadata $md) { return <div></div>; } }
 		});
 
 		$response = (string)beatbox\Router::route('/');
 
-		$this->assertEquals($response, '<div></div>');
+		$this->assertEquals('<div></div>', $response);
 
 		// Setup AJAX
 		$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHTTPRequest';
 
 		$response = json_decode((string)beatbox\Router::route('/'), true);
-		$this->assertEquals($response, ['page' => '<div></div>']);
+		$this->assertEquals(['page' => '<div></div>'], $response);
 	}
 
 	/**
@@ -347,8 +360,9 @@ class RouterTest extends beatbox\Test {
 		$args = [];
 		$called = false;
 
-		beatbox\Router::add_routes(Map {
-			'home' => Map {'page' => function() use(&$args, &$called) {
+		beatbox\Router::add_simple_routes(Map {
+			'home' => Map {'page' => function(beatbox\Path $url, beatbox\Extension $ext,
+												beatbox\Metadata $md) use(&$args, &$called) {
 				$args = func_get_args();
 				$called = true;
 				return 'Hello';
@@ -356,25 +370,25 @@ class RouterTest extends beatbox\Test {
 		});
 
 		$res = beatbox\Router::route('home.php');
-		$this->assertEquals($res, 'Hello');
+		$this->assertEquals('Hello', $res);
 		$this->assertTrue($called);
-		$this->assertEquals($args, [['home'], 'php', Map {}]);
+		$this->assertEquals([ImmVector {'home'}, 'php', Map {}], $args);
 
 		$args = [];
 		$called = false;
 
 		$res = beatbox\Router::route('home.somelongextension');
-		$this->assertEquals($res, 'Hello');
+		$this->assertEquals('Hello', $res);
 		$this->assertTrue($called);
-		$this->assertEquals($args, [['home'], 'somelongextension', Map {}]);
+		$this->assertEquals([ImmVector {'home'}, 'somelongextension', Map {}], $args);
 
 		$args = [];
 		$called = false;
 
 		$res = beatbox\Router::route('home.tar.gz');
-		$this->assertEquals($res, 'Hello');
+		$this->assertEquals('Hello', $res);
 		$this->assertTrue($called);
-		$this->assertEquals($args, [['home'], 'tar.gz', Map {}]);
+		$this->assertEquals([ImmVector {'home'}, 'tar.gz', Map {}], $args);
 	}
 
 	/**
@@ -386,18 +400,18 @@ class RouterTest extends beatbox\Test {
 		beatbox\Router::add_checker('CSRF', cast_callable(__CLASS__ . '::testExtension'));
 
 		// Check exact match
-		$this->assertEquals(beatbox\Router::get_checker('test'), __CLASS__ . '::testAddChecker');
-		$this->assertEquals(beatbox\Router::get_checker('CSRF'), __CLASS__ . '::testExtension');
+		$this->assertEquals(__CLASS__ . '::testAddChecker', beatbox\Router::get_checker('test'));
+		$this->assertEquals(__CLASS__ . '::testExtension', beatbox\Router::get_checker('CSRF'));
 
 		// Check different case
-		$this->assertEquals(beatbox\Router::get_checker('TEST'), __CLASS__ . '::testAddChecker');
+		$this->assertEquals(__CLASS__ . '::testAddChecker', beatbox\Router::get_checker('TEST'));
 
 		// Check non-existent
 		$this->assertEmpty(beatbox\Router::get_checker('none'));
 
 		// Check override
 		beatbox\Router::add_checker('test', cast_callable(__CLASS__ . '::testCheckPass'));
-		$this->assertEquals(beatbox\Router::get_checker('test'), __CLASS__ . '::testCheckPass');
+		$this->assertEquals(__CLASS__ . '::testCheckPass', beatbox\Router::get_checker('test'));
 	}
 
 	/**
@@ -414,19 +428,20 @@ class RouterTest extends beatbox\Test {
 
 		beatbox\Router::add_routes(Map {
 			'home' => Pair {
-				Map { 'page' => function () {}},
+				Map { 'page' => function(beatbox\Path $url, beatbox\Extension $ext,
+										beatbox\Metadata $md) {}},
 				Map { 'test' => true }
 			}
 		});
 
 		beatbox\Router::route('home');
-		$this->assertEquals($called, 1);
+		$this->assertEquals(1, $called);
 
 		// AJAX check. Should be called each time
 		$called = 0;
 		$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHTTPRequest';
 		beatbox\Router::route('home', Vector {'page', 'page'});
-		$this->assertEquals($called, 2);
+		$this->assertEquals(2, $called);
 	}
 
 	/**
@@ -440,7 +455,8 @@ class RouterTest extends beatbox\Test {
 		});
 		beatbox\Router::add_routes(Map {
 			'home' => Pair {
-				Map { 'page' => function () {}},
+				Map { 'page' => function(beatbox\Path $url, beatbox\Extension $ext,
+										beatbox\Metadata $md) {}},
 				Map { 'test' => true }
 			}
 		});
@@ -449,12 +465,13 @@ class RouterTest extends beatbox\Test {
 			beatbox\Router::route('home');
 			$this->fail('Should have thrown an error');
 		} catch(beatbox\errors\HTTP_Exception $e) {
-			$this->assertEquals($e->getBaseCode(), 403);
+			$this->assertEquals(403, $e->getBaseCode());
 		}
 
 		beatbox\Router::add_routes(Map {
 			'home' => Pair {
-				Map { 'form' => function () {} },
+				Map { 'form' => function(beatbox\Path $url, beatbox\Extension $ext,
+										beatbox\Metadata $md) {} },
 				Map { 'test' => Vector {'form'} }
 			}
 		});
@@ -465,7 +482,7 @@ class RouterTest extends beatbox\Test {
 			beatbox\Router::route('home', Vector {'form'});
 			$this->fail('Should have thrown an error');
 		} catch(beatbox\errors\HTTP_Exception $e) {
-			$this->assertEquals($e->getBaseCode(), 403);
+			$this->assertEquals(403, $e->getBaseCode());
 		}
 
 		try {
@@ -473,7 +490,7 @@ class RouterTest extends beatbox\Test {
 			beatbox\Router::route('home', Vector {'page', 'form'});
 			$this->fail('Should have thrown an error');
 		} catch(beatbox\errors\HTTP_Exception $e) {
-			$this->assertEquals($e->getBaseCode(), 403);
+			$this->assertEquals(403, $e->getBaseCode());
 		}
 	}
 
@@ -498,33 +515,36 @@ class RouterTest extends beatbox\Test {
 		beatbox\Router::add_routes(Map {
 			'base' => Pair {
 				Map {
-					'a' => function () {},
-					'b' => function () {},
-					'c' => function () {},
+					'a' => function(beatbox\Path $url, beatbox\Extension $ext,
+									beatbox\Metadata $md) {},
+					'b' => function(beatbox\Path $url, beatbox\Extension $ext,
+									beatbox\Metadata $md) {},
+					'c' => function(beatbox\Path $url, beatbox\Extension $ext,
+									beatbox\Metadata $md) {},
 				},
 				Map {
 					'test' => true
 				}
 			},
 			'base/first' => Pair {
-				null,
+				Map {},
 				Map { 'test' => false }
 			},
 			'base/first/second' => Pair {
-				null,
+				Map {},
 				Map { 'test' => ['a', 'b']}
 			},
 			'base/first/second/third' => Pair {
-				null,
+				Map {},
 				Map { 'test' => Vector {'b', 'c'}}
 			},
 			'base/first/second/third/fourth' => Pair {
-				null,
+				Map {},
 				Map { 'test' => true }
 			},
 			'base/first/second/third/fourth/fifth' => Pair {
-				null,
-				null
+				Map {},
+				Map {}
 			}
 		});
 
@@ -630,25 +650,30 @@ class RouterTest extends beatbox\Test {
 		// Setup base
 		$args = [];
 		$called = false;
-		beatbox\Router::add_routes(Map {
+		beatbox\Router::add_simple_routes(Map {
 			'home' => Map {
-				'page' => function() {},
-				'a' => function() use(&$args, &$called) {
+				'page' => function(beatbox\Path $url, beatbox\Extension $ext,
+									beatbox\Metadata $md) {},
+				'a' => function(beatbox\Path $url, beatbox\Extension $ext,
+									beatbox\Metadata $md) use(&$args, &$called) {
 					$args = func_get_args();
 					$called = true;
 					return 'a';
 				},
-				'b' => function() use(&$args, &$called) {
+				'b' => function(beatbox\Path $url, beatbox\Extension $ext,
+									beatbox\Metadata $md) use(&$args, &$called) {
 					$args = func_get_args();
 					$called = true;
 					return 'b';
 				},
-				'c' => function() use(&$args, &$called) {
+				'c' => function(beatbox\Path $url, beatbox\Extension $ext,
+									beatbox\Metadata $md) use(&$args, &$called) {
 					$args = func_get_args();
 					$called = true;
 					return 'c';
 				},
-				'd' => function() use(&$args, &$called) {
+				'd' => function(beatbox\Path $url, beatbox\Extension $ext,
+									beatbox\Metadata $md) use(&$args, &$called) {
 					$args = func_get_args();
 					$called = true;
 					return 'd';
@@ -659,7 +684,7 @@ class RouterTest extends beatbox\Test {
 		// Start the route
 		beatbox\Router::route('home.text');
 
-		$expectedArgs = [['home'], 'text', Map {}];
+		$expectedArgs = [ImmVector {'home'}, 'text', Map {}];
 
 		foreach(['a', 'b', 'c', 'd'] as $frag) {
 			$args = [];
@@ -667,9 +692,9 @@ class RouterTest extends beatbox\Test {
 
 			$res = beatbox\Router::response_for_fragment($frag);
 
-			$this->assertEquals($res, $frag);
+			$this->assertEquals($frag, $res);
 			$this->assertTrue($called);
-			$this->assertEquals($args, $expectedArgs);
+			$this->assertEquals($expectedArgs, $args);
 		}
 
 		// Null check
@@ -681,8 +706,9 @@ class RouterTest extends beatbox\Test {
 	 * @depends testAddRoute
 	 */
 	public function testFragmentCallback() {
-		beatbox\Router::add_routes(Map {
-			'/' => Map {'page' => function() {
+		beatbox\Router::add_simple_routes(Map {
+			'/' => Map {'page' => function(beatbox\Path $url, beatbox\Extension $ext,
+											beatbox\Metadata $md) {
 				return new RouterTest_Callback();
 			}}
 		});
@@ -690,17 +716,24 @@ class RouterTest extends beatbox\Test {
 		$ret = beatbox\Router::route('/');
 		invariant($ret instanceof RouterTest_Callback, '$ret should be a RouterTest_Callback');
 
-		$this->assertEquals($ret->url, ['/']);
-		$this->assertEquals($ret->fragment, 'page');
+		$this->assertEquals(ImmVector {'/'}, $ret->url);
+		$this->assertEquals('page', $ret->fragment);
 	}
 }
 
 class RouterTest_Callback implements beatbox\FragmentCallback {
 	public $url, $fragment;
 
-	public function forFragment(\Indexish<int,string> $url, string $fragment) : mixed {
+	public function forFragment(beatbox\Path $url, string $fragment) : mixed {
 		$this->url = $url;
 		$this->fragment = $fragment;
 		return $this;
+	}
+}
+
+class TestRouter extends beatbox\Router {
+	<<Override>>
+	public static function reset(): void {
+		parent::reset();
 	}
 }

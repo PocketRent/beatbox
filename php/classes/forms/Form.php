@@ -17,7 +17,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		</form>;
 	}
 
-	public function forFragment(\Indexish<int, string> $url, string $fragment) : ?:x:base {
+	public function forFragment(beatbox\Path $url, string $fragment) : ?:x:base {
 		if(!$this->getAttribute('method')) {
 			$this->setAttribute('method', 'post');
 		}

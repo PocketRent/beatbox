@@ -103,7 +103,7 @@ class Router {
 			$res = Map {};
 
 			foreach ($parts as $name) {
-				$res[$name] = static::render_fragment($name, $fragments[$name], $stack);
+				$res[$name] = static::render_fragment($name, $stack);
 
 				if(is_object($res[$name]) && !$res[$name] instanceof \JsonSerializable &&
 					!$res[$name] instanceof Collection) {
@@ -132,7 +132,7 @@ class Router {
 
 		$frag = $parts[0];
 
-		return self::render_fragment($frag, $fragments[$frag], $stack);
+		return self::render_fragment($frag, $stack);
 	}
 
 	/**
@@ -254,11 +254,11 @@ class Router {
 	/**
 	 * Handles the rendering of a potential Awaitable fragment
 	 */
-	protected static function render_fragment(string $fragName, FragmentHandler $frag,
-												RequestStackItem $stack): mixed {
+	protected static function render_fragment(string $fragName, RequestStackItem $stack): mixed {
 		$url = $stack->getPath();
 		$extension = $stack->getExtension();
 		$md = $stack->getMetaData();
+		$frag = $stack->getFragmentTable()->at($fragName);
 
 		$val = $frag($url, $extension, $md);
 		if ($val instanceof Awaitable) {
@@ -342,7 +342,7 @@ class Router {
 		if ($stack) {
 			$frags = $stack->getFragmentTable();
 			if ($frags->contains($frag)) {
-				return static::render_fragment($frag, $frags[$frag], $stack);
+				return static::render_fragment($frag, $stack);
 			}
 		}
 		return null;

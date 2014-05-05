@@ -19,7 +19,6 @@ type PathTable = Pair<FragmentTable, Metadata>;
 type RouteTable = Map<string, PathTable>;
 type SimpleRouteTable = Map<string, FragmentTable>;
 
-newtype RequestStackItem = (Path, Extension, FragmentTable, Metadata);
 newtype RequestStack = Vector<RequestStackItem>;
 
 class Router {
@@ -77,7 +76,7 @@ class Router {
 			}
 		});
 
-		$stack = tuple($url, $ext, $paths, $metadata);
+		$stack = new RequestStackItem($url, $ext, $paths, $metadata);
 
 		self::$_stack->add($stack);
 
@@ -93,7 +92,8 @@ class Router {
 	 */
 	protected static function route_ajax(ImmVector<string> $parts,
 											RequestStackItem $stack): string {
-		list($path, $extension, $fragments, $metadata) = $stack;
+		$fragments = $stack->getFragmentTable();
+		$metadata = $stack->getMetaData();
 
 		static::validate_fragments($parts, $fragments, $metadata);
 
@@ -121,7 +121,8 @@ class Router {
 	 * Handle a non-AJAX/Pagelet route request
 	 */
 	protected static function route_base(ImmVector<string> $parts, RequestStackItem $stack): mixed {
-		list($path, $extension, $fragments, $metadata) = $stack;
+		$fragments = $stack->getFragmentTable();
+		$metadata = $stack->getMetaData();
 
 		if ($parts->count() != 1) {
 			http_error(400, 'Non-ajax request cannot request more than one fragment');
@@ -142,7 +143,7 @@ class Router {
 		$res = Map {};
 		$tasks = Vector {};
 
-		$url = implode('/', $stack[0]);
+		$url = implode('/', $stack->getPath());
 
 		$task_headers = apache_request_headers() ?: [];
 		$task_headers['X-Pagelet-Fragment'] = 'true';
@@ -255,7 +256,10 @@ class Router {
 	 */
 	protected static function render_fragment(string $fragName, FragmentHandler $frag,
 												RequestStackItem $stack): mixed {
-		list($url, $extension, $_, $md) = $stack;
+		$url = $stack->getPath();
+		$extension = $stack->getExtension();
+		$md = $stack->getMetaData();
+
 		$val = $frag($url, $extension, $md);
 		if ($val instanceof Awaitable) {
 			$val = wait($val);
@@ -336,7 +340,7 @@ class Router {
 	public static function response_for_fragment(string $frag) : mixed {
 		$stack = static::current_stack();
 		if ($stack) {
-			$frags = $stack[2];
+			$frags = $stack->getFragmentTable();
 			if ($frags->contains($frag)) {
 				return static::render_fragment($frag, $frags[$frag], $stack);
 			}
@@ -350,7 +354,7 @@ class Router {
 	public static function current_path() : ?ImmVector<string> {
 		$stack = static::current_stack();
 		if ($stack) {
-			return $stack[0];
+			return $stack->getPath();
 		}
 		return null;
 	}
@@ -394,5 +398,62 @@ class Router {
 			return constant('FRAGMENT_TIMEOUT');
 		}
 		return 500;
+	}
+}
+
+class RequestStackItem {
+	public function __construct(private Path $path, private Extension $extension,
+								private FragmentTable $fragmentTable, private Metadata $metadata) {
+		// no-op
+	}
+
+	public function getPath(): Path {
+		return $this->path;
+	}
+
+	public function getExtension(): Extension {
+		return $this->extension;
+	}
+
+	public function getFragmentTable(): FragmentTable {
+		return $this->fragmentTable;
+	}
+
+	public function getMetaData(): Metadata {
+		return $this->metadata;
+	}
+
+	public function __sleep(): array<string> {
+		return array(
+			'path',
+			'extension',
+		);
+	}
+
+	public function __wakeup(): void {
+		// Get potential routes and MD
+		$parts = $this->path->toVector();
+		$allPaths = Vector {};
+		do {
+			$path = implode('/', $parts);
+			$allPaths[] = $path;
+			$parts->pop();
+		} while(!$parts->isEmpty());
+		$allPaths[] = '';
+		$allPaths->reverse();
+
+		$paths = Map {};
+		$metadata = Map {};
+
+		$allPaths->map((string $path) ==> {
+			$p = Router::get_routes_for_path($path);
+			if ($p) {
+				$paths->setAll($p[0]);
+				$metadata->setAll($p[1]);
+			}
+		});
+
+		$this->fragmentTable = $paths;
+		$this->metadata = $metadata;
 	}
 }

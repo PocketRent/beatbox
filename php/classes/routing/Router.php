@@ -32,7 +32,7 @@ class Router {
 	/**
 	 * Route the url, generating the fragments
 	 */
-	public static function route(string $url, \Traversable<string> $fragments = Vector {}) : mixed {
+	public static function route(string $url, Traversable<string> $fragments = Vector {}) : mixed {
 		// Get extension
 		if (strpos($url, '.') === false) {
 			$ext = '';

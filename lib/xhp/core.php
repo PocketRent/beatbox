@@ -917,7 +917,7 @@ class :x:frag extends :x:primitive {
  * Exceptions are neat.
  */
 class XHPException extends Exception {
-  protected static function getElementName(object $that): string {
+  protected static function getElementName(:xhp $that): string {
     $name = get_class($that);
     if (substr($name, 0, 4) !== 'xhp_') {
       return $name;
@@ -928,7 +928,7 @@ class XHPException extends Exception {
 }
 
 class XHPClassException extends XHPException {
-  public function __construct(object $that, string $msg) {
+  public function __construct(:xhp $that, string $msg) {
     parent::__construct(
       'Exception in class `' . XHPException::getElementName($that) . "`\n\n".
       "$that->source\n\n".
@@ -976,7 +976,7 @@ class XHPInvalidArrayKeyAttributeException extends XHPException {
 }
 
 class XHPAttributeNotSupportedException extends XHPException {
-  public function __construct(object $that, string $attr) {
+  public function __construct(:xhp $that, string $attr) {
     parent::__construct(
       'Attribute "'.$attr.'" is not supported in class '.
       '"'.XHPException::getElementName($that).'"'.
@@ -988,7 +988,7 @@ class XHPAttributeNotSupportedException extends XHPException {
 }
 
 class XHPAttributeRequiredException extends XHPException {
-  public function __construct(object $that, string $attr) {
+  public function __construct(:xhp $that, string $attr) {
     parent::__construct(
       'Required attribute `'.$attr.'` was not specified in element '.
       '`'.XHPException::getElementName($that)."`.\n\n".
@@ -1013,7 +1013,7 @@ class XHPInvalidAttributeException extends XHPException {
 }
 
 class XHPInvalidChildrenException extends XHPException {
-  public function __construct(object $that, int $index) {
+  public function __construct(:xhp $that, int $index) {
     parent::__construct(
       'Element `'.XHPException::getElementName($that).'` was rendered with '.
       "invalid children.\n\n".

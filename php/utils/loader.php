@@ -69,6 +69,9 @@ function register_autoload_map(ImmSet<string> $dirs) : string {
 			require $base.$map[$kind][$name];
 		}
 		if ($kind == 'class' || $kind == 'type') {
+			if (strtok($name, '\\') == 'hh') {
+				return false;
+			}
 			unlink(MAP_FILE);
 			$new_hash = register_autoload_map($dirs);
 			// Check the new hash against the captured one, if they're different, then

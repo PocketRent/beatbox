@@ -22,7 +22,11 @@ class PHP {
 		$stack = debug_backtrace();
 		$message = trim($message);
 		if (inited()) {
-			send_event('error:' . $number, $number, $message, $file, $line, $stack);
+			$escaped_trace = array_map((array $arg) ==> {
+				$arg['args'] = array();
+				return $arg;
+			}, $stack);
+			send_event('error:' . $number, $number, $message, $file, $line, $escaped_trace);
 		}
 
 		if(in_dev()) {
@@ -191,7 +195,11 @@ class PHP {
 			$event = $exception->getEventPrefix() . $event;
 		}
 		if (inited()) {
-			send_event($event, $exception->getCode(), $message, $file, $line, $exception, $stack);
+			$escaped_trace = array_map((array $arg) ==> {
+				unset($arg['args']);
+				return $arg;
+			}, $stack);
+			send_event($event, $exception->getCode(), $message, $file, $line, $escaped_trace);
 		}
 		if($exception instanceof HTTP_Exception) {
 			$code = $exception->getBaseCode();

@@ -1,6 +1,5 @@
 <?hh
 
-const int T_XHP_LABEL = 382;
 const int T_TYPELIST_LT = 398;
 const int T_TYPELIST_GT = 399;
 const int T_SHAPE = 402;

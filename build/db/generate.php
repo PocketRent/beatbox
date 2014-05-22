@@ -806,7 +806,7 @@ class Constraint {
 }
 
 function load_tables(resource $conn, string $ns,
-						Map<string,ExcludePattern> $excludes): Vector<Table> {
+						Map<string,ExcludePattern> $excludes): Map<string,Table> {
 	vprint("Reading tables...");
 
 	$ex_tables_it = $excludes->filter(function (ExcludePattern $pat): bool {
@@ -872,12 +872,13 @@ function load_tables(resource $conn, string $ns,
 
 	while ($row = pg_fetch_assoc($cols)) {
 		$table = null;
-		if (isset($tables[$row['table_name']])) {
-			$table = $tables[$row['table_name']];
+		$table_name = (string)$row['table_name'];
+		if (isset($tables[$table_name])) {
+			$table = $tables[$table_name];
 		} else {
-			vprint("  Found table \"{$row['table_name']}\"");
-			$table = new Table($row['table_name'] ?: '', (int)$row['table_oid']);
-			$tables[$row['table_name']] = $table;
+			vprint("  Found table \"{$table_name}\"");
+			$table = new Table($table_name ?: '', (int)$row['table_oid']);
+			$tables[$table_name] = $table;
 		}
 
 		$table->addColumn($row);
@@ -886,7 +887,7 @@ function load_tables(resource $conn, string $ns,
 
 	vprint("Read ".$tables->count()." tables from database");
 
-	return Vector::fromItems($tables->values());
+	return $tables;
 }
 
 function load_constraints(resource $conn): Vector<Constraint> {
@@ -938,13 +939,15 @@ function load_constraints(resource $conn): Vector<Constraint> {
 	return Vector::fromItems($constraints->values());
 }
 
-function resolve_fk_constraints(Vector<Table> $tables, Vector<Constraint> $constraints) : void {
+function resolve_fk_constraints(Map<string,Table> $tables, Vector<Constraint> $constraints) : void {
 	vprint("Resolving constraints");
 
 	foreach ($constraints as $constraint) {
 		foreach ($tables as $table) {
 			if ($table->name == $constraint->on_table) {
-				if ($constraint->type == 'FOREIGN KEY') {
+				if ($constraint->type == 'FOREIGN KEY' &&
+				$constraint->to_table &&
+				$tables->containsKey($constraint->to_table)) {
 					$table->addHasOne($constraint->name, nullthrows($constraint->to_table),
 										$constraint->columns);
 				} else if ($constraint->type == 'PRIMARY KEY') {
@@ -1029,7 +1032,7 @@ class CodeFile {
 	}
 }
 
-function generate_php(Vector<Table> $tables, TypeDict $dict, string $directory,
+function generate_php(Map<string,Table> $tables, TypeDict $dict, string $directory,
 						?string $ns=null) : void {
 	$ns = $ns ? $ns : "";
 

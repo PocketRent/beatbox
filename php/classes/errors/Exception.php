@@ -25,3 +25,27 @@ class Exception extends \Exception {
 		return $this->getCode() - self::MIN_EXCEPTION_CODE;
 	}
 }
+
+/**
+ * Used for providing a body in stubs so the Hack typechecker is
+ * still useful.
+ */
+class UnimplementedException extends Exception {
+	public function __construct() {
+		// Quite hacky, but use `debug_backtrace` to get information of the
+		// calling function
+		// UNSAFE -- it doesn't much like the DEBUG_BACKTRACE_IGNORE_ARGS
+		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+		$frame = $backtrace[1];
+
+		$func = $frame['function'];
+		$type = 'function';
+		if (array_key_exists('class', $frame)) {
+			$func = sprintf("%s::%s", $frame['class'], $func);
+			$type = 'method';
+		}
+
+		$msg = sprintf("Unimplemented %s '%s' called", $type, $func);
+		parent::__construct($msg);
+	}
+}

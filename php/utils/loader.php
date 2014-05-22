@@ -58,16 +58,21 @@ function register_autoload_map(ImmSet<string> $dirs) : string {
 	// handler. If we don't we'll end up in an infinite loop if the symbol doesn't exist.
 	$hash = md5(file_get_contents(MAP_FILE));
 	// UNSAFE
-	$map['failure'] = function ($kind, $name) use ($dirs, $hash, $base, $map) {
+	$map['failure'] = function ($kind, $name, $error) use ($dirs, $hash, $base, $map) {
 		if ($kind != 'constant') {
 			$name = strtolower($name);
 		}
 
-		// Check to see if it's in the map, if the file has an error, it won't say, so
-		// try loading it manually
-		if (isset($map[$kind][$name])) {
-			require $base.$map[$kind][$name];
+		if ($error != null) {
+			$file = $map[$kind][$name];
+			if (substr($name, 0, 4) == 'xhp_') {
+				$name = str_replace(array('__', '_'), array(':', '-'),
+					       preg_replace('#^xhp_#i', '', $name));
+			}
+			throw new Exception(
+				"Error trying to load $kind '$name' from '$file': \"$error\"\n");
 		}
+
 		if ($kind == 'class' || $kind == 'type') {
 			if (strtok($name, '\\') == 'hh') {
 				return false;

@@ -64,9 +64,10 @@ abstract class :bb:base extends :x:element {
 
 	final protected function cascadeAttributes(:x:base $root) : void {
 		// Get all attributes declared on this instance
-		$attributes = $this->getAttributes();
+		$attributes = clone $this->getAttributes();
 		// Get all allowed attributes on the node returned
 		// from compose()
+		$declared = array();
 		{ // UNSAFE
 			$declared = $root->__xhpAttributeDeclaration();
 		}
@@ -76,18 +77,18 @@ abstract class :bb:base extends :x:element {
 
 		// Transfer any classes that were added inline over
 		// to the root node.
-		if (array_key_exists('class', $attributes) && method_exists($root, 'addClass')) {
+		if ($attributes->contains('class') && method_exists($root, 'addClass')) {
 			$attributes['class'] && $root->addClass($attributes['class']);
-			unset($attributes['class']);
+			$attributes->remove('class');
 		}
 
 		// Always forward data and aria attributes
-		$html5Attributes = array('data-' => true, 'aria-' => true);
+		$html5Attributes = ImmSet {'data-', 'aria-'};
 
 		// Transfer all valid attributes to $root
 		foreach ($attributes as $attribute => $value) {
-			if (isset($declared[$attribute]) ||
-					isset($html5Attributes[substr($attribute, 0, 5)])) {
+			if (array_key_exists($attribute, $declared) ||
+					$html5Attributes->contains(substr($attribute, 0, 5))) {
 				if($skip->contains($attribute)) {
 					continue;
 				}

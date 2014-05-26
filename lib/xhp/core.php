@@ -110,7 +110,7 @@ abstract class :x:composable-element extends :x:base {
    * @param $attributes    map of attributes to values
    * @param $children      list of children
    */
-  <<Ovveride>>
+  <<Override>>
   final public function __construct(KeyedTraversable<string, mixed> $attributes,
                                     Traversable<XHPChild> $children) {
     parent::__construct($attributes, $children);

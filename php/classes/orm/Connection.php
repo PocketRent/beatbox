@@ -106,10 +106,12 @@ final class Connection {
 			$conn = $this->connection_pool->pop();
 		}
 
-		$val = await $fn($conn);
-
-		if (!$this->in_transaction) {
-			$this->connection_pool->add($conn);
+		try {
+			$val = await $fn($conn);
+		} finally {
+			if (!$this->in_transaction) {
+				$this->connection_pool->add($conn);
+			}
 		}
 
 		return $val;
@@ -368,6 +370,10 @@ final class Connection {
 			pg_close($conn);
 		}
 		$this->connection_pool = Vector {};
+		if ($this->transactionConn !== null) {
+			pg_close($this->transactionConn);
+			$this->transactionConn = null;
+		}
 	}
 }
 
@@ -388,9 +394,12 @@ class QueryQueue {
 
 	public async function getResult(int $num) : Awaitable<Result> {
 		if ($this->results == null) {
-			$query = bb_join(';', $this->queries);
-			$this->results = await $this->conn->multiQuery($query);
-			$this->conn->clearQueue();
+			try {
+				$query = bb_join(';', $this->queries);
+				$this->results = await $this->conn->multiQuery($query);
+			} finally {
+				$this->conn->clearQueue();
+			}
 		}
 
 		$results = nullthrows($this->results);

@@ -143,15 +143,24 @@ function get_cookie(string $name): ?string {
  */
 function set_cookie(string $name, ?string $value = '', int $expire = 0, string $path = '',
 					?string $domain = null, bool $secure = false, bool $httponly = false): bool {
-	if (setcookie($name, $value, $expire, $path, $domain, $secure, $httponly)) {
+	if (is_cli()) {
 		if ($expire > 0 && $expire < time()) {
 			unset($_COOKIE[$name]);
 		} else {
 			$_COOKIE[$name] = $value;
 		}
 		return true;
+	} else {
+		if (setcookie($name, $value, $expire, $path, $domain, $secure, $httponly)) {
+			if ($expire > 0 && $expire < time()) {
+				unset($_COOKIE[$name]);
+			} else {
+				$_COOKIE[$name] = $value;
+			}
+			return true;
+		}
+		return false;
 	}
-	return false;
 }
 
 /**

@@ -135,8 +135,8 @@ class ExcludePattern {
 		$this->table = $table;
 
 		if (count($parts) > 1) {
-			$cols = Vector::fromArray(explode(',', $parts[1]));
-			$cols = Vector::fromItems($cols->map(function (string $col) : string {
+			$cols = new Vector(explode(',', $parts[1]));
+			$cols = $cols->map(function (string $col) : string {
 				$col = trim($col);
 				if (preg_match('#^[\d\w_]*$#', $col)) {
 					return $col;
@@ -146,7 +146,7 @@ class ExcludePattern {
 				}
 			})->filter(function (string $col) : bool {
 				return strlen($col) > 0;
-			}));
+			});
 
 			$this->columns = $cols;
 		}
@@ -160,7 +160,7 @@ class ExcludePattern {
 				fprintf(STDERR, "Warning: exclusion file '$file' is empty\n");
 				return Map {};
 			}
-			$pats = Vector::fromArray(explode("\n", $pats));
+			$pats = new Vector(explode("\n", $pats));
 			// Filter out empty lines and comments
 			$pats_iter = $pats->filter(function (string $pat) : bool {
 				return strlen($pat) > 0 && $pat[0] != '#';

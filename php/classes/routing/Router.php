@@ -46,7 +46,7 @@ class Router {
 		if ($parts == ['']) {
 			$parts = ['/'];
 		}
-		$parts = Vector::fromArray($parts);
+		$parts = new Vector($parts);
 
 		// Get fragments
 		$fragments = new ImmVector($fragments);

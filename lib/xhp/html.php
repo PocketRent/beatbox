@@ -1,4 +1,5 @@
 <?hh
+
 /*
   +----------------------------------------------------------------------+
   | XHP                                                                  |
@@ -25,41 +26,99 @@ abstract class :xhp:html-element extends :x:primitive {
 
   attribute
     // Global HTML attributes
-    string accesskey, string class, bool contenteditable, string contextmenu,
-    string dir, bool draggable, string dropzone, bool hidden, string id,
-    string lang, string role, enum {'true', 'false'} spellcheck, string style,
-    string tabindex, string title, enum {'yes', 'no'} translate,
+    string accesskey,
+    string class,
+    bool contenteditable,
+    string contextmenu,
+    string dir,
+    bool draggable,
+    string dropzone,
+    bool hidden,
+    string id,
+    bool inert,
+    string itemid,
+    string itemprop,
+    string itemref,
+    string itemscope,
+    string itemtype,
+    string lang,
+    string role,
+    enum {'true', 'false'} spellcheck,
+    string style,
+    string tabindex,
+    string title,
+    enum {'yes', 'no'} translate,
 
     // Javascript events
-    string onabort, string onblur, string oncancel, string oncanplay,
-    string oncanplaythrough, string onchange, string onclick, string onclose,
-    string oncontextmenu, string oncuechange, string ondblclick,
-    string ondrag, string ondragend, string ondragenter, string ondragexit,
-    string ondragleave, string ondragover, string ondragstart, string ondrop,
-    string ondurationchange, string onemptied, string onended, string onerror,
-    string onfocus, string oninput, string oninvalid, string onkeydown,
-    string onkeypress, string onkeyup, string onload, string onloadeddata,
-    string onloadedmetadata, string onloadstart, string onmousedown,
-    string onmousemove, string onmouseout, string onmouseover,
-    string onmouseup, string onmousewheel, string onpause, string onplay,
-    string onplaying, string onprogress, string onratechange,
-    string onreadystatechange, string onreset, string onscroll,
-    string onseeked, string onseeking, string onselect, string onshow,
-    string onstalled, string onsubmit, string onsuspend, string ontimeupdate,
-    string onvolumechange, string onwaiting,
+    string onabort,
+    string onblur,
+    string oncancel,
+    string oncanplay,
+    string oncanplaythrough,
+    string onchange,
+    string onclick,
+    string onclose,
+    string oncontextmenu,
+    string oncuechange,
+    string ondblclick,
+    string ondrag,
+    string ondragend,
+    string ondragenter,
+    string ondragexit,
+    string ondragleave,
+    string ondragover,
+    string ondragstart,
+    string ondrop,
+    string ondurationchange,
+    string onemptied,
+    string onended,
+    string onerror,
+    string onfocus,
+    string oninput,
+    string oninvalid,
+    string onkeydown,
+    string onkeypress,
+    string onkeyup,
+    string onload,
+    string onloadeddata,
+    string onloadedmetadata,
+    string onloadstart,
+    string onmousedown,
+    string onmouseenter,
+    string onmouseleave,
+    string onmousemove,
+    string onmouseout,
+    string onmouseover,
+    string onmouseup,
+    string onmousewheel,
+    string onpause,
+    string onplay,
+    string onplaying,
+    string onprogress,
+    string onratechange,
+    string onreset,
+    string onresize,
+    string onscroll,
+    string onseeked,
+    string onseeking,
+    string onselect,
+    string onshow,
+    string onstalled,
+    string onsubmit,
+    string onsuspend,
+    string ontimeupdate,
+    string ontoggle,
+    string onvolumechange,
+    string onwaiting;
 
-    // IE only
-    string onmouseenter, string onmouseleave;
-
-  protected
-    ?string $tagName;
+  protected string $tagName = '';
 
   public function getID(): string {
     return $this->requireUniqueID();
   }
 
   public function requireUniqueID(): string {
-    if (!($id = (string)$this->getAttribute('id'))) {
+    if (!($id = $this->getAttribute('id'))) {
       $this->setAttribute('id', $id = substr(md5(mt_rand(0, 100000)), 0, 10));
     }
     return $id;
@@ -72,7 +131,7 @@ abstract class :xhp:html-element extends :x:primitive {
         if ($val === true) {
           $buf .= ' '.htmlspecialchars($key);
         } else {
-          $buf .= ' '.htmlspecialchars($key).'="'.htmlspecialchars($val, ENT_QUOTES).'"';
+          $buf .= ' '.htmlspecialchars($key).'="'.htmlspecialchars($val, ENT_COMPAT).'"';
         }
       }
     }
@@ -84,14 +143,13 @@ abstract class :xhp:html-element extends :x:primitive {
     return $this;
   }
 
-  public function conditionClass(mixed $cond, string $class): this {
+  public function conditionClass(bool $cond, string $class) {
     if ($cond) {
       $this->addClass($class);
     }
     return $this;
   }
 
-  <<Override>>
   protected function stringify(): string {
     $buf = $this->renderBaseAttrs().'>';
     foreach ($this->getChildren() as $child) {
@@ -109,7 +167,6 @@ abstract class :xhp:html-element extends :x:primitive {
 abstract class :xhp:html-singleton extends :xhp:html-element {
   children empty;
 
-  <<Override>>
   protected function stringify(): string {
     return $this->renderBaseAttrs().'>';
   }
@@ -136,7 +193,6 @@ abstract class :xhp:pcdata-element extends :xhp:html-element {
  * the element."
  */
 abstract class :xhp:raw-pcdata-element extends :xhp:pcdata-element {
-  <<Override>>
   protected function stringify(): string {
     $buf = $this->renderBaseAttrs() . '>';
     foreach ($this->getChildren() as $child) {
@@ -145,7 +201,7 @@ abstract class :xhp:raw-pcdata-element extends :xhp:pcdata-element {
       }
       $buf .= $child;
     }
-    $buf .= '</'.(string)$this->tagName.'>';
+    $buf .= '</'.$this->tagName.'>';
     return $buf;
   }
 }
@@ -239,7 +295,7 @@ class :bdo extends :xhp:html-element {
 
 class :blockquote extends :xhp:html-element {
   attribute string cite;
-  category %flow;
+  category %flow, %sectioning;
   children (pcdata | %flow)*;
   protected string $tagName = 'blockquote';
 }
@@ -248,8 +304,8 @@ class :body extends :xhp:html-element {
   attribute
     string onafterprint, string onbeforeprint, string onbeforeunload,
     string onhashchange, string onmessage, string onoffline, string ononline,
-    string onpagehide, string onpageshow, string onpopstate, string onresize,
-    string onstorage, string onunload;
+    string onpagehide, string onpageshow, string onpopstate, string onstorage,
+    string onunload;
   children (pcdata | %flow)*;
   protected string $tagName = 'body';
 }
@@ -263,8 +319,8 @@ class :button extends :xhp:html-element {
   attribute
     bool autofocus, bool disabled, string form, string formaction,
     string formenctype, enum {'get', 'post'} formmethod, bool formnovalidate,
-    string formtarget, string name, enum {'submit', 'button', 'reset'} type,
-    string value;
+    string formtarget, string menu, string name,
+    enum {'submit', 'button', 'reset'} type, string value;
   category %flow, %phrase, %interactive;
   // Should not contain interactive
   children (pcdata | %phrase)*;
@@ -313,6 +369,12 @@ class :data extends :xhp:html-element {
   category %flow, %phrase;
   children (%phrase*);
   protected string $tagName = 'data';
+}
+
+class :datalist extends :xhp:html-element {
+  category %flow, %phrase;
+  children (%phrase+ | :option*);
+  protected string $tagName = 'datalist';
 }
 
 class :dd extends :xhp:html-element {
@@ -399,7 +461,7 @@ class :figcaption extends :xhp:html-element {
 }
 
 class :figure extends :xhp:html-element {
-  category %flow;
+  category %flow, %sectioning;
   children ((:figcaption, %flow+) | (%flow+, :figcaption?));
   protected string $tagName = 'figure';
 }
@@ -493,8 +555,8 @@ class :i extends :xhp:html-element {
 
 class :iframe extends :xhp:pcdata-element {
   attribute
-    string name, int height, string sandbox, bool seamless, string src,
-    string srcdoc, int width;
+    bool allowfullscreen, string name, int height, string sandbox,
+    bool seamless, string src, string srcdoc, int width;
   category %flow, %phrase, %embedded, %interactive;
   protected string $tagName = 'iframe';
 }
@@ -512,10 +574,13 @@ class :input extends :xhp:html-singleton {
     string accept, string alt, enum {'on', 'off'} autocomplete, bool autofocus,
     bool checked, string dirname, bool disabled, string form,
     string formaction, string formenctype, enum {'get', 'post'} formmethod,
-    bool formnovalidate, string formtarget, int height, string list,
-    float max, int maxlength, float min, bool multiple, string name,
-    string pattern, string placeholder, bool readonly, bool required,
-    int size, string src, float step, enum {
+    bool formnovalidate, string formtarget, int height, enum {
+      'email', 'full-width-latin', 'kana', 'katakana', 'latin', 'latin-name',
+      'latin-prose', 'numeric', 'tel', 'url', 'verbatim'
+    } inputmode, string list, float max, int maxlength, float min,
+    int minlength, bool multiple, string name, string pattern,
+    string placeholder, bool readonly, bool required, int size, string src,
+    float step, enum {
       'hidden', 'text', 'search', 'tel', 'url', 'email', 'password',
       'datetime', 'date', 'month', 'week', 'time', 'datetime-local', 'number',
       'range', 'color', 'checkbox', 'radio', 'file', 'submit', 'image',
@@ -592,6 +657,21 @@ class :mark extends :xhp:html-element {
   protected string $tagName = 'mark';
 }
 
+class :menu extends :xhp:html-element {
+  attribute string label, enum {'popup', 'toolbar'} type;
+  category %flow;
+  children ((:menuitem | :hr | :menu)* | :li* | %flow*);
+  protected string $tagName = 'menu';
+}
+
+class :menuitem extends :xhp:html-singleton {
+  attribute
+    bool checked, string command, bool default, bool disabled,
+    string label, string icon, string radiogroup,
+    enum {'checkbox', 'command', 'radio'} type;
+  protected string $tagName = 'menuitem';
+}
+
 class :meta extends :xhp:html-singleton {
   attribute
     // The correct definition of http-equiv is an enum, but there are legacy
@@ -599,7 +679,8 @@ class :meta extends :xhp:html-singleton {
     string charset, string content @required, string http-equiv, string name,
     // Facebook OG
     string property;
-  category %metadata;
+  // If itemprop is present, this element is allowed within the <body>.
+  category %metadata, %flow, %phrase;
   protected string $tagName = 'meta';
 }
 
@@ -690,6 +771,11 @@ class :q extends :xhp:html-element {
   protected string $tagName = 'q';
 }
 
+class :rb extends :xhp:html-element {
+  children (pcdata | %phrase)+;
+  protected string $tagName = 'rb';
+}
+
 class :rp extends :xhp:html-element {
   children (pcdata | %phrase)+;
   protected string $tagName = 'rp';
@@ -700,9 +786,17 @@ class :rt extends :xhp:html-element {
   protected string $tagName = 'rt';
 }
 
+class :rtc extends :xhp:html-element {
+  children (pcdata | %phrase)+;
+  protected string $tagName = 'rtc';
+}
+
 class :ruby extends :xhp:html-element {
   category %flow, %phrase;
-  children (pcdata+, (:rt | (:rp, :rt, :rp)))+;
+  children (
+    (pcdata | :rb)+ |
+    ((:rp, :rt) | (:rp, :rtc) | (:rt, :rp) | (:rtc, :rp))+
+  );
   protected string $tagName = 'ruby';
 }
 
@@ -768,10 +862,7 @@ class :strong extends :xhp:html-element {
 
 class :style extends :xhp:raw-pcdata-element {
   attribute
-    enum {
-      'all', 'aural', 'braille', 'embossed', 'handheld', 'print', 'projection',
-      'screen', 'speech', 'tty', 'tv'
-    } media, bool scoped, string type;
+    string media, bool scoped, string type;
   category %flow, %metadata;
   protected string $tagName = 'style';
 }
@@ -794,10 +885,11 @@ class :sup extends :xhp:html-element {
 }
 
 class :table extends :xhp:html-element {
-  attribute int border;
+  attribute int border, bool sortable;
   category %flow;
   children (
-    :caption?, :colgroup*,
+    :caption?,
+    :colgroup*,
     :thead?,
     (
       (:tfoot, (:tbody+ | :tr*)) |
@@ -812,6 +904,12 @@ class :tbody extends :xhp:html-element {
   protected string $tagName = 'tbody';
 }
 
+class :template extends :xhp:html-element {
+  category %flow, %phrase, %metadata;
+  // The children declaration for this element is extraordinarily verbose so
+  // I leave it to you to use it appropriately.
+  protected string $tagName = 'tbody';
+}
 
 class :td extends :xhp:html-element {
   attribute int colspan, string headers, int rowspan;
@@ -822,7 +920,7 @@ class :td extends :xhp:html-element {
 class :textarea extends :xhp:pcdata-element {
   attribute
     enum {'on', 'off'} autocomplete, bool autofocus, int cols, string dirname,
-    bool disabled, string form, int maxlength, string name,
+    bool disabled, string form, int maxlength, int minlength, string name,
     string placeholder, bool readonly, bool required, int rows,
     enum {'soft', 'hard'} wrap;
   category %flow, %phrase, %interactive;
@@ -837,7 +935,7 @@ class :tfoot extends :xhp:html-element {
 class :th extends :xhp:html-element {
   attribute
     string abbr, int colspan, string headers, int rowspan,
-    enum {'col', 'colgroup', 'row', 'rowgroup'} scope;
+    enum {'col', 'colgroup', 'row', 'rowgroup'} scope, string sorted;
   children (pcdata | %flow)*;
   protected string $tagName = 'th';
 }
@@ -920,9 +1018,31 @@ class :wbr extends :xhp:html-singleton {
 class :x:doctype extends :x:primitive {
   children (:html);
 
-  <<Override>>
   protected function stringify(): string {
     $children = $this->getChildren();
     return '<!DOCTYPE html>' . (:xhp::renderChild($children[0]));
+  }
+}
+
+/**
+ * Render an HTML conditional comment. You can choose whatever you like as
+ * the conditional statement.
+ */
+class :x:conditional-comment extends :x:primitive {
+  attribute string if @required;
+  children (pcdata | :xhp)*;
+
+  protected function stringify(): string {
+    $children = $this->getChildren();
+    $html = '<!--[if '.$this->getAttribute('if').']>';
+    foreach ($children as $child) {
+      if ($child instanceof :xhp) {
+        $html .= :xhp::renderChild($child);
+      } else {
+        $html .= $child;
+      }
+    }
+    $html .= '<![endif]-->';
+    return $html;
   }
 }

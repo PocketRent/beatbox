@@ -1,4 +1,5 @@
 <?hh
+
 /*
   +----------------------------------------------------------------------+
   | XHP                                                                  |
@@ -16,14 +17,16 @@
 */
 
 abstract class :xhp implements XHPChild {
-  public function __construct(KeyedTraversable<string, mixed> $attributes,
-                              Traversable<XHPChild> $children) {}
+  abstract public function __construct(
+    KeyedTraversable<string, mixed> $attributes,
+    Traversable<XHPChild> $children,
+  );
   abstract public function appendChild(mixed $child): this;
   abstract public function prependChild(mixed $child): this;
   abstract public function replaceChildren(...): this;
-  abstract protected function getChildren(?string $selector = null): Vector<XHPChild>;
-  abstract protected function getFirstChild(?string $selector = null): ?XHPChild;
-  abstract protected function getLastChild(?string $selector = null): ?XHPChild;
+  abstract public function getChildren(?string $selector = null): Vector<XHPChild>;
+  abstract public function getFirstChild(?string $selector = null): ?XHPChild;
+  abstract public function getLastChild(?string $selector = null): ?XHPChild;
   abstract public function getAttribute(string $attr): mixed;
   abstract public function getAttributes(): Map<string, mixed>;
   abstract public function setAttribute(string $attr, mixed $val): this;
@@ -78,6 +81,7 @@ abstract class :x:base extends :xhp {}
 abstract class :x:composable-element extends :x:base {
   private Map<string, mixed> $attributes = Map {};
   private Vector<XHPChild> $children = Vector {};
+  private Map<string, mixed> $context = Map {};
 
   private static $specialAttributes = ImmSet {
     'data',
@@ -85,15 +89,15 @@ abstract class :x:composable-element extends :x:base {
   };
 
   // Private constants indicating the declared types of attributes
-  const TYPE_STRING   = 1;
-  const TYPE_BOOL     = 2;
-  const TYPE_NUMBER   = 3;
-  const TYPE_ARRAY    = 4;
-  const TYPE_OBJECT   = 5;
-  const TYPE_VAR      = 6;
-  const TYPE_ENUM     = 7;
-  const TYPE_FLOAT    = 8;
-  const TYPE_CALLABLE = 9;
+  const int TYPE_STRING   = 1;
+  const int TYPE_BOOL     = 2;
+  const int TYPE_NUMBER   = 3;
+  const int TYPE_ARRAY    = 4;
+  const int TYPE_OBJECT   = 5;
+  const int TYPE_VAR      = 6;
+  const int TYPE_ENUM     = 7;
+  const int TYPE_FLOAT    = 8;
+  const int TYPE_CALLABLE = 9;
 
   protected function init(): void {}
 
@@ -110,10 +114,8 @@ abstract class :x:composable-element extends :x:base {
    * @param $attributes    map of attributes to values
    * @param $children      list of children
    */
-  <<Override>>
   final public function __construct(KeyedTraversable<string, mixed> $attributes,
                                     Traversable<XHPChild> $children) {
-    parent::__construct($attributes, $children);
     foreach ($children as $child) {
       $this->appendChild($child);
     }
@@ -150,7 +152,7 @@ abstract class :x:composable-element extends :x:base {
       $this->children->addAll($child->children);
     } else if ($child !== null) {
       assert($child instanceof XHPChild);
-      $this->children[] = $child;
+      $this->children->add($child);
     }
     return $this;
   }
@@ -184,18 +186,18 @@ abstract class :x:composable-element extends :x:base {
       if ($xhp) {
         if ($xhp instanceof :x:frag) {
           foreach ($xhp->children as $child) {
-            $new_children[] = $child;
+            $new_children->add($child);
           }
         } else if (!is_array($xhp)) {
-          $new_children[] = $xhp;
+          $new_children->add($xhp);
         } else {
           foreach ($xhp as $element) {
             if ($element instanceof :x:frag) {
               foreach ($element->children as $child) {
-                $new_children[] = $child;
+                $new_children->add($child);
               }
             } else if ($element !== null) {
-              $new_children[] = $element;
+              $new_children->add($element);
             }
           }
         }
@@ -212,27 +214,28 @@ abstract class :x:composable-element extends :x:base {
    * @param $selector   tag name or category (optional)
    * @return array
    */
-  final protected function getChildren(?string $selector = null): Vector<XHPChild> {
-    if (!$selector) {
-      return $this->children;
-    }
-    $result = Vector {};
-    if ($selector[0] == '%') {
-      $selector = substr($selector, 1);
-      foreach ($this->children as $child) {
-        if ($child instanceof :xhp && $child->categoryOf($selector)) {
-          $result[] = $child;
+  final public function getChildren(?string $selector = null): Vector<XHPChild> {
+    if ($selector) {
+      $children = Vector {};
+      if ($selector[0] == '%') {
+        $selector = substr($selector, 1);
+        foreach ($this->children as $child) {
+          if ($child instanceof :xhp && $child->categoryOf($selector)) {
+            $children->add($child);
+          }
+        }
+      } else {
+        $selector = :xhp::element2class($selector);
+        foreach ($this->children as $child) {
+          if ($child instanceof $selector) {
+            $children->add($child);
+          }
         }
       }
     } else {
-      $selector = :xhp::element2class($selector);
-      foreach ($this->children as $child) {
-        if ($child instanceof $selector) {
-          $result[] = $child;
-        }
-      }
+      $children = new Vector($this->children);
     }
-    return $result;
+    return $children;
   }
 
 
@@ -244,9 +247,9 @@ abstract class :x:composable-element extends :x:base {
    * @return            element  the first child node (with the given selector),
    *                             false if there are no (matching) children
    */
-  final protected function getFirstChild(?string $selector = null): ?XHPChild {
+  final public function getFirstChild(?string $selector = null): ?XHPChild {
     if (!$selector) {
-      return reset($this->children);
+      return $this->children->get(0);
     } else if ($selector[0] == '%') {
       $selector = substr($selector, 1);
       foreach ($this->children as $child) {
@@ -273,11 +276,11 @@ abstract class :x:composable-element extends :x:base {
    * @return           element  the last child node (with the given selector),
    *                            false if there are no (matching) children
    */
-  final protected function getLastChild(?string $selector = null): ?XHPChild {
+  final public function getLastChild(?string $selector = null): ?XHPChild {
     $temp = $this->getChildren($selector);
     if ($temp->count() > 0) {
       $count = $temp->count();
-      return $temp->at($count-1);
+      return $temp->at($count - 1);
     }
     return null;
   }
@@ -305,10 +308,10 @@ abstract class :x:composable-element extends :x:base {
    * @param $attr      attribute to fetch
    * @return           value
    */
-  final public function getAttribute(string $attr): mixed {
+  final public function getAttribute(string $attr) {
     // Return the attribute if it's there
-    if (isset($this->attributes[$attr])) {
-      return $this->attributes[$attr];
+    if ($this->attributes->containsKey($attr)) {
+      return $this->attributes->get($attr);
     }
 
     if (!self::isAttributeSpecial($attr)) {
@@ -328,7 +331,7 @@ abstract class :x:composable-element extends :x:base {
   }
 
   final public function getAttributes(): Map<string, mixed> {
-    return $this->attributes;
+    return new Map($this->attributes);
   }
 
   /**
@@ -346,7 +349,7 @@ abstract class :x:composable-element extends :x:base {
     } else {
       $value = (string)$value;
     }
-    $this->attributes[$attr] = $value;
+    $this->attributes->set($attr, $value);
     return $this;
   }
 
@@ -395,28 +398,89 @@ abstract class :x:composable-element extends :x:base {
    * @param $val       value
    */
   final public function forceAttribute(string $attr, mixed $value): this {
-    $this->attributes[$attr] = $value;
+    $this->attributes->set($attr, $value);
     return $this;
+  }
+  /**
+   * Returns all contexts currently set.
+   *
+   * @return array  All contexts
+   */
+  final public function getAllContexts(): Map<string, mixed> {
+    return new Map($this->context);
+  }
+
+  /**
+   * Returns a specific context value. Can include a default if not set.
+   *
+   * @param string $key     The context key
+   * @param mixed $default  The value to return if not set (optional)
+   * @return mixed          The context value or $default
+   */
+  final public function getContext(string $key, ?mixed $default): mixed {
+    if ($this->context->containsKey($key)) {
+      return $this->context->get($key);
+    }
+    return $default;
+  }
+
+  /**
+   * Sets a value that will be automatically passed down through a render chain
+   * and can be referenced by children and composed elements. For instance, if
+   * a root element sets a context of "admin_mode" = true, then all elements
+   * that are rendered as children of that root element will receive this
+   * context WHEN RENDERED. The context will not be available before render.
+   *
+   * @param mixed $key      Either a key, or an array of key/value pairs
+   * @param mixed $default  if $key is a string, the value to set
+   * @return :xhp           $this
+   */
+  final public function setContext(string $key, ?mixed $value): this {
+    $this->context->set($key, $value);
+    return $this;
+  }
+
+  /**
+   * Sets a value that will be automatically passed down through a render chain
+   * and can be referenced by children and composed elements. For instance, if
+   * a root element sets a context of "admin_mode" = true, then all elements
+   * that are rendered as children of that root element will receive this
+   * context WHEN RENDERED. The context will not be available before render.
+   *
+   * @param Map $context  A map of key/value pairs
+   * @return :xhp         $this
+   */
+  final public function addContextMap(Map<string, mixed> $context): this {
+    $this->context->addAll($context->items());
+    return $this;
+  }
+
+  /**
+   * Transfers the context but will not overwrite anything. This is done only
+   * for rendering because we don't want a parent's context to replace a
+   * child's context if they have the same key.
+   *
+   * @param array $parentContext  The context to transfer
+   */
+  final private function transferContext(Map<string, mixed> $parentContext): void {
+    foreach ($parentContext as $key => $value) {
+      if (!$this->context->containsKey($key)) {
+        $this->context->set($key, $value);
+      }
+    }
   }
 
   final protected function __flushElementChildren(): void {
     // Flush all :xhp elements to x:primitive's
     $ln = count($this->children);
     for ($ii = 0; $ii < $ln; ++$ii) {
-      $child = $this->children[$ii];
-      if ($child instanceof :x:element) {
-        do {
-          if (:xhp::$ENABLE_VALIDATION) {
-            $child->validateChildren();
-          }
-          $child = $child->render();
-        } while ($child instanceof :x:element);
+      $child = $this->children->get($ii);
+      if ($child instanceof :x:composable-element) {
+        $child->transferContext($this->context);
+      }
 
-        if (!($child instanceof :x:primitive)) {
-          $ochild = $this->children[$ii];
-          assert($ochild instanceof :x:element);
-          throw new XHPCoreRenderException($ochild, $child);
-        }
+      if ($child instanceof :x:element) {
+        $child = $child->__flushRenderedRootElement();
 
         if ($child instanceof :x:frag) {
           $children = $this->children->toValuesArray();
@@ -425,10 +489,30 @@ abstract class :x:composable-element extends :x:base {
           $ln = count($this->children);
           --$ii;
         } else {
-          $this->children[$ii] = $child;
+          $this->children->set($ii, $child);
         }
       }
     }
+  }
+
+  final protected function __flushRenderedRootElement(): :x:primitive {
+    $that = $this;
+    // Flush root elements returned from render() to an :x:primitive
+    while (($composed = $that->render()) instanceof :x:element) {
+      if (:xhp::$ENABLE_VALIDATION) {
+        $composed->validateChildren();
+      }
+      $composed->transferContext($that->context);
+      $that = $composed;
+    }
+
+    if ($composed instanceof :x:primitive) {
+      $composed->transferContext($that->context);
+    } else if (:xhp::$ENABLE_VALIDATION) {
+      // render() must always return XHPPrimitives
+      throw new XHPCoreRenderException($this, $that);
+    }
+    return $composed;
   }
 
   /**
@@ -546,7 +630,7 @@ abstract class :x:composable-element extends :x:base {
     return $val;
   }
 
-  final private function validateArrayAttributeValue(array<int,mixed> $decl, string $attr,
+  final private function validateArrayAttributeValue(array<int, mixed> $decl, string $attr,
                                                      array<mixed> $val): void {
     if ($decl[0]) { // Key declaration
       if ($decl[0] == self::TYPE_STRING) {
@@ -634,11 +718,6 @@ abstract class :x:composable-element extends :x:base {
     }
     list($ret, $ii) = $this->validateChildrenExpression((array)$decl, 0);
     if (!$ret || $ii < count($this->children)) {
-      // Use of HTML() breaks the content model definition.
-      // Lesson: Don't use HTML().
-      if (isset($this->children[$ii]) && $this->children[$ii] instanceof HTML) {
-        return;
-      }
       throw new XHPInvalidChildrenException($this, $ii);
     }
   }
@@ -696,31 +775,31 @@ abstract class :x:composable-element extends :x:base {
   final private function validateChildrenRule(int $type, mixed $rule, int $index): (bool, int) {
     switch ($type) {
       case 1: // any element -- any
-        if (isset($this->children[$index])) {
+        if ($this->children->containsKey($index)) {
           return tuple(true, $index + 1);
         }
         return tuple(false, $index);
 
       case 2: // pcdata -- pcdata
-        if (isset($this->children[$index]) &&
-            !($this->children[$index] instanceof :xhp)) {
+        if ($this->children->containsKey($index) &&
+            !($this->children->get($index) instanceof :xhp)) {
           return tuple(true, $index + 1);
         }
         return tuple(false, $index);
 
       case 3: // specific element -- :fb-thing
-        if (isset($this->children[$index]) &&
-            $this->children[$index] instanceof $rule) {
+        if ($this->children->containsKey($index) &&
+            $this->children->get($index) instanceof $rule) {
           return tuple(true, $index + 1);
         }
         return tuple(false, $index);
 
       case 4: // element category -- %block
-        if (!isset($this->children[$index]) ||
-            !($this->children[$index] instanceof :xhp)) {
+        if (!$this->children->containsKey($index) ||
+            !($this->children->get($index) instanceof :xhp)) {
           return tuple(false, $index);
         }
-        $child = $this->children[$index];
+        $child = $this->children->get($index);
         assert($child instanceof :xhp);
         $categories = $child->__xhpCategoryDeclaration();
         if (empty($categories[(string)$rule])) {
@@ -833,28 +912,16 @@ abstract class :x:composable-element extends :x:base {
 abstract class :x:primitive extends :x:composable-element {
   abstract protected function stringify(): string;
 
-  /**
-   *  This isn't __toString() because throwing an exception out of __toString()
-   *  produces a useless, immediate fatal, and allowing XHP to seamlessly cast
-   *  into strings encourages bad practices, like this real snippet:
-   *
-   *    $links .= <a>...</a>;
-   *    $links .= <a>...</a>;
-   *    return HTML($links);
-   *
-   */
   final public function __toString(): string {
-
-    // Validate our children
-    $this->__flushElementChildren();
-    if (:xhp::$ENABLE_VALIDATION) {
-      try {
+    try {
+      // Validate our children
+      $this->__flushElementChildren();
+      if (:xhp::$ENABLE_VALIDATION) {
         $this->validateChildren();
-      } catch (Exception $error) {
-        trigger_error($error->getMessage(), E_USER_ERROR);
       }
+    } catch (Exception $error) {
+      trigger_error($error->getMessage(), E_USER_ERROR);
     }
-
     // Render to string
     return $this->stringify();
   }
@@ -871,28 +938,15 @@ abstract class :x:element extends :x:composable-element {
   final public function __toString(): string {
     $that = $this;
 
-    if (:xhp::$ENABLE_VALIDATION) {
-      try {
-        // Validate the current object
+    try {
+      if (:xhp::$ENABLE_VALIDATION) {
         $that->validateChildren();
-
-        // And each intermediary object it returns
-        while (($that = $that->render()) instanceof :x:element) {
-          $that->validateChildren();
-        }
-
-        // render() must always return XHPPrimitives
-        if (!($that instanceof :x:composable-element)) {
-          throw new XHPCoreRenderException($this, $that);
-        }
-      } catch (Exception $error) {
-        trigger_error($error->getMessage(), E_USER_ERROR);
       }
-    } else {
-      // Skip the above checks when not validating
-      while (($that = $that->render()) instanceof :x:element);
+      $that = $that->__flushRenderedRootElement();
+    } catch (Exception $error) {
+      var_log($error->getTrace());
+      trigger_error($error->getMessage(), E_USER_ERROR);
     }
-
     return $that->__toString();
   }
 }
@@ -1013,7 +1067,7 @@ class XHPInvalidAttributeException extends XHPException {
 }
 
 class XHPInvalidChildrenException extends XHPException {
-  public function __construct(:xhp $that, int $index) {
+  public function __construct(object $that, int $index) {
     parent::__construct(
       'Element `'.XHPException::getElementName($that).'` was rendered with '.
       "invalid children.\n\n".

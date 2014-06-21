@@ -295,7 +295,7 @@ class SymbolParser {
 			$element = $this->getTokenValue();
 			$this->bump();
 			$this->skipGenerics();
-			return 'xhp_'.str_replace(array(':', '-'), array('__', '_'), $element);
+			return 'xhp_'.str_replace(array(':', '-'), array('__', '_'), substr($element, 1));
 		} else if ($start_token == T_STRING) {
 			$name = $this->getTokenValue();
 			$this->bump();

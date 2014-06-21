@@ -71,8 +71,18 @@ final class ImmMap<Tk, Tv> implements ConstMap<Tk, Tv>, Indexish<Tk, Tv> {
   public function filter((function(Tv): bool) $callback): ImmMap<Tk, Tv>;
   public function filterWithKey((function(Tk, Tv): bool) $callback):
     ImmMap<Tk, Tv>;
-  public function zip<Tu>(Traversable<Tu> $iterable):
+  public function zip<Tu>(Traversable<Tu> $traversable):
     ImmMap<Tk, Pair<Tv, Tu>>;
+  public function take(int $n): ImmMap<Tk, Tv>;
+  public function takeWhile((function(Tv): bool) $fn): ImmMap<Tk, Tv>;
+  public function skip(int $n): ImmMap<Tk, Tv>;
+  public function skipWhile((function(Tv): bool) $fn): ImmMap<Tk, Tv>;
+  public function slice(int $start, int $len): ImmMap<Tk, Tv>;
+  public function concat(Traversable<Tv> $traversable): ImmVector<Tv>;
+  public function firstValue(): ?Tv;
+  public function firstKey(): ?Tk;
+  public function lastValue(): ?Tv;
+  public function lastKey(): ?Tk;
 
   /**
    * Returns true if the ImmMap is empty, false otherwise.
@@ -105,17 +115,13 @@ final class ImmMap<Tk, Tv> implements ConstMap<Tk, Tv>, Indexish<Tk, Tv> {
   public function containsKey(Tk $k): bool;
 
   /**
-   * Returns a new Map with the keys in this Map not in $iterable
+   * Returns a new Map with the keys in this Map not in $traversable
    */
-  public function differenceByKey(KeyedTraversable<Tk, Tv> $iterable): Map<Tk, Tv>;
+  public function differenceByKey(KeyedTraversable<Tk, Tv> $traversable):
+    Map<Tk, Tv>;
 
   /**
-   * Returns an ImmMap containing the first n values of this ImmMap.
-   */
-  public function take(int $n): ImmMap<Tk, Tv>;
-
-  /**
-   * Returns an iterator that points to beginning of this ImmMap.
+   * Returns an iterator that points to the beginning of this ImmMap.
    */
   public function getIterator(): MapIterator<Tk, Tv>;
 

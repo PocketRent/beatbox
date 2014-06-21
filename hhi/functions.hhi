@@ -17,9 +17,8 @@
 
 function array_fill<T>(int $start_index, int $num, T $value): array<T>;
 // TODO make non-nullable once Thrift files are fixed
-function array_key_exists<Tk, Tv>(mixed $key, ?Indexish<Tk, Tv> $search): bool;
 function chr(int $ascii): string;
-function count(mixed $x): int; // count takes Countable or array. We'll need to hardcode this...
+function count(mixed $x, int $mode = COUNT_NORMAL): int; // count takes Countable or array. We'll need to hardcode this...
 function dechex(int $number): string;
 function fb_bsdiff(string $data1, string $data2): (array<int>, string, string);
 function fb_bspatch(
@@ -29,7 +28,7 @@ function fb_bspatch(
   string $extra,
 ): string;
 function func_get_args(): array;
-function implode<Tv>(string $glue, Traversable<Tv> $pieces): string;
+function implode(string $glue, $pieces): string; // could be Container<Stringish>
 function is_array(mixed $arg): bool;
 function isset(ArrayAccess $x): bool;
 function ord(string $string): int;
@@ -41,19 +40,6 @@ function gzdeflate(string $data, int $level = -1): mixed;
 function gzencode(string $data, int $level = -1): mixed;
 function gzinflate(string $data, int $length = 0): mixed;
 function gzuncompress(string $data, int $length = 0): mixed;
-
-function sort<Tv>(Traversable<Tv> &$arg, int $sort_flags = SORT_REGULAR, bool $intl_sort = false): bool;
-function rsort<Tv>(Traversable<Tv> &$arg, int $sort_flags = SORT_REGULAR, bool $intl_sort = false): bool;
-function asort<Tk,Tv>(KeyedTraversable<Tk, Tv> &$arg, int $sort_flags = SORT_REGULAR, bool $intl_sort = false): bool;
-function arsort<Tk,Tv>(KeyedTraversable<Tk, Tv> &$arg, int $sort_flags = SORT_REGULAR, bool $intl_sort = false): bool;
-function ksort<Tk,Tv>(KeyedTraversable<Tk, Tv> &$arg, int $sort_flags = SORT_REGULAR): bool;
-function krsort<Tk,Tv>(KeyedTraversable<Tk, Tv> &$arg, int $sort_flags = SORT_REGULAR): bool;
-// $c is a callable of type (function(Tv,Tv): bool)
-function usort<Tv>(Traversable<Tv> &$arg, mixed $c): bool;
-// $c is a callable of type (function(Tv,Tv): bool)
-function uasort<Tk,Tv>(KeyedTraversable<Tk, Tv> &$arg, mixed $c): bool;
-// $c is a callable of type (function(Tk,Tk): bool)
-function uksort<Tk,Tv>(KeyedTraversable<Tk, Tv> &$arg, mixed $c): bool;
 
 function intval($v, $base = 10): int;
 function doubleval($v): float;

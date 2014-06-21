@@ -78,7 +78,28 @@ final class Vector<Tv> implements MutableVector<Tv> {
   public function filter((function(Tv): bool) $callback): Vector<Tv>;
   public function filterWithKey((function(int, Tv): bool) $callback):
     Vector<Tv>;
-  public function zip<Tu>(Traversable<Tu> $iterable): Vector<Pair<Tv, Tu>>;
+  public function zip<Tu>(Traversable<Tu> $traversable): Vector<Pair<Tv, Tu>>;
+
+  /**
+   * Returns a Vector containing the first n values of this Vector.
+   */
+  public function take(int $n): Vector<Tv>;
+
+  /**
+   * Returns a Vector containing the values of this Vector up to but not
+   * including the first value that produces false when passed to the specified
+   * callback.
+   */
+  public function takeWhile((function(Tv): bool) $fn): Vector<Tv>;
+
+  public function skip(int $n): Vector<Tv>;
+  public function skipWhile((function(Tv): bool) $fn): Vector<Tv>;
+  public function slice(int $start, int $len): Vector<Tv>;
+  public function concat(Traversable<Tv> $traversable): Vector<Tv>;
+  public function firstValue(): ?Tv;
+  public function firstKey(): ?int;
+  public function lastValue(): ?Tv;
+  public function lastKey(): ?int;
 
   /**
    * Returns true if the Vector is empty, false otherwise.
@@ -105,7 +126,7 @@ final class Vector<Tv> implements MutableVector<Tv> {
 
   /**
    * Stores a value into the Vector with the specified key, overwriting the
-   * previous value associated with the key. If the key is not present, an
+   * previous value associated with the key. If the key is not present,
    * an exception is thrown. "$vec->set($k,$v)" is semantically equivalent
    * to "$vec[$k] = $v" (except that set() returns the Vector).
    */
@@ -155,8 +176,8 @@ final class Vector<Tv> implements MutableVector<Tv> {
   public function resize(int $sz, Tv $value): void;
 
   /**
-   * Reserve memory for 'sz' elements. If 'sz' is smaller than the current
-   * size of this Vector or 'sz' is zero, do nothing.
+   * Reserves enough memory to accomodate 'sz' elements. If 'sz' is less than or
+   * equal to the current capacity of this Vector, does nothing.
    */
   public function reserve(int $sz): void;
 
@@ -178,11 +199,6 @@ final class Vector<Tv> implements MutableVector<Tv> {
   public function splice(int $offset, ?int $len = null): void;
 
   /**
-   * Returns a Vector containing the first n values of this Vector.
-   */
-  public function take(int $n): Vector<Tv>;
-
-  /**
    * Returns the index of the first element that matches the search value.
    * If no element matches the search value, this function returns -1.
    */
@@ -193,12 +209,14 @@ final class Vector<Tv> implements MutableVector<Tv> {
    */
   public function shuffle(): void;
 
-  /**
-   * Returns a Vector containing the values from the specified array.
-   */
-  public static function fromArray<T>(array<T, Tv> $arr): Vector<Tv>;
-
   public static function fromItems(?Traversable<Tv> $items): Vector<Tv>;
+
+  /**
+   * Returns a Vector built from the keys of the specified container.
+   */
+  public static function fromKeysOf<Tk,Tv2>(
+    ?KeyedContainer<Tk,Tv2> $container
+  ): Vector<Tk>;
 
   public function __toString(): string;
 

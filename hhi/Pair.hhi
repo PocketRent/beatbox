@@ -64,15 +64,26 @@ final class Pair<Tv1, Tv2> implements ConstVector<mixed> {
   public function toSet(): Set<mixed>;
   public function toImmSet(): ImmSet<mixed>;
   public function lazy(): KeyedIterable<int, mixed>;
-  public function values(): Vector<mixed>;
-  public function keys(): Vector<int>;
-  public function map<Tu>((function(mixed): Tu) $callback): Vector<Tu>;
+  public function values(): ImmVector<mixed>;
+  public function keys(): ImmVector<int>;
+  public function map<Tu>((function(mixed): Tu) $callback): ImmVector<Tu>;
   public function mapWithKey<Tu>((function(int, mixed): Tu) $callback):
-    Vector<Tu>;
-  public function filter((function(mixed): bool) $callback): Vector<mixed>;
+    ImmVector<Tu>;
+  public function filter((function(mixed): bool) $callback): ImmVector<mixed>;
   public function filterWithKey((function(int, mixed): bool) $callback):
-    Vector<mixed>;
-  public function zip<Tu>(Traversable<Tu> $iterable): Vector<Pair<mixed, Tu>>;
+    ImmVector<mixed>;
+  public function zip<Tu>(Traversable<Tu> $traversable):
+    ImmVector<Pair<mixed, Tu>>;
+  public function take(int $n): ImmVector<mixed>;
+  public function takeWhile((function(mixed): bool) $fn): ImmVector<mixed>;
+  public function skip(int $n): ImmVector<mixed>;
+  public function skipWhile((function(mixed): bool) $fn): ImmVector<mixed>;
+  public function slice(int $start, int $len): ImmVector<mixed>;
+  public function concat(Traversable<mixed> $traversable): ImmVector<mixed>;
+  public function firstValue(): Tv1;
+  public function firstKey(): int;
+  public function lastValue(): Tv2;
+  public function lastKey(): int;
 
   /**
    * Returns true if the Pair is empty, false otherwise.

@@ -46,8 +46,32 @@ trait StrictIterable<Tv> implements Iterable<Tv> {
   public function filter((function(Tv): bool) $callback): Iterable<Tv> {
     return Vector {};
   }
-  public function zip<Tu>(Traversable<Tu> $iterable): Iterable<Pair<Tv,Tu>> {
+  public function zip<Tu>(Traversable<Tu> $traversable): Iterable<Pair<Tv,Tu>> {
     return Vector {};
+  }
+  public function take(int $n): Iterable<Tv> {
+    return Vector {};
+  }
+  public function takeWhile((function(Tv): bool) $n): Iterable<Tv> {
+    return Vector {};
+  }
+  public function skip(int $n): Iterable<Tv> {
+    return Vector {};
+  }
+  public function skipWhile((function(Tv): bool) $n): Iterable<Tv> {
+    return Vector {};
+  }
+  public function slice(int $start, int $len): Iterable<Tv> {
+    return Vector {};
+  }
+  public function concat(Traversable<Tv> $traversable): Iterable<Tv> {
+    return Vector {};
+  }
+  public function firstValue(): ?Tv {
+    return null;
+  }
+  public function lastValue(): ?Tv {
+    return null;
   }
 }
 
@@ -105,9 +129,39 @@ trait StrictKeyedIterable<Tk,Tv> implements KeyedIterable<Tk,Tv> {
     return Map {};
   }
   public function zip<Tu>(
-    Traversable<Tu> $iterable
+    Traversable<Tu> $traversable
   ): KeyedIterable<Tk,Pair<Tv,Tu>> {
     return Map {};
+  }
+  public function take(int $n): KeyedIterable<Tk, Tv> {
+    return Map {};
+  }
+  public function takeWhile((function(Tv): bool) $n): KeyedIterable<Tk, Tv> {
+    return Map {};
+  }
+  public function skip(int $n): KeyedIterable<Tk, Tv> {
+    return Map {};
+  }
+  public function skipWhile((function(Tv): bool) $n): KeyedIterable<Tk, Tv> {
+    return Map {};
+  }
+  public function slice(int $start, int $len): KeyedIterable<Tk, Tv> {
+    return Map {};
+  }
+  public function concat(Traversable<Tv> $traversable): Iterable<Tv> {
+    return Map {};
+  }
+  public function firstValue(): ?Tv {
+    return null;
+  }
+  public function firstKey(): ?Tk {
+    return null;
+  }
+  public function lastValue(): ?Tv {
+    return null;
+  }
+  public function lastKey(): ?Tk {
+    return null;
   }
 }
 
@@ -142,8 +196,32 @@ trait LazyIterable<Tv> implements Iterable<Tv> {
   public function filter((function(Tv): bool) $callback): Iterable<Tv> {
     return Vector {};
   }
-  public function zip<Tu>(Traversable<Tu> $iterable): Iterable<Pair<Tv,Tu>> {
+  public function zip<Tu>(Traversable<Tu> $traversable): Iterable<Pair<Tv,Tu>> {
     return Vector {};
+  }
+  public function take(int $n): Iterable<Tv> {
+    return Vector {};
+  }
+  public function takeWhile((function(Tv): bool) $n): Iterable<Tv> {
+    return Vector {};
+  }
+  public function skip(int $n): Iterable<Tv> {
+    return Vector {};
+  }
+  public function skipWhile((function(Tv): bool) $n): Iterable<Tv> {
+    return Vector {};
+  }
+  public function slice(int $start, int $len): Iterable<Tv> {
+    return Vector {};
+  }
+  public function concat(Traversable<Tv> $traversable): Iterable<Tv> {
+    return Vector {};
+  }
+  public function firstValue(): ?Tv {
+    return null;
+  }
+  public function lastValue(): ?Tv {
+    return null;
   }
 }
 
@@ -201,9 +279,39 @@ trait LazyKeyedIterable<Tk,Tv> implements KeyedIterable<Tk,Tv> {
     return Map {};
   }
   public function zip<Tu>(
-    Traversable<Tu> $iterable
+    Traversable<Tu> $traversable
   ): KeyedIterable<Tk,Pair<Tv,Tu>> {
     return Map {};
+  }
+  public function take(int $n): KeyedIterable<Tk, Tv> {
+    return Map {};
+  }
+  public function takeWhile((function(Tv): bool) $n): KeyedIterable<Tk, Tv> {
+    return Map {};
+  }
+  public function skip(int $n): KeyedIterable<Tk, Tv> {
+    return Map {};
+  }
+  public function skipWhile((function(Tv): bool) $n): KeyedIterable<Tk, Tv> {
+    return Map {};
+  }
+  public function slice(int $start, int $len): KeyedIterable<Tk, Tv> {
+    return Map {};
+  }
+  public function concat(Traversable<Tv> $traversable): Iterable<Tv> {
+    return Map {};
+  }
+  public function firstValue(): ?Tv {
+    return null;
+  }
+  public function firstKey(): ?Tk {
+    return null;
+  }
+  public function lastValue(): ?Tv {
+    return null;
+  }
+  public function lastKey(): ?Tk {
+    return null;
   }
 }
 

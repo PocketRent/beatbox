@@ -1,4 +1,4 @@
-<?hh     /* -*- php -*- */
+<?hh // decl
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -19,6 +19,7 @@ define('XHPROF_FLAGS_VTSC', 0);
 define('XHPROF_FLAGS_TRACE', 0);
 define('XHPROF_FLAGS_MEASURE_XHPROF_DISABLE', 0);
 define('XHPROF_FLAGS_MALLOC', 0);
+define('XHPROF_FLAGS_I_HAVE_INFINITE_MEMORY', 0);
 function fb_thrift_serialize($thing) { }
 function fb_thrift_unserialize($thing, &$success, &$errcode = null_variant) { }
 function fb_serialize($thing) { }
@@ -51,7 +52,6 @@ function xhprof_run_trace($packedTrace, $flags) { }
 function xhprof_sample_enable() { }
 function xhprof_sample_disable() { }
 function fb_load_local_databases($servers) { }
-function fb_parallel_query($sql_map, $max_thread = 50, $combine_result = true, $retry_query_on_fail = true, $connect_timeout = -1, $read_timeout = -1, $timeout_in_ms = false) { }
 function fb_crossall_query($sql, $max_thread = 50, $retry_query_on_fail = true, $connect_timeout = -1, $read_timeout = -1, $timeout_in_ms = false) { }
 function fb_output_compression($new_value) { }
 function fb_set_exit_callback($function) { }
@@ -63,6 +63,7 @@ function fb_lazy_realpath($filename) { }
 function fb_setprofile($callback) { }
 function fb_gc_collect_cycles() { }
 function fb_gc_detect_cycles($filename) { }
+function fb_get_method_param_default_info(mixed $cls, string $name, bool $prohibitStatic = false): array<int,mixed> { }
 
 namespace HH {
 

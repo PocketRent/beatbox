@@ -84,7 +84,17 @@ final class Map<Tk, Tv> implements MutableMap<Tk, Tv> {
   public function filter((function(Tv): bool) $callback): Map<Tk, Tv>;
   public function filterWithKey((function(Tk, Tv): bool) $callback):
     Map<Tk, Tv>;
-  public function zip<Tu>(Traversable<Tu> $iterable): Map<Tk, Pair<Tv, Tu>>;
+  public function zip<Tu>(Traversable<Tu> $traversable): Map<Tk, Pair<Tv, Tu>>;
+  public function take(int $n): Map<Tk, Tv>;
+  public function takeWhile((function(Tv): bool) $fn): Map<Tk, Tv>;
+  public function skip(int $n): Map<Tk, Tv>;
+  public function skipWhile((function(Tv): bool) $fn): Map<Tk, Tv>;
+  public function slice(int $start, int $len): Map<Tk, Tv>;
+  public function concat(Traversable<Tv> $traversable): Vector<Tv>;
+  public function firstValue(): ?Tv;
+  public function firstKey(): ?Tk;
+  public function lastValue(): ?Tv;
+  public function lastKey(): ?Tk;
 
   /**
    * Returns true if the Map is empty, false otherwise.
@@ -139,15 +149,22 @@ final class Map<Tk, Tv> implements MutableMap<Tk, Tv> {
   public function addAll(?Traversable<Pair<Tk, Tv>> $it): Map<Tk, Tv>;
 
   /**
+   * Reserves enough memory to accomodate 'sz' key/value pairs. If 'sz' is less
+   * than or equal to the current capacity of this Map, does nothing.
+   */
+  public function reserve(int $sz): void;
+
+  /**
    * Removes the specified key from this Map.
    */
   public function remove(Tk $k): Map<Tk, Tv>;
   public function removeKey(Tk $k): Map<Tk, Tv>;
 
   /**
-   * Returns a new Map with the keys in this Map not in $iterable
+   * Returns a new Map with the keys in this Map not in $traversable
    */
-  public function differenceByKey(KeyedTraversable<Tk, Tv> $iterable): Map<Tk, Tv>;
+  public function differenceByKey(KeyedTraversable<Tk, Tv> $traversable):
+    Map<Tk, Tv>;
 
   /**
    * Returns an iterator that points to beginning of this Map.

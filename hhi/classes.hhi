@@ -49,79 +49,87 @@ class RuntimeException extends Exception {
 class OutOfBoundsException extends RuntimeException {
 }
 
+class AsyncGenerator<Tk, Tv, Ts> implements AsyncIterator<Tk, Tv> {
+  public function next(): Awaitable<?(Tk, Tv)> {}
+  public function send(Ts $v): Awaitable<?(Tk, Tv)> {}
+  public function raise(Exception $e): Awaitable<?(Tk, Tv)> {}
+}
+
+class Continuation<Tv> implements KeyedIterator<int, Tv> {
+  public function getOrigFuncName(): string {}
+  public function current(): Tv {}
+  public function key(): int {}
+  public function valid(): bool {}
+  public function next(): void {}
+  public function send($v): void {}
+  public function raise(Exception $e): void {}
+  public function rewind(): void {}
+  public function getLabel(): int {}
+  public function update(int $label, Tv $value): void {}
+  public function num_args(): int {}
+  public function get_arg(int $index): mixed {}
+}
+
+class Generator<Tv> extends Continuation<Tv> {
+}
+
 abstract class WaitHandle<T> implements Awaitable<T> {
-  public function getWaitHandle(): this { }
-  public function import(): void { }
-  public function join(): T { }
-  public function isFinished(): bool { }
-  public function isSucceeded(): bool { }
-  public function isFailed(): bool { }
-  public function getID(): int { }
-  public function getName(): string { }
-  public function getExceptionIfFailed(): ?Exception { }
-  public static function setOnJoinCallback(?(function(WaitableWaitHandle<mixed>): void) $callback) { }
+  public function getWaitHandle(): this {}
+  public function import(): void {}
+  public function join(): T {}
+  public function isFinished(): bool {}
+  public function isSucceeded(): bool {}
+  public function isFailed(): bool {}
+  public function getID(): int {}
+  public function getName(): string {}
+  public function getExceptionIfFailed(): ?Exception {}
+  public static function setOnJoinCallback(?(function(WaitableWaitHandle<mixed>): void) $callback) {}
 }
 
-abstract class StaticWaitHandle<T> extends WaitHandle<T> {
-}
-
-class StaticResultWaitHandle<T> extends StaticWaitHandle<T> {
-  static public function create(T $result): StaticResultWaitHandle<T> { }
-}
-
-class StaticExceptionWaitHandle extends StaticWaitHandle<void> {
-  static public function create(Exception $exception): StaticExceptionWaitHandle { }
+class StaticWaitHandle<T> extends WaitHandle<T> {
 }
 
 abstract class WaitableWaitHandle<T> extends WaitHandle<T> {
-  public function getContextIdx(): int { }
-  public function getCreator(): /*AsyncFunction*/WaitHandle<mixed> { }
-  public function getParents(): array<BlockableWaitHandle<mixed>> { }
-  public function getStackTrace(): array<WaitableWaitHandle<mixed>> { }
+  public function getContextIdx(): int {}
+  public function getCreator(): /*AsyncFunction*/WaitHandle<mixed> {}
+  public function getParents(): array<BlockableWaitHandle<mixed>> {}
+  public function getStackTrace(): array<WaitableWaitHandle<mixed>> {}
 }
 
 abstract class BlockableWaitHandle<T> extends WaitableWaitHandle<T> {
 }
 
 class AsyncFunctionWaitHandle<T> extends BlockableWaitHandle<T> {
-  public function getPrivData() { }
-  public function setPrivData($data) { }
-  public static function setOnCreateCallback(?(function(AsyncFunctionWaitHandle<mixed>, WaitableWaitHandle<mixed>): void) $callback) { }
-  public static function setOnAwaitCallback(?(function(AsyncFunctionWaitHandle<mixed>, WaitableWaitHandle<mixed>): void) $callback) { }
-  public static function setOnSuccessCallback(?(function(AsyncFunctionWaitHandle<mixed>, mixed): void) $callback) { }
-  public static function setOnFailCallback(?(function(AsyncFunctionWaitHandle<mixed>, Exception): void) $callback) { }
+  public static function setOnCreateCallback(?(function(AsyncFunctionWaitHandle<mixed>, WaitableWaitHandle<mixed>): void) $callback) {}
+  public static function setOnAwaitCallback(?(function(AsyncFunctionWaitHandle<mixed>, WaitableWaitHandle<mixed>): void) $callback) {}
+  public static function setOnSuccessCallback(?(function(AsyncFunctionWaitHandle<mixed>, mixed): void) $callback) {}
+  public static function setOnFailCallback(?(function(AsyncFunctionWaitHandle<mixed>, Exception): void) $callback) {}
 }
 
 class GenArrayWaitHandle extends BlockableWaitHandle<array> {
   // This is technically overloaded to allow an array of nullable
-  public static function create(array $dependencies): WaitHandle<array> { }
-  public static function setOnCreateCallback(?(function(GenArrayWaitHandle, array): void) $callback) { }
+  public static function create(array $dependencies): WaitHandle<array> {}
+  public static function setOnCreateCallback(?(function(GenArrayWaitHandle, array): void) $callback) {}
 }
 
 class GenMapWaitHandle<Tk, Tv> extends BlockableWaitHandle<Map<Tk, Tv>> {
-  public static function create(Map<Tk, WaitHandle<Tv>> $dependencies): WaitHandle<Map<Tk, Tv>> { }
-  public static function setOnCreateCallback(?(function(GenMapWaitHandle<Tk, Tv>, Map<mixed, mixed>): void) $callback) { }
+  public static function create(Map<Tk, WaitHandle<Tv>> $dependencies): WaitHandle<Map<Tk, Tv>> {}
+  public static function setOnCreateCallback(?(function(GenMapWaitHandle<Tk, Tv>, Map<mixed, mixed>): void) $callback) {}
 }
 
 class GenVectorWaitHandle<T> extends BlockableWaitHandle<Vector<T>> {
-  public static function create(Vector<WaitHandle<T>> $dependencies): WaitHandle<Vector<T>> { }
-  public static function setOnCreateCallback(?(function(GenVectorWaitHandle<T>, Vector<mixed>): void) $callback) { }
-}
-
-class SetResultToRefWaitHandle<T> extends BlockableWaitHandle<T> {
-    static public function create(WaitHandle<T> $wait_handle, ?T &$ref)
-      : SetResultToRefWaitHandle<T> { }
+  public static function create(Vector<WaitHandle<T>> $dependencies): WaitHandle<Vector<T>> {}
+  public static function setOnCreateCallback(?(function(GenVectorWaitHandle<T>, Vector<mixed>): void) $callback) {}
 }
 
 class RescheduleWaitHandle extends WaitableWaitHandle<void> {
-  const QUEUE_DEFAULT = 0;
-  const QUEUE_NO_PENDING_IO = 0;
-  static public function create(int $queue, int $priority)
-    : RescheduleWaitHandle<void> { }
+  const int QUEUE_DEFAULT = 0;
+  const int QUEUE_NO_PENDING_IO = 1;
+  public static function create(int $queue, int $priority): RescheduleWaitHandle {}
 }
 
 class SessionScopedWaitHandle<T> extends WaitableWaitHandle<T> {}
 
-class SleepWaitHandle<T> extends SessionScopedWaitHandle<T> {
-  static public function create(int $usecs): SleepWaitHandle<T> {}
+class SleepWaitHandle extends SessionScopedWaitHandle<void> {
+  public static function create(int $usecs): SleepWaitHandle {}
 }

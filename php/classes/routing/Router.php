@@ -151,6 +151,7 @@ class Router {
 		$task_headers['X-Pagelet-Fragment'] = 'true';
 
 		$data = filter_input_array(\INPUT_GET, 0, false);
+		assert(is_array($data));
 
 		foreach ($parts as $frag) {
 			// Override the previous 'fragments' value

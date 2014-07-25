@@ -5,7 +5,7 @@ namespace beatbox;
 use \Redis as R;
 
 class Task implements \Serializable {
-	use redis;
+	use Redis;
 
 	const CON_ALWAYS = 0;
 	const CON_DIFF = 1;

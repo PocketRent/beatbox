@@ -5,7 +5,7 @@ namespace beatbox\test;
 use beatbox, beatbox\Task;
 
 class TaskTest extends beatbox\Test {
-	use beatbox\Test\Redis;
+	use beatbox\test\Redis;
 
 	/**
 	 * @group fast

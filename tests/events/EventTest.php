@@ -5,7 +5,7 @@ namespace beatbox\test;
 use beatbox, beatbox\Event;
 
 class EventTest extends beatbox\Test {
-	use beatbox\Test\Redis;
+	use beatbox\test\Redis;
 
 	protected $called = [];
 	protected $args = [];

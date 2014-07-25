@@ -203,7 +203,7 @@ final class RequestBuilder {
 		}
 	}
 
-	private function setopt(int $option, ?mixed $value) : void {
+	private function setopt(int $option, mixed $value) : void {
 		$handle = nullthrows($this->handle);
 		if (!curl_setopt($handle, $option, $value))
 			throw new CurlHandleException($handle);

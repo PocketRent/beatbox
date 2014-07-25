@@ -6,7 +6,7 @@ class Asset {
 	/**
 	 * The unique ID for this asset
 	 */
-	private ?mixed $id = null;
+	private mixed $id = null;
 	/**
 	 * The name of this asset (normally the original
 	 * filename)

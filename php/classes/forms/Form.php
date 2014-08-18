@@ -59,7 +59,11 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 				}
 				{
 					// UNSAFE - This is callable though rather difficult to typecheck
-					return wait($handler($this, $this->getData()));
+					$ret = $handler($this, $this->getData());
+					if ($ret instanceof Awaitable) {
+						$ret = wait($ret);
+					}
+					return $ret;
 				}
 			}
 		}

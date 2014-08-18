@@ -8,6 +8,7 @@ abstract class CompositeType implements Type {
 	abstract static function fromString(string $val) : CompositeType;
 }
 
+<<ConsistentConstruct>>
 class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 	use beatbox\Compare;
 

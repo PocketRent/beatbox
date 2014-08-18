@@ -1099,7 +1099,6 @@ function generate_php(Map<string,Table> $tables, TypeDict $dict, string $directo
 		$tbl_data->startBlock("public function __construct(?Indexish<string,string> \$row = null)");
 		$tbl_data->writeLine("assert(is_null(\$row) || is_array(\$row) || "
 								. "\$row instanceof \ConstMapAccess);");
-		$tbl_data->writeLine('parent::__construct($row);');
 		$tbl_data->startBlock('if($row)', '');
 		$tbl_data->writeLine("\$this->updateFromRow(\$row);");
 		$tbl_data->endBlock();

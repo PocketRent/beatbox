@@ -59,7 +59,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 				}
 				{
 					// UNSAFE - This is callable though rather difficult to typecheck
-					return $handler($this, $this->getData());
+					return wait($handler($this, $this->getData()));
 				}
 			}
 		}
@@ -87,7 +87,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		if(preg_match('#^(.+?)\[(.*?)\](.*)$#', $name, $matches)) {
 			if(!$matches[2]) {
 				$matchVec = $base->get($matches[1]);
-				if($matchVec == null) {
+				if($matchVec === null) {
 					$matchVec = Vector {};
 					$base[$matches[1]] = $matchVec;
 				}
@@ -95,7 +95,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 				$matchVec->add($value);
 			} else {
 				$matchMap = $base->get($matches[1]);
-				if($matchMap == null) {
+				if($matchMap === null) {
 					$matchMap = Map {};
 					$base[$matches[1]] = $matchMap;
 				}
@@ -118,7 +118,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		return $data;
 	}
 
-	protected static array $load_count = [];
+	protected static Map<string, int> $load_count = Map {};
 
 	protected static function get_value(Indexish<string,mixed> $data, string $name,
 										string $base) : mixed {
@@ -127,34 +127,34 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 			return $data;
 		} else if(preg_match('#^(.+?)\[(.*?)\](.*)$#', $name, $matches)) {
 			if(!$matches[2]) {
-				$index = isset(self::$load_count[$base . $matches[1]]) ?
+				$index = self::$load_count->contains($base . $matches[1]) ?
 					self::$load_count[$base . $matches[1]] + 1 :
 					0;
 				self::$load_count[$base . $matches[1]] = $index;
 
-				if (isset($data[$matches[1]])) {
+				if (array_key_exists($matches[1], $data)) {
 					$field = $data[$matches[1]];
 					if (is_array($field)) {
-						if(isset($field[$index])) {
+						if(array_key_exists($index, $field)) {
 							return $field[$index];
 						}
 					}
 				}
-			} else if(isset($data[$matches[1]])) {
+			} else if(array_key_exists($matches[1], $data)) {
 				$field = $data[$matches[1]];
 				if (is_array($field)) {
 					$base .= "$matches[1]-";
 					return self::get_value($field, $matches[2].$matches[3], $base);
 				}
 			}
-		} else if(isset($data[$name])) {
+		} else if(array_key_exists($name, $data)) {
 			return $data[$name];
 		}
 		return null;
 	}
 
 	public function loadData(Indexish<string, mixed> $data, bool $empty = false) : :bb:form {
-		self::$load_count = [];
+		self::$load_count = Map {};
 		foreach($this->getFields() as $field) {
 			$name = $field->getAttribute('name');
 			if(!$name) {

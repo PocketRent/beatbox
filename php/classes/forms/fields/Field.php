@@ -84,7 +84,7 @@ abstract class :bb:form:field extends :bb:base {
 		return $this->valid;
 	}
 
-	public function validate() : array {
+	public function validate() : (bool, string) {
 		$value = $this->getValue();
 		$displayName = (string)($this->getAttribute('label') ?: $this->getAttribute('name'));
 		// required
@@ -152,7 +152,7 @@ abstract class :bb:form:field extends :bb:base {
 				}
 			}
 		}
-		return [$this->valid, $this->error];
+		return tuple($this->valid, $this->error);
 	}
 
 	private function getType() : string {

@@ -1,11 +1,11 @@
-<?hh
+<?hh // strict
 
 class :bb:form:email extends :bb:form:field {
 	attribute :input;
 
 	protected string $type = 'email';
 
-	protected function buildField() : :bb:form:field {
+	protected function buildField() : :xhp {
 		if ($this->getAttribute('multiple')) {
 			return <bb:form:textarea>{$this->getValue()}</bb:form:textarea>;
 		} else {
@@ -13,7 +13,7 @@ class :bb:form:email extends :bb:form:field {
 		}
 	}
 
-	public function validate() : array {
+	public function validate() : (bool, string) {
 		$value = (string)$this->getValue();
 		if($value) {
 			if($this->getAttribute('multiple')) {

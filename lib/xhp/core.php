@@ -920,6 +920,9 @@ abstract class :x:primitive extends :x:composable-element {
         $this->validateChildren();
       }
     } catch (Exception $error) {
+      if ($error instanceof beatbox\errors\Exception) {
+        throw $error;
+      }
       trigger_error($error->getMessage(), E_USER_ERROR);
     }
     // Render to string

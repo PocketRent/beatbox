@@ -20,7 +20,7 @@ class point extends GeomType {
 	}
 
 	public function toDBString(Connection $_unused) : string {
-		return $this->__toString();
+		return sprintf("point '(%f, %f)'", $this->x, $this->y);
 	}
 
 	public function __toString() : string {

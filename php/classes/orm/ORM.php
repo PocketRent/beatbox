@@ -13,9 +13,11 @@ class ORM<T> implements IteratorAggregate<T>, Countable {
 
 	private Set<string> $valid_fields;
 
-	protected Vector $conds = Vector {};
-	protected Vector $sorts = Vector {};
-	protected Vector $joins = Vector {};
+	protected Vector<string> $conds = Vector {};
+	protected Vector<string> $sorts = Vector {};
+	protected Vector<string> $joins = Vector {};
+	protected Vector<string> $selects = Vector {};
+
 	private int $limit = -1;
 	private int $offset = -1;
 	private ?string $from = null;
@@ -134,6 +136,17 @@ class ORM<T> implements IteratorAggregate<T>, Countable {
 	public function join(string $clause) : ORM<T> {
 		$new = clone $this;
 		$new->joins->add(trim($clause));
+		return $new;
+	}
+
+	/**
+	 * Add a SELECT field
+	 *
+	 * No escaping occurs, so make sure you escape anything that needs it.
+	 */
+	public function select(string $field): ORM<T> {
+		$new = clone $this;
+		$new->selects->add(trim($field));
 		return $new;
 	}
 
@@ -297,6 +310,7 @@ class ORM<T> implements IteratorAggregate<T>, Countable {
 		$conn = $this->conn;
 		$table = $this->conn->escapeIdentifier($this->table);
 		$fields = $this->valid_fields->map($f ==> "$table.".$this->conn->escapeIdentifier($f));
+		$fields = $fields->toSet()->addAll($this->selects);
 
 		return bb_join(', ', $fields);
 	}
@@ -330,6 +344,7 @@ class ORM<T> implements IteratorAggregate<T>, Countable {
 		$this->conds = clone $this->conds;
 		$this->sorts = clone $this->sorts;
 		$this->joins = clone $this->joins;
+		$this->selects = clone $this->selects;
 	}
 
 	protected async function getResult() : Awaitable<QueryResult> {

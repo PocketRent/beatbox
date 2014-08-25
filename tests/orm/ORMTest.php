@@ -19,6 +19,22 @@ class ORMTest extends beatbox\Test {
 	/**
 	 * @group fast
 	 * @group database
+	 */
+	public function testSelect() {
+		$q = TestTable::get()
+			->select('TestField');
+
+		$str = $q->getQueryString();
+		$this->assertEquals('SELECT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2", TestField FROM "TestTable"', $str);
+
+		$q = $q->select('"Table"."Field"');
+		$str = $q->getQueryString();
+		$this->assertEquals('SELECT "TestTable"."ID", "TestTable"."AuxID", "TestTable"."Col1", "TestTable"."Col2", TestField, "Table"."Field" FROM "TestTable"', $str);
+	}
+
+	/**
+	 * @group fast
+	 * @group database
 	 * @depends testBasicQuery
 	 *
 	 */

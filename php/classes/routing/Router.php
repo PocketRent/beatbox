@@ -134,7 +134,7 @@ class Router {
 
 		$frag = $parts[0];
 
-		return self::render_fragment($frag, $stack);
+		return static::render_fragment($frag, $stack);
 	}
 
 	/**
@@ -175,7 +175,7 @@ class Router {
 			list($frag, $t) = array_shift($tasks);
 			$headers = []; $code = 0;
 			// Block waiting for the task to finish
-			$result = pagelet_server_task_result($t, $headers, $code, self::fragment_timeout());
+			$result = pagelet_server_task_result($t, $headers, $code, static::fragment_timeout());
 
 			// Handle the response
 			if ($code == -1) {
@@ -286,7 +286,7 @@ class Router {
 			$map = self::$_straight_routes;
 		}
 		foreach ($routes as $path => $table) {
-			$path = self::sanitise_path($path);
+			$path = static::sanitise_path($path);
 			if (!$map->contains($path)) {
 				$map[$path] = Pair { Map {}, Map {} };
 			}
@@ -309,7 +309,7 @@ class Router {
 	 * Gets the routes available for a given path
 	 */
 	public static function get_routes_for_path(string $path): ?PathTable {
-		$path = self::sanitise_path($path);
+		$path = static::sanitise_path($path);
 		if (self::$_straight_routes->contains($path)) {
 			return self::$_straight_routes[$path];
 		}
@@ -386,7 +386,7 @@ class Router {
 	/**
 	 * Removes leading/trailing slashes from paths where it makes sense
 	 */
-	private static function sanitise_path(string $path): string {
+	protected static function sanitise_path(string $path): string {
 		if (strlen($path)) {
 			$path = trim($path, '/') ?: '/';
 		}
@@ -396,7 +396,7 @@ class Router {
 	/**
 	 * How long to wait before a pagelet fragment request is forceably timed out
 	 */
-	private static function fragment_timeout(): int {
+	protected static function fragment_timeout(): int {
 		if (defined('FRAGMENT_TIMEOUT')) {
 			return constant('FRAGMENT_TIMEOUT');
 		}

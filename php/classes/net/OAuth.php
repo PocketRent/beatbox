@@ -272,7 +272,7 @@ class OAuth {
 		$params['signature_method'] = $this->signMethod;
 
 		$setMissing('nonce', () ==> substr(md5(microtime() . mt_rand()), 0, 12));
-		$setMissing('timestamp', () ==> time());
+		$setMissing('timestamp', () ==> (string)time());
 
 
 		return clone $params;

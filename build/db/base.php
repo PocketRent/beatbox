@@ -110,7 +110,7 @@ function do_connect(Map<string,mixed> $info) : resource {
 		pg_close($conn);
 	}
 
-	($conn = pg_connect($conn_string . "dbname='".$info['database']."'")) ||
+	($conn = pg_connect($conn_string . "dbname='".(string)$info['database']."'")) ||
 				command_fail("Unable to connect to postgres");
 
 	vprint("Connected to database ".(string)$info['database']." at ".(string)$info['host']);

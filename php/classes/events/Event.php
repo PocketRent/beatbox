@@ -34,7 +34,7 @@ class Event {
 		}
 	}
 
-	protected static function listeners_for(string $name) : \Continuation<CallbackFunction> {
+	protected static function listeners_for(string $name) : \Generator<int, CallbackFunction, void> {
 		foreach(self::$exact_listeners as $key => $cbs) {
 			if($key == $name) {
 				foreach($cbs as $cb) yield $cb;

@@ -33,7 +33,7 @@ class Asset {
 	 * 'tmp_name' must be an uploaded file
 	 *
 	 */
-	public static async function store(\Indexish<string, mixed> $file) : \Awaitable<Asset> {
+	public static async function store(\Indexish<string, mixed> $file) : Awaitable<Asset> {
 		if (!isset($file['name']) || !isset($file['tmp_name'])) {
 			throw new \InvalidArgumentException("\$file must have 'name' and 'tmp_name' keys");
 		}
@@ -67,7 +67,7 @@ class Asset {
 	 *
 	 * @return Asset or null, if it doesn't exist
 	 */
-	public static async function load(mixed $id) : \Awaitable<?Asset> {
+	public static async function load(mixed $id) : Awaitable<?Asset> {
 		$conn = orm\Connection::get();
 
 		$eid = $conn->escapeValue($id);
@@ -161,7 +161,7 @@ class Asset {
 	/**
 	 * Writes the Asset information to the database
 	 */
-	public async function write() : \Awaitable<void> {
+	public async function write() : Awaitable<void> {
 		$conn = orm\Connection::get();
 
 		$name = $conn->escapeValue($this->name);
@@ -186,7 +186,7 @@ class Asset {
 		}
 	}
 
-	public async function delete() : \Awaitable<void> {
+	public async function delete() : Awaitable<void> {
 		$conn = orm\Connection::get();
 
 		if ($this->id !== null) {

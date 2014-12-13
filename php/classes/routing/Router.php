@@ -2,8 +2,6 @@
 
 namespace beatbox;
 
-use Awaitable;
-
 type Path = ImmVector<string>;
 type Extension = ?string;
 type Metadata = Map<string, mixed>;

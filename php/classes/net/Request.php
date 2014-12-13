@@ -295,7 +295,7 @@ final class Request {
 	 * This is asynchronous, so use `await` or `wait()` to wait for the
 	 * request to finish.
 	 */
-	public async function exec() : \Awaitable<this> {
+	public async function exec() : Awaitable<this> {
 		if ($this->done) return $this;
 
 		while (!$this->done) {

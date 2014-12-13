@@ -2,8 +2,6 @@
 
 namespace beatbox\orm;
 
-use \Awaitable;
-
 /**
  * This class represents the Postgres connection used for interacting with the
  * database. It is intended for use as a singleton, with the constructor
@@ -255,7 +253,7 @@ final class Connection {
 
 			if (!$this->in_transaction) {
 				while (pg_connection_busy($conn)) {
-					await \SleepWaitHandle::create(self::CONNECTION_POLL_TIME);
+					await SleepWaitHandle::create(self::CONNECTION_POLL_TIME);
 				}
 			}
 
@@ -293,7 +291,7 @@ final class Connection {
 
 			if (!$this->in_transaction) {
 				while (pg_connection_busy($conn)) {
-					await \SleepWaitHandle::create(self::CONNECTION_POLL_TIME);
+					await SleepWaitHandle::create(self::CONNECTION_POLL_TIME);
 				}
 			}
 

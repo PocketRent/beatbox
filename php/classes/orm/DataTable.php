@@ -2,7 +2,7 @@
 
 namespace beatbox\orm;
 
-use Awaitable,Indexish;
+use Indexish;
 
 abstract class DataTable {
 	abstract public function __construct(?Indexish<string,string> $row = null);

@@ -2,7 +2,6 @@
 
 namespace beatbox\orm;
 
-use Awaitable;
 use Countable;
 use IteratorAggregate;
 

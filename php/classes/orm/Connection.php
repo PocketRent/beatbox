@@ -414,7 +414,7 @@ class QueuedQuery implements Awaitable<Result> {
 		$this->queryNum = $queryNum;
 	}
 
-	public function getWaitHandle() : \WaitHandle<Result> {
+	public function getWaitHandle() : WaitHandle<Result> {
 		$do = async function (QueryQueue $queue, int $num) : Awaitable<Result> {
 			return await $queue->getResult($num);
 		};

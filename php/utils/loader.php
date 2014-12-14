@@ -10,6 +10,14 @@
 
 require_once __DIR__.'/symbolmap.php';
 
+function add_application_dirs(...) : void {
+	if (!is_array($GLOBALS['<__applicationDirs>']))
+		$GLOBALS['<__applicationDirs>'] = [];
+	foreach (func_get_args() as $e) {
+		$GLOBALS['<__applicationDirs>'][] = $e;
+	}
+}
+
 function initialize_beatbox(string $conf) : void {
 	date_default_timezone_set('UTC');
 
@@ -17,13 +25,18 @@ function initialize_beatbox(string $conf) : void {
 		// UNSAFE
 		require_once $conf;
 
-		$dirs = ImmSet {
+		$dirs = Set {
 			__DIR__.'/..', // Main BeatBox directory
 			__DIR__.'/../../lib', // BeatBox library directory
-			APPLICATION_DIR
 		};
 
-		register_autoload_map($dirs);
+		if (defined('APPLICATION_DIR'))
+		    $dirs->add(APPLICATION_DIR);
+
+		if (isset($GLOBALS['<__applicationDirs>']))
+			$dirs->addAll($GLOBALS['<__applicationDirs>']);
+		
+		register_autoload_map($dirs->toImmSet());
 
 	} else {
 		throw new Exception("Cannot include configuration file `$conf`");

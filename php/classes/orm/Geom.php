@@ -362,6 +362,9 @@ class _GeomParser {
 		$seen_point = false;
 
 		$len = strlen($this->str);
+		if ($this->str[$this->pos] == '-') {
+			$this->pos++;
+		}
 		while ($this->pos < $len) {
 			if (ctype_digit($this->str[$this->pos])) {
 				$this->pos++;

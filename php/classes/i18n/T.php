@@ -5,7 +5,7 @@ class :bb:t extends :bb:base {
 
 	attribute
 		string label @required,
-		Traversable args = [];
+		Traversable<Stringish> args = [];
 
 	protected function compose() : :x:frag {
 		$message = (string)((<bb:raw />)->appendChild($this->getChildren()));

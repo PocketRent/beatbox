@@ -3,7 +3,7 @@
 abstract class :bb:form:field extends :bb:base {
 	attribute
 		string label,
-		integer minlength;
+		int minlength;
 
 	protected ?string $type;
 

@@ -74,7 +74,9 @@ function build_symbol_map(Traversable<string> $directories) : (string, SymbolMap
 
 	$dirs = Set {};
 	foreach ($directories as $dir) {
-		$dirs[] = realpath($dir).'/';
+		$realpath = realpath($dir);
+		if ($realpath)
+			$dirs[] = $realpath.'/';
 	}
 
 	$stripped = Set {};

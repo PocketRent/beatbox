@@ -129,22 +129,30 @@ function db_parse_hstore(string $val) : Map<string, string> {
 		$key = db_parse_string($key);
 		// Skip over the arrow
 		assert($val[$cur_pos++] == '=' && $val[$cur_pos++] == '>');
-		assert($val[$cur_pos] == '"');
-
-		// Parse out the value
-		$val_start = $cur_pos;
-		while ($cur_pos < strlen($val)) {
-			$cur_pos++;
-			if ($val[$cur_pos] == '"')
-				break;
-			if ($val[$cur_pos] == '\\')
+		if ($val[$cur_pos] == 'N') {
+			$null = substr($val, $cur_pos, 4);
+			if ($null == 'NULL') {
+				$value = null;
+				$cur_pos += 5;
+			} else {
+				assert(false);
+			}
+		} else {
+			assert($val[$cur_pos] == '"');
+			// Parse out the value
+			$val_start = $cur_pos;
+			while ($cur_pos < strlen($val)) {
 				$cur_pos++;
+				if ($val[$cur_pos] == '"')
+					break;
+				if ($val[$cur_pos] == '\\')
+					$cur_pos++;
+			}
+			$cur_pos++;
+
+			$value = substr($val, $val_start, $cur_pos-$val_start);
+			$value = db_parse_string($value);
 		}
-		$cur_pos++;
-
-		$value = substr($val, $val_start, $cur_pos-$val_start);
-		$value = db_parse_string($value);
-
 		$map[$key] = $value;
 		$val = trim(substr($val, $cur_pos+1));
 	}

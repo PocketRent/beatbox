@@ -337,6 +337,21 @@ final class Connection {
 	public function escapeValue(mixed $val, bool $sub = false) : string {
 		if ($val instanceof Type) {
 			return $val->toDBString($this);
+		} else if ($val instanceof Map) {
+			$s = '';
+			$comma = false;
+			foreach ($val as $k => $v) {
+				if ($comma) $s .= ',';
+				$s .= $this->hstoreEscape((string)$k);
+				$s .= '=>';
+				if ($v === null) {
+					$s .= 'NULL';
+				} else {
+					$s .= $this->hstoreEscape((string)$v);
+				}
+				$comma = true;
+			}
+			return $this->escapeValue($s);
 		} else if ($val instanceof Traversable) {
 			if ($sub) {
 				$s = '[';
@@ -360,6 +375,15 @@ final class Connection {
 				return pg_escape_literal($conn, (string)$val);
 			}));
 		}
+	}
+
+	private function hstoreEscape(string $s) : string {
+		$replacements = [
+			'\\' => '\\\\',
+			'"' => '\"',
+		];
+		$s = strtr($s, $replacements);
+		return '"'.$s.'"'; // Always double quote, even if it's not necessary
 	}
 
 	public function close() {

@@ -110,7 +110,7 @@ function db_parse_string(string $val) : string {
 	}
 }
 
-function db_parse_hstore(string $val) : Map<string, string> {
+function db_parse_hstore(string $val) : Map<string, ?string> {
 	$map = Map {};
 	$val = trim($val);
 	while (strlen($val) > 0) {

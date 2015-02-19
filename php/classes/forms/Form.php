@@ -70,8 +70,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		return $this;
 	}
 
-	protected function getFields(
-								 ?:x:base $base = null): Generator<int, :bb:form:field, void> {
+	protected function getFields(?:x:base $base = null): Generator<int, :bb:form:field, void> {
 		if(!$base) {
 			$base = $this;
 		}

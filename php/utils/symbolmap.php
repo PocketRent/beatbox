@@ -101,7 +101,6 @@ function build_symbol_map(Traversable<string> $directories) : (string, SymbolMap
 
 	$cwd_len = strlen($cwd);
 
-
 	$relative = false;
 	if ($cwd == $base) {
 		$base = "";
@@ -157,7 +156,13 @@ function get_symbols_from_dir(string $dirname) : SymbolMap {
 			while (false != ($entry = readdir($handle))) {
 				if ($entry[0] == '.' && $entry != './')
 					continue;
-				$entry = $dirname.'/'.$entry;
+
+				if ($dirname[strlen($dirname)-1] == '/') {
+					$entry = $dirname.$entry;
+				} else {
+					$entry = $dirname.'/'.$entry;
+				}
+
 				if (is_dir($entry)) {
 					$map = array_merge_recursive($map, get_symbols_from_dir($entry));
 				} else if (substr($entry, -4) == '.php') {
@@ -297,7 +302,8 @@ class SymbolParser {
 			$element = $this->getTokenValue();
 			$this->bump();
 			$this->skipGenerics();
-			return 'xhp_'.str_replace(array(':', '-'), array('__', '_'), substr($element, 1));
+			$name = 'xhp_'.str_replace(array(':', '-'), array('__', '_'), substr($element, 1));
+			return $name;
 		} else if ($start_token == T_STRING) {
 			$name = $this->getTokenValue();
 			$this->bump();
@@ -404,7 +410,7 @@ class SymbolParser {
 		}
 		$scopes = 1;
 		$this->bump();
-		while ($scopes > 0) {
+		while ($this->pos < count($this->tokens) && $scopes > 0) {
 			if ($this->getTokenValue() == $from) {
 				$scopes++;
 			} else if ($this->getTokenValue() == $to) {
@@ -420,7 +426,7 @@ class SymbolParser {
 		}
 		$scopes = 1;
 		$this->bump();
-		while ($scopes > 0) {
+		while ($this->pos < count($this->tokens) && $scopes > 0) {
 			if ($this->getToken() == $from) {
 				$scopes++;
 			} else if ($this->getToken() == $to) {

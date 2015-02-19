@@ -364,7 +364,7 @@ class ORM<T> implements IteratorAggregate<T>, Countable {
 	}
 }
 
-class AggregateORM extends ORM<Map<string,string>> {
+class AggregateORM extends ORM<Map<string,?string>> {
 
 	private Set<string> $extra_fields = Set {};
 	private Vector<string> $group_bys = Vector {};
@@ -549,7 +549,7 @@ class AggregateORM extends ORM<Map<string,string>> {
 	/**
 	 * Returns the nth row or null
 	 */
-	public async function getNth(int $n) : Awaitable<?Map<string,string>> {
+	public async function getNth(int $n) : Awaitable<?Map<string,?string>> {
 		$result = await $this->getResult();
 		if ($n < $result->numRows()) {
 			return $result->nthRow($n);

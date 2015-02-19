@@ -85,12 +85,12 @@ class ModifyResult extends Result {
 
 }
 
-class QueryResult extends Result implements Iterable<Map<string,string>> {
-	use \StrictIterable<Map<string,string>>;
+class QueryResult extends Result implements Iterable<Map<string,?string>> {
+	use \StrictIterable<Map<string,?string>>;
 
 	private int $num_rows = -1;
 
-	private Vector<Map<string,string>> $rows = Vector {};
+	private Vector<Map<string,?string>> $rows = Vector {};
 
 	public function __construct(resource $result) {
 		parent::__construct($result);
@@ -110,7 +110,7 @@ class QueryResult extends Result implements Iterable<Map<string,string>> {
 	 *
 	 * Will throw an exception if the given position is out of bounds
 	 */
-	public function nthRow(int $pos) : Map<string,string> {
+	public function nthRow(int $pos) : Map<string,?string> {
 		if ($pos >= 0 && $pos < $this->numRows()) {
 			if ($pos >= $this->rows->count()) {
 				$iter = $this->getIterator();
@@ -140,8 +140,8 @@ class QueryResult extends Result implements Iterable<Map<string,string>> {
 	}
 }
 
-class ResultIterable implements Iterable<Map<string,string>> {
-	use \LazyIterable<Map<string,string>>;
+class ResultIterable implements Iterable<Map<string,?string>> {
+	use \LazyIterable<Map<string,?string>>;
 
 	private QueryResult $result;
 
@@ -154,20 +154,20 @@ class ResultIterable implements Iterable<Map<string,string>> {
 	}
 }
 
-class ResultIterator implements Iterator<Map<string,string>> {
+class ResultIterator implements Iterator<Map<string,?string>> {
 	private resource $result;
-	private Vector<Map<string,string>> $rows;
+	private Vector<Map<string,?string>> $rows;
 	private int $num_rows;
 
 	private int $cur_idx = 0;
 
-	public function __construct(resource $result, Vector<Map<string,string>> $rows, int $num_rows) {
+	public function __construct(resource $result, Vector<Map<string,?string>> $rows, int $num_rows) {
 		$this->result = $result;
 		$this->rows = $rows;
 		$this->num_rows = $num_rows;
 	}
 
-	public function current() : Map<string,string> {
+	public function current() : Map<string,?string> {
 		invariant($this->cur_idx != $this->num_rows,
 					"Tried to iterate past the end of the iterator");
 		if ($this->cur_idx == $this->rows->count()) {

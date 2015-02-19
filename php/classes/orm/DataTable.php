@@ -5,14 +5,14 @@ namespace beatbox\orm;
 use Indexish;
 
 abstract class DataTable {
-	abstract public function __construct(?Indexish<string,string> $row = null);
+	abstract public function __construct(?Indexish<string,?string> $row = null);
 
 	/**
 	 * Updates the fields in the object from the data in the row.
 	 * This assumes that the given row is from the database and
 	 * therefore resets and marked changes for this object.
 	 */
-	abstract protected function updateFromRow(Indexish<string,string> $row) : void;
+	abstract protected function updateFromRow(Indexish<string,?string> $row) : void;
 
 	/**
 	 * Get a map of updated columns for this object, the keys are the

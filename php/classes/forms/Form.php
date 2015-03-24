@@ -17,7 +17,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 		</form>;
 	}
 
-	public function forFragment(beatbox\Path $url, string $fragment) : ?:x:base {
+	public function forFragment(beatbox\Path $url, string $fragment) : mixed {
 		if(!$this->getAttribute('method')) {
 			$this->setAttribute('method', 'post');
 		}
@@ -48,6 +48,7 @@ class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 					// Redirect back
 					redirect_back($base);
 				} else {
+					header('X-Validation-Failed: ' . rawurlencode($fragment), false);
 					// Fall back to the return
 				}
 			} else {

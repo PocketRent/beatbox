@@ -4,7 +4,7 @@ function db_parse_array(string $delimiter, string $val): Vector<string> {
   $generator = function () : \Generator<int, string, void> use ($delimiter, $val) {
 		$len = strlen($val);
 		if ($len > 0) {
-			$start = 0;
+			$start = 1;
 
 			$brace_count = 0;
 
@@ -12,7 +12,7 @@ function db_parse_array(string $delimiter, string $val): Vector<string> {
 
 			for($i = 0; $i < $len; $i++) {
 				$c = $val[$i];
-				if (!$in_string && $brace_count == 0 && $c == $delimiter) {
+				if (!$in_string && $brace_count == 1 && $c == $delimiter) {
 					yield trim(substr($val, $start, ($i-$start)));
 					$start = $i+1;
 				} else if ($c == '"') {
@@ -26,7 +26,7 @@ function db_parse_array(string $delimiter, string $val): Vector<string> {
 					$i++;
 				}
 			}
-			yield trim(substr($val, $start));
+			yield trim(substr($val, $start, -1));
 			assert(!$in_string);
 			assert($brace_count == 0);
 		}

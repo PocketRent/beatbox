@@ -13,7 +13,7 @@ class :bb:listbox extends :bb:base {
 
 	children (:bb:list-item)*;
 
-	protected Set<string> $skipTransfer = Set { 'fallback' };
+	protected ImmSet<string> $skipTransfer = ImmSet { 'fallback' };
 
 	protected function compose() : :ul {
 		$list = <ul class="listbox" role="listbox" />;
@@ -40,7 +40,7 @@ class :bb:listbox extends :bb:base {
 class :bb:list-item extends :bb:base {
 	attribute :li;
 
-	protected Set<string> $skipTransfer = Set {'icon'};
+	protected ImmSet<string> $skipTransfer = ImmSet {'icon'};
 
 	protected function compose() : :li {
 		return <li role="option">{$this->getChildren()}</li>;

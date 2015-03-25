@@ -16,7 +16,7 @@ abstract class :bb:form:field extends :bb:base {
 	protected $valid = true;
 	protected $error;
 
-	protected function buildField() : :input {
+	protected function buildField() : :x:composable-element {
 
 		return <input type={$this->getType()} class={$this->getType()} />;
 	}

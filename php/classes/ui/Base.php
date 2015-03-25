@@ -77,8 +77,8 @@ abstract class :bb:base extends :x:element {
 
 		// Transfer any classes that were added inline over
 		// to the root node.
-		if ($attributes->contains('class') && method_exists($root, 'addClass')) {
-			$attributes['class'] && $root->addClass($attributes['class']);
+		if ($attributes->contains('class') && $root instanceof :xhp:html-element) {
+			$attributes['class'] && $root->addClass((string)$attributes['class']);
 			$attributes->remove('class');
 		}
 

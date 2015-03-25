@@ -14,7 +14,7 @@ class Outbound {
 	/**
 	 * Construct an outbound email
 	 */
-	public function __construct(string $to, string $subject, :x:base $content,
+	public function __construct(string $to, string $subject, \Stringish $content,
 								?string $from = null) {
 		if(!$from) {
 			$from = static::default_from;

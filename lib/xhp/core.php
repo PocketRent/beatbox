@@ -149,7 +149,7 @@ abstract class :x:composable-element extends :x:base {
         $this->appendChild($c);
       }
     } else if ($child instanceof :x:frag) {
-      $this->children->addAll($child->children);
+      $this->children->addAll($child->getChildren());
     } else if ($child !== null) {
       assert($child instanceof XHPChild);
       $this->children->add($child);
@@ -484,7 +484,7 @@ abstract class :x:composable-element extends :x:base {
 
         if ($child instanceof :x:frag) {
           $children = $this->children->toValuesArray();
-          array_splice($children, $ii, 1, $child->children);
+          array_splice($children, $ii, 1, $child->getChildren());
           $this->children = new Vector($children);
           $ln = count($this->children);
           --$ii;
@@ -496,9 +496,14 @@ abstract class :x:composable-element extends :x:base {
   }
 
   final protected function __flushRenderedRootElement(): :x:primitive {
+    // UNSAFE
     $that = $this;
+    $composed = $that;
     // Flush root elements returned from render() to an :x:primitive
-    while (($composed = $that->render()) instanceof :x:element) {
+    while ($that instanceof :x:element && ($composed = $that->render()) instanceof :x:element) {
+      $composed = $that->render();
+      if (!($composed instanceof :x-element))
+          break;
       if (:xhp::$ENABLE_VALIDATION) {
         $composed->validateChildren();
       }
@@ -938,6 +943,7 @@ abstract class :x:primitive extends :x:composable-element {
  * of markup.
  */
 abstract class :x:element extends :x:composable-element {
+  abstract protected function render(): :xhp;
   final public function __toString(): string {
     $that = $this;
 
@@ -1070,7 +1076,7 @@ class XHPInvalidAttributeException extends XHPException {
 }
 
 class XHPInvalidChildrenException extends XHPException {
-  public function __construct(object $that, int $index) {
+    public function __construct(:x:composable-element $that, int $index) {
     parent::__construct(
       'Element `'.XHPException::getElementName($that).'` was rendered with '.
       "invalid children.\n\n".

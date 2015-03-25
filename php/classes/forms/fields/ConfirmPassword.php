@@ -8,7 +8,7 @@ class :bb:form:confirm-password extends :bb:form:field {
 		string firstLabel,
 		string secondLabel;
 
-	protected string $type = 'password';
+	protected ?string $type = 'password';
 
 	protected ImmSet<string> $skipTransfer = ImmSet {
 		'name',

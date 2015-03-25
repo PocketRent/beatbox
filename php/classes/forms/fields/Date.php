@@ -12,7 +12,7 @@ class :bb:form:date extends :bb:form:field {
 		DateTimeInterface min,
 		DateTimeInterface max;
 
-	protected string $type = 'date';
+	protected ?string $type = 'date';
 
 	protected ImmSet<string> $skipTransfer = ImmSet { 'label', 'value', 'name' };
 

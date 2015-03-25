@@ -3,7 +3,7 @@
 class :bb:form:textarea extends :bb:form:field {
 	attribute :textarea;
 
-	protected string $type = 'textarea';
+	protected ?string $type = 'textarea';
 
 	children (pcdata)*;
 

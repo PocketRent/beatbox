@@ -3,5 +3,5 @@
 class :bb:form:hidden extends :bb:form:field {
 	attribute :input;
 
-	protected string $type = 'hidden';
+	protected ?string $type = 'hidden';
 }

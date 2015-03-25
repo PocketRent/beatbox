@@ -5,7 +5,7 @@ class :bb:form:file extends :bb:form:field {
 		:input,
 		array value;
 
-	protected string $type = 'file';
+	protected ?string $type = 'file';
 
 	protected ImmSet<string> $skipTransfer = ImmSet { 'value' };
 

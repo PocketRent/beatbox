@@ -3,9 +3,9 @@
 class :bb:form:email extends :bb:form:field {
 	attribute :input;
 
-	protected string $type = 'email';
+	protected ?string $type = 'email';
 
-	protected function buildField() : :xhp {
+	protected function buildField() : :x:composable-element {
 		if ($this->getAttribute('multiple')) {
 			return <bb:form:textarea>{$this->getValue()}</bb:form:textarea>;
 		} else {

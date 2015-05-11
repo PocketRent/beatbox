@@ -145,7 +145,6 @@ function build_symbol_map(Traversable<string> $directories) : (string, SymbolMap
 		$map['constant'][$const] = substr(realpath($file), $strip_len);
 	}
 
-
 	return tuple($base, $map);
 }
 
@@ -222,6 +221,7 @@ class SymbolParser {
 			case T_CLASS:
 			case T_INTERFACE:
 			case T_TRAIT:
+            case T_ENUM:
 				$this->bump();
 				$name = $this->parseFQName();
 				$this->addClass($name);
@@ -497,6 +497,7 @@ class SymbolParser {
 				case T_TRAIT:
 				case T_TYPE:
 				case T_STRING:
+                case T_ENUM:
 					return;
 				}
 			} else if ($token == '}') {

@@ -500,10 +500,11 @@ abstract class :x:composable-element extends :x:base {
     $that = $this;
     $composed = $that;
     // Flush root elements returned from render() to an :x:primitive
-    while ($that instanceof :x:element && ($composed = $that->render()) instanceof :x:element) {
+    while ($that instanceof :x:element) {
       $composed = $that->render();
-      if (!($composed instanceof :x-element))
+      if (!($composed instanceof :x:element)) {
           break;
+      }
       if (:xhp::$ENABLE_VALIDATION) {
         $composed->validateChildren();
       }
@@ -1002,9 +1003,14 @@ class XHPClassException extends XHPException {
 
 class XHPCoreRenderException extends XHPException {
   public function __construct(:xhp $that, mixed $rend) {
+    if (is_object($rend)) {
+      $val_type = get_class($rend);
+    } else {
+      $val_type = gettype($rend);
+    }
     parent::__construct(
       ':x:element::render must reduce an object to an :x:primitive, but `'.
-      :xhp::class2element(get_class($that)).'` reduced into `'.gettype($rend)."`.\n\n".
+      :xhp::class2element(get_class($that)).'` reduced into `'.$val_type."`.\n\n".
       $that->source
     );
   }

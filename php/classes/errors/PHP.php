@@ -76,7 +76,7 @@ class PHP {
 		}
 	}
 
-	private static function pretty_backtrace(array $stack) : string {
+	public static function pretty_backtrace(array $stack) : string {
 		// pop off the first item, as it's the call to the error handler
 		array_shift($stack);
 		$i = 1;
@@ -201,15 +201,17 @@ class PHP {
 			}, $stack);
 			send_event($event, $exception->getCode(), $message, $file, $line, $escaped_trace);
 		}
-		if($exception instanceof HTTP_Exception) {
-			$code = $exception->getBaseCode();
-			$exception->sendToBrowser();
-			if($code >= 200 && $code <= 399) {
-				return true;
+		if (!is_cli()) {
+			if($exception instanceof HTTP_Exception) {
+				$code = $exception->getBaseCode();
+				$exception->sendToBrowser();
+				if($code >= 200 && $code <= 399) {
+					return true;
+				}
+			} else {
+				$e = new HTTP_Exception(null, 500);
+				$e->sendToBrowser();
 			}
-		} else {
-			$e = new HTTP_Exception(null, 500);
-			$e->sendToBrowser();
 		}
 		if(in_dev()) {
 			if(!is_cli()) {

@@ -28,9 +28,11 @@ trait Redis {
 	protected static function redis() : R {
 		if(!self::$__redis__inst) {
 			$inst = new R();
-			$inst->connect(REDIS_SERVER);
+			if (!$inst->connect(REDIS_SERVER))
+				throw new \Exception("Could not connect to Redis server");
 			if(REDIS_PASSWORD) {
-				$inst->auth(REDIS_PASSWORD);
+				if (!$inst->auth(REDIS_PASSWORD))
+					throw new \Exception("Could not authenticate with Redis server");
 			}
 			if(APP_NAME) {
 				$inst->setOption(R::OPT_PREFIX, APP_NAME);

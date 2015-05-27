@@ -39,7 +39,7 @@ class HTTP {
 			}
 		}
 		if(!$to) {
-			$to = $fallback ?: '';
+			$to = $fallback === null ? $fallback : '';
 
 			$uri = base_url();
 

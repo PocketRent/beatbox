@@ -6,7 +6,11 @@ use beatbox\Browser;
  * Checks if this site is in dev mode or not
  */
 function in_dev() : bool {
-	return (bool)DEV_MODE;
+	if (defined('DEV_MODE')) {
+		return (bool)DEV_MODE;
+	} else {
+		return false;
+	}
 }
 
 /**

@@ -9,17 +9,6 @@ class ExpectedCallableExpection extends InvariantViolationException {}
  * input or anything like that.
  */
 class UnexpectedNullException extends InvariantViolationException {}
-
-function invariant(mixed $test, string $message): void {
-  if (!$test) {
-    invariant_violation($message);
-  }
-}
-
-function invariant_violation(string $message): void {
-  throw new InvariantViolationException($message);
-}
-
 /**
  * Use this function when you are sure a value can never be null and want to
  * express that fact to the type system. If the value happens to actually be
@@ -31,7 +20,11 @@ function nullthrows<T>(?T $x): T {
 		return $x;
 	}
 
-	throw new UnexpectedNullException('Got unexpected null');
+	$caller_info = hphp_debug_caller_info();
+
+	$file = (string)$caller_info['file'];
+	$line = (int)$caller_info['line'];
+	throw new UnexpectedNullException("Got unexpected null at $file:$line");
 }
 
 function cast_callable<Tf>(mixed $val) : Tf {

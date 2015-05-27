@@ -44,7 +44,7 @@ class CacheTest extends beatbox\Test {
 	 * @depends testSetKeys
 	 */
 	public function testRemove() {
-		$val = Cache::remove("key2");
+		Cache::remove("key2");
 		$this->assertFalse(Cache::test("key2"));
 	}
 

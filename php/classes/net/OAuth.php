@@ -62,7 +62,7 @@ class OAuth {
 		if (isset($url_params['query']) && $url_params['query'] != '') {
 			$query = [];
 			parse_str($url_params['query'], $query);
-			$this->queryParameters = Map::fromArray($query);
+			$this->queryParameters = new Map($query);
 		} else {
 			$this->queryParameters = Map {};
 		}

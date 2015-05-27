@@ -29,7 +29,7 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 	 * DateTime, because timestamps from the database have the same
 	 * timezone as the local PHP default timezone
 	 */
-	public function __construct(mixed $date) {
+	public function __construct(string $date) {
 		if ($date == 'infinity' || $date == '+infinity') {
 			$this->_infinity = 1;
 			parent::__construct('9999-12-31 23:59:59');
@@ -48,39 +48,21 @@ class DateTimeType extends \DateTime implements Type, beatbox\Comparable {
 	 *
 	 * Set to null to clear the timezone (Actually just resets it back to default)
 	 */
-	public function setTimezone(mixed $timezone) : ?DateTimeType {
-		if ($timezone === null) {
-			if (parent::setTimezone(new \DateTimeZone(date_default_timezone_get()))) {
-				return $this;
-			} else {
-				return null;
-			}
-		}
-		if (!($timezone instanceof \DateTimeZone)) {
-			if (is_string($timezone)) {
-				$timezone = new \DateTimeZone($timezone);
-			} else {
-				throw new \InvalidArgumentException(
-					"\$timezone should be string or instance of DateTimeZone"
-				);
-			}
-		}
-
-		if (parent::setTimezone($timezone)) {
-			return $this;
-		} else {
-			return null;
-		}
+	public function setTimezone(\DateTimeZone $timezone) : DateTimeType {
+		parent::setTimezone($timezone);
+		return $this;
 	}
 
-	public function setTime(int $hour, int $minute, int $second=0) : ?DateTimeType {
+	public function setTime(int $hour, int $minute, int $second=0) : DateTimeType {
 		$this->_infinity = 0;
-		return parent::setTime($hour, $minute, $second);
+		parent::setTime($hour, $minute, $second);
+		return $this;
 	}
 
-	public function setDate(int $year, int $month, int $day) : ?DateTimeType {
+	public function setDate(int $year, int $month, int $day) : DateTimeType {
 		$this->_infinity = 0;
-		return parent::setDate($year, $month, $day);
+		parent::setDate($year, $month, $day);
+		return $this;
 	}
 
 	////// Predicates

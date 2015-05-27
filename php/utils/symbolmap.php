@@ -1,12 +1,5 @@
 <?hh
 
-const int T_TYPELIST_LT = 398;
-const int T_TYPELIST_GT = 399;
-const int T_SHAPE = 402;
-const int T_NEWTYPE = 403;
-const int T_TYPE = 405;
-const int T_GROUP = 423;
-
 namespace beatbox\utils;
 
 type SymbolMap = shape(

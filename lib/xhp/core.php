@@ -531,8 +531,8 @@ abstract class :x:composable-element extends :x:base {
    * Attribute types are suggested by the TYPE_* constants.
    */
   protected static function &__xhpAttributeDeclaration(): array<string, array<int, mixed>> {
-    static $_ = array();
-    return $_;
+    static $_a = array();
+    return $_a;
   }
 
   /**
@@ -540,8 +540,8 @@ abstract class :x:composable-element extends :x:base {
    * categories an element belongs to. Each category is a key with value 1.
    */
   protected function &__xhpCategoryDeclaration(): array<string, int> {
-    static $_ = array();
-    return $_;
+    static $_a = array();
+    return $_a;
   }
 
   /**
@@ -552,8 +552,8 @@ abstract class :x:composable-element extends :x:base {
    * biggest mess you've ever seen.
    */
   protected function &__xhpChildrenDeclaration(): mixed {
-    static $_ = 1;
-    return $_;
+    static $_a = 1;
+    return $_a;
   }
 
   /**

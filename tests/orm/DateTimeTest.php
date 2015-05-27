@@ -50,7 +50,7 @@ class DateTimeTest extends beatbox\Test {
 	 */
 	public function testTimezone() {
 		$date = new DateTimeType("2000-01-01 00:00:00");
-		$date->setTimezone('Pacific/Auckland');
+		$date->setTimezone(new \DateTimeZone('Pacific/Auckland'));
 		$this->assertEquals("2000-01-01 13:00:00 Pacific/Auckland", $date->__toString());
 
 		$date = new DateTimeType("2000-01-01 00:00:00+12");

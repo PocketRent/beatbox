@@ -238,7 +238,7 @@ class CodeClass extends CodeItem {
 			$writer->str('final ');
 
 		$writer->str('class %s', $this->name);
-		if ($this->extends) {
+		if ($this->extends !== null && $this->extends != '') {
 			$writer->str(' extends %s', $this->extends);
 		}
 		if ($this->implements->count() > 0) {

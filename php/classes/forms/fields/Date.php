@@ -89,7 +89,7 @@ class :bb:form:date extends :bb:form:field {
 			$value = "$value[Year]-$value[Month]-$value[Day]";
 			parent::setValue(new DateTimeType($value));
 		} else {
-			parent::setValue(new DateTimeType($value));
+			parent::setValue(new DateTimeType((string)$value));
 		}
 		return $this;
 	}

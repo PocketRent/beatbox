@@ -34,8 +34,8 @@ trait Settings {
 		$this->settings_key = self::getTableName() . ':' . $id;
 		$data = self::redis()->hgetall($this->settings_key);
 		if($data) {
-			$this->settings_data = Map::fromArray($data);
-			$this->settings_original = Map::fromArray($data);
+			$this->settings_data = new Map($data);
+			$this->settings_original = new Map($data);
 		}
 		register_shutdown_function(inst_meth($this, 'endSettings'));
 	}

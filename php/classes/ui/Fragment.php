@@ -9,7 +9,7 @@ final class :bb:fragment extends :bb:base {
 
 	protected function compose() : :bb:fragment-data {
 		$name = (string)$this->getAttribute('name');
-		$fragment = beatbox\Router::response_for_fragment($name);
+		$fragment = wait(beatbox\Router::response_for_fragment($name));
 
 		return <bb:fragment-data name={$name}>{$fragment}</bb:fragment-data>;
 	}

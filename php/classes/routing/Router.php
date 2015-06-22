@@ -101,7 +101,7 @@ class Router {
 			$res = Map {};
 
 			foreach ($parts as $name) {
-				$res[$name] = static::render_fragment($name, $stack);
+				$res[$name] = wait(static::render_fragment($name, $stack));
 
 				if(is_object($res[$name]) && !$res[$name] instanceof \JsonSerializable &&
 					!$res[$name] instanceof Collection) {
@@ -132,7 +132,7 @@ class Router {
 
 		$frag = $parts[0];
 
-		return static::render_fragment($frag, $stack);
+		return wait(static::render_fragment($frag, $stack));
 	}
 
 	/**
@@ -255,7 +255,7 @@ class Router {
 	/**
 	 * Handles the rendering of a potential Awaitable fragment
 	 */
-	protected static function render_fragment(string $fragName, RequestStackItem $stack): mixed {
+	protected static async function render_fragment(string $fragName, RequestStackItem $stack): Awaitable<mixed> {
 		$url = $stack->getPath();
 		$extension = $stack->getExtension();
 		$md = $stack->getMetaData();
@@ -263,12 +263,12 @@ class Router {
 
 		$val = $frag($url, $extension, $md);
 		if ($val instanceof Awaitable) {
-			$val = wait($val);
+			$val = await $val;
 		}
 		if ($val && $val instanceof FragmentCallback) {
 			$val = $val->forFragment($url, $fragName);
 			if ($val instanceof Awaitable) {
-				$val = wait($val);
+				$val = await $val;
 			}
 		}
 		return $val;
@@ -338,12 +338,12 @@ class Router {
 	/**
 	 * Gets the response for a specific fragment
 	 */
-	public static function response_for_fragment(string $frag) : mixed {
+	public static async function response_for_fragment(string $frag) : Awaitable<mixed> {
 		$stack = static::current_stack();
 		if ($stack) {
 			$frags = $stack->getFragmentTable();
 			if ($frags->contains($frag)) {
-				return static::render_fragment($frag, $stack);
+				return await static::render_fragment($frag, $stack);
 			}
 		}
 		return null;

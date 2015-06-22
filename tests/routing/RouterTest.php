@@ -690,7 +690,7 @@ class RouterTest extends beatbox\Test {
 			$args = [];
 			$called = false;
 
-			$res = beatbox\Router::response_for_fragment($frag);
+			$res = wait(beatbox\Router::response_for_fragment($frag));
 
 			$this->assertEquals($frag, $res);
 			$this->assertTrue($called);
@@ -698,7 +698,7 @@ class RouterTest extends beatbox\Test {
 		}
 
 		// Null check
-		$this->assertNull(beatbox\Router::response_for_fragment('e'));
+		$this->assertNull(wait(beatbox\Router::response_for_fragment('e')));
 	}
 
 	/**

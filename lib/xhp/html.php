@@ -176,7 +176,7 @@ abstract class :xhp:html-singleton extends :xhp:html-element {
  * Subclasses of :xhp:pcdata-elements may contain only string children.
  */
 abstract class :xhp:pcdata-element extends :xhp:html-element {
-  children (pcdata)*;
+    children (pcdata | :bb:raw)*;
 }
 
 /**

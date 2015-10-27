@@ -94,7 +94,7 @@ class Cache {
 		assert(is_numeric($expire));
 
 		self::redis()->set($key, $value);
-		self::redis()->expireat($key, $expire);
+		self::redis()->expireAt($key, $expire);
 		// If expire is already over then don't bother adding it to
 		// the tags
 		if (self::redis()->exists($key)) {
@@ -119,7 +119,7 @@ class Cache {
 		$args = func_get_args();
 		$tags = array_map(class_meth('beatbox\Cache', 'tag_name'), $args);
 		// Get the members of the tags
-		$members = self::redis()->sunion($tags);
+		$members = call_user_func_array(inst_meth(self::redis(), 'sUnion'), $tags);
 		// The data is serialized, so we need to unserialize it here
 		$members = array_map(fun('unserialize'), $members);
 		// Delete in a transaction
@@ -128,7 +128,7 @@ class Cache {
 			$r->del($members);
 			// Delete the members from each tag
 			foreach ($tags as $tag) {
-				$r->srem($tag, $members);
+				$r->sRem($tag, $members);
 			}
 		});
 	}
@@ -137,7 +137,7 @@ class Cache {
 		// Add the key to a set for each tag.
 		foreach ($tags as $tag) {
 			$tag = self::tag_name($tag);
-			self::redis()->sadd($tag, $key);
+			self::redis()->sAdd($tag, $key);
 		}
 	}
 

@@ -8,9 +8,9 @@ class :bb:form:time extends :bb:form:field {
 		int minHour = 0,
 		int maxHour = 23;
 
-	protected string $type = 'time';
+	protected ?string $type = 'time';
 
-	protected Set<string> $skipTransfer = Set { 'label', 'name' };
+	protected ImmSet<string> $skipTransfer = ImmSet { 'label', 'name' };
 
 	protected function buildField() : :div {
 		$step = $this->getAttribute('minuteStep');

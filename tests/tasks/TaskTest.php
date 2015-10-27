@@ -12,14 +12,14 @@ class TaskTest extends beatbox\Test {
 	 */
 	public function testEnqueue() {
 		// Make sure the queue's empty
-		$this->assertEquals(0, self::redis()->llen(Task::QUEUE_NAME));
+		$this->assertEquals(0, self::redis()->lLen(Task::QUEUE_NAME));
 
 		$this->assertEquals(1, add_task(cast_callable('strtolower'), 'hello'));
-		$this->assertEquals(1, self::redis()->llen(Task::QUEUE_NAME));
+		$this->assertEquals(1, self::redis()->lLen(Task::QUEUE_NAME));
 
 		$task = new Task(cast_callable('strtolower'), 'goodbye');
 		$this->assertEquals(2, $task->queue());
-		$this->assertEquals(2, self::redis()->llen(Task::QUEUE_NAME));
+		$this->assertEquals(2, self::redis()->lLen(Task::QUEUE_NAME));
 	}
 
 	/**
@@ -27,24 +27,24 @@ class TaskTest extends beatbox\Test {
 	 * @depends testEnqueue
 	 */
 	public function testRunning() {
-		$this->assertEquals(0, self::redis()->llen(Task::QUEUE_NAME));
+		$this->assertEquals(0, self::redis()->lLen(Task::QUEUE_NAME));
 
 		$this->assertEquals(1, add_task(cast_callable('strtolower'), 'Hello'));
 
 		$this->assertEquals('hello', Task::run());
 
-		$this->assertEquals(0, self::redis()->llen(Task::QUEUE_NAME));
+		$this->assertEquals(0, self::redis()->lLen(Task::QUEUE_NAME));
 		$this->assertNull(Task::run());
-		$this->assertEquals(0, self::redis()->llen(Task::QUEUE_NAME));
+		$this->assertEquals(0, self::redis()->lLen(Task::QUEUE_NAME));
 
 		// Make sure it is a queue
 		$this->assertEquals(1, add_task(cast_callable('strtolower'), 'Hello'));
 		$this->assertEquals(2, add_task(cast_callable('strtolower'), 'World'));
 
 		$this->assertEquals('hello', Task::run());
-		$this->assertEquals(1, self::redis()->llen(Task::QUEUE_NAME));
+		$this->assertEquals(1, self::redis()->lLen(Task::QUEUE_NAME));
 		$this->assertEquals('world', Task::run());
-		$this->assertEquals(0, self::redis()->llen(Task::QUEUE_NAME));
+		$this->assertEquals(0, self::redis()->lLen(Task::QUEUE_NAME));
 	}
 
 	/**
@@ -52,7 +52,7 @@ class TaskTest extends beatbox\Test {
 	 * @depends testRunning
 	 */
 	public function testConcurrency() {
-		$this->assertEquals(0, self::redis()->llen(Task::QUEUE_NAME));
+		$this->assertEquals(0, self::redis()->lLen(Task::QUEUE_NAME));
 
 		$task = new Task(cast_callable('strtolower'), 'Hello');
 		$task->setConcurrent(Task::CON_ALWAYS);

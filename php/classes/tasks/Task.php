@@ -28,7 +28,7 @@ class Task implements \Serializable {
 	 * Load a task from the queue and run it
 	 */
 	public static function run() : mixed {
-		$task = self::redis()->lpop(self::QUEUE_NAME);
+		$task = self::redis()->lPop(self::QUEUE_NAME);
 		if($task) {
 			$task = unserialize($task);
 			if($task->canStart()) {
@@ -77,7 +77,7 @@ class Task implements \Serializable {
 	 * Returns the length of the queue
 	 */
 	public function queue() : int {
-		return self::redis()->rpush(self::QUEUE_NAME, serialize($this));
+		return self::redis()->rPush(self::QUEUE_NAME, serialize($this));
 	}
 
 	/**

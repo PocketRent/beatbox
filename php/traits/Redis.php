@@ -43,7 +43,7 @@ trait Redis {
 				// The test runner should always use the test database,
 				// which we clear on connection
 				$inst->select(REDIS_DB_TEST);
-				$inst->flushdb();
+				$inst->flushDB();
 			}
 			self::$__redis__inst = $inst;
 		}

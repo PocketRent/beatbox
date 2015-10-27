@@ -377,6 +377,18 @@ final class Connection {
 		}
 	}
 
+    public function escapeBytea(?string $bytea): string {
+        if ($bytea === null) return 'NULL';
+        return wait($this->withRawConn(async function ($conn) : Awaitable<string> use ($bytea) {
+            return "'".pg_escape_bytea($conn, $bytea)."'";
+        }));
+    }
+
+    public function unescapeBytea(?string $str): ?string {
+        if ($str === null) return null;
+        return pg_unescape_bytea($str);
+    }
+
 	private function hstoreEscape(string $s) : string {
 		$replacements = [
 			'\\' => '\\\\',

@@ -8,6 +8,6 @@ trait Redis {
 	protected static function config_redis(\Redis $inst) : void {}
 
 	protected function tearDown() : void {
-		self::redis()->flushdb();
+		self::redis()->flushDB();
 	}
 }

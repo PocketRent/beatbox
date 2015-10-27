@@ -819,7 +819,7 @@ function load_tables(resource $conn, string $ns,
 	})->map(function (ExcludePattern $pat): Iterable<string> {
 		return $pat->columns->items();
 	}) as $it) {
-		$ex_cols_it->append($it);
+		$ex_cols_it->append($it->getIterator());
 	}
 
 	$ex_tables = [];

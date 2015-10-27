@@ -7,8 +7,8 @@ type DataSource = array<string,mixed>;
 class :bb:form extends :bb:base implements beatbox\FragmentCallback {
 	attribute
 		:form,
-		var validator,
-		var handler;
+	    mixed validator,
+        mixed handler;
 
 	protected function compose(): :form {
 		return <form>

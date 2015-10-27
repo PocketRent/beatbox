@@ -32,7 +32,7 @@ trait Settings {
 		$this->settings_loaded = true;
 		$id = (string)$this->getID();
 		$this->settings_key = self::getTableName() . ':' . $id;
-		$data = self::redis()->hgetall($this->settings_key);
+		$data = self::redis()->hGetAll($this->settings_key);
 		if($data) {
 			$this->settings_data = new Map($data);
 			$this->settings_original = new Map($data);
@@ -77,7 +77,7 @@ trait Settings {
 					}
 				}
 				if(count($set)) {
-					$r->hmset($this->settings_key, $set);
+					$r->hMset($this->settings_key, $set);
 				}
 				// call_user_func_array wants an array
 				$del = [$this->settings_key];
@@ -86,7 +86,7 @@ trait Settings {
 					$del[] = $key;
 				}
 				if(count($del) > 1) {
-					call_user_func_array(inst_meth($r, 'hdel'), $del);
+					call_user_func_array(inst_meth($r, 'hDel'), $del);
 				}
 			});
 
